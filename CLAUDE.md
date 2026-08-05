@@ -53,5 +53,11 @@ UDID=$(xcrun simctl list devices available --json \
   them and reports green over nothing. Nightly and Prerelease therefore filter by target.
 - **`#_sourceLocation`, with the underscore.** The unprefixed spelling is the compiler's
   line-control directive and does not parse in a parameter default.
+- **A pre-commit hook's exit code is its LAST command's.** An earlier spelling ended with a bare
+  `swift-format lint`, so a lint finding silently aborted the commit while `git commit -q`
+  printed nothing — it dropped five commits before anyone noticed a count mismatch. Every gate
+  now names itself on failure and prints the fix command.
+- **`// swift-format-ignore:` only works on its own line.** As an end-of-line comment it is
+  inert *and* usually over-length, so it trips `EndOfLineComment` while suppressing nothing.
 - The pre-commit hook lives in `.git/hooks/pre-commit` and is **not versioned**. On a fresh
-  clone, copy it from this repo's history or run the two check scripts by hand.
+  clone, copy it from this repo's history or run the check scripts by hand.
