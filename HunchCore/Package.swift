@@ -39,15 +39,25 @@ let package = Package(
     // (07 B22, 06 T49, 01 §5b). iOS must equal IPHONEOS_DEPLOYMENT_TARGET in Config/Base.xcconfig.
     platforms: [.iOS(.v18), .macOS(.v15)],
     products: [
-        // The single library product arrives in T05 with the first shipping target.
         // HunchTestSupport is deliberately NEVER here — that absence is half of what keeps
         // `import Testing` out of the release binary (01 P20, 06 T5a). Check 4 asserts it.
+        .library(name: "HunchCore", targets: ["LawGeneration"])
     ],
     targets: [
         // A .target, never a .testTarget — test targets cannot be depended on (01 P20).
         // It may import Testing under 06 T5a's three conditions: absent from products:, named
         // only by test targets, and both asserted in CI rather than remembered.
         .target(name: "HunchTestSupport", swiftSettings: coreSettings),
+
+        // No dependencies: SplitMix64 imports nothing. The edges arrive with the files that
+        // need them (package-manifests.md §4 rule 3).
+        .target(name: "LawGeneration", swiftSettings: coreSettings),
+
+        .testTarget(
+            name: "LawGenerationTests",
+            dependencies: ["LawGeneration", "HunchTestSupport"],
+            swiftSettings: coreSettings
+        ),
 
         .testTarget(
             name: "HunchTestSupportTests",
