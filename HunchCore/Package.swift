@@ -47,7 +47,11 @@ let package = Package(
         // A .target, never a .testTarget — test targets cannot be depended on (01 P20).
         // It may import Testing under 06 T5a's three conditions: absent from products:, named
         // only by test targets, and both asserted in CI rather than remembered.
-        .target(name: "HunchTestSupport", swiftSettings: coreSettings),
+        .target(
+            name: "HunchTestSupport",
+            dependencies: ["LawGeneration"],
+            swiftSettings: coreSettings
+        ),
 
         // No dependencies: SplitMix64 imports nothing. The edges arrive with the files that
         // need them (package-manifests.md §4 rule 3).
