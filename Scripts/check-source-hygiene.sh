@@ -129,6 +129,11 @@ if [ "$fast" -eq 0 ] && [ -f "$catalog" ]; then
   keys=$(jq '.strings | length' "$catalog")
   [ "$keys" -le 250 ] || report "String Catalog over budget — $keys keys, the ceiling is 250 (§12.9):" "$catalog"
 
+  # A catalog with zero strings has zero locales, and that is not a violation — it is an empty
+  # catalog. The locale-set and per-key completeness checks below only mean something once
+  # there are keys, so they are skipped while it is empty (E18 fills it). The budget check
+  # above still runs, because "0 <= 250" is a real answer.
+  if [ "$keys" -gt 0 ]; then
   have=$(jq -r '[.strings[].localizations? // {} | keys[]] | unique | join(" ")' "$catalog")
   [ "$have" = "$want" ] || report 'Locale set is not the brief’s twelve:' "want: $want
 have: $have"
@@ -166,6 +171,7 @@ have: $have"
         | .key' "$catalog")
       [ -n "$hit" ] && report "Banned lexeme \"$word\" in $loc (§1.13):" "$hit"
     done < Scripts/banned-lexemes.txt
+  fi
   fi
 elif [ "$fast" -eq 0 ] && [ -d Modules/Sources ]; then
   report 'String Catalog missing (01 P35):' "$catalog"

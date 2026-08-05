@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		C0F1000000000000000320 /* HunchUI in Frameworks */ = {isa = PBXBuildFile; productRef = C0F1000000000000000310 /* HunchUI */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		C0F1000000000000000001 /* Hunch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hunch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0F1000000000000000002 /* HunchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HunchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -30,6 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C0F1000000000000000320 /* HunchUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,6 +111,7 @@
 			);
 			name = Hunch;
 			packageProductDependencies = (
+				C0F1000000000000000310 /* HunchUI */,
 			);
 			productName = Hunch;
 			productReference = C0F1000000000000000001 /* Hunch.app */;
@@ -159,10 +165,21 @@
 		};
 /* End PBXNativeTarget section */
 
+/* Begin XCSwiftPackageProductDependency section */
+		C0F1000000000000000310 /* HunchUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = HunchUI;
+		};
+/* End XCSwiftPackageProductDependency section */
+
 /* Begin XCLocalSwiftPackageReference section */
 		C0F1000000000000000300 /* XCLocalSwiftPackageReference "HunchCore" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = HunchCore;
+		};
+		C0F1000000000000000301 /* XCLocalSwiftPackageReference "Modules" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Modules;
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -200,6 +217,7 @@
 			productRefGroup = C0F1000000000000000042 /* Products */;
 			packageReferences = (
 				C0F1000000000000000300 /* XCLocalSwiftPackageReference "HunchCore" */,
+				C0F1000000000000000301 /* XCLocalSwiftPackageReference "Modules" */,
 			);
 			projectDirPath = "";
 			projectRoot = "";
