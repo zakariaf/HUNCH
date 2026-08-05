@@ -1,4 +1,4 @@
-internal import LawGeneration
+internal import Glyphs
 
 /// Shared, immutable test corpora. Everything here is a `let` of a `Sendable` value: tests run
 /// in parallel *in one process* (06 T10), so a `static var` here would be a data race across

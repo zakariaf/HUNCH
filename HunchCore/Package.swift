@@ -41,7 +41,7 @@ let package = Package(
     products: [
         // HunchTestSupport is deliberately NEVER here — that absence is half of what keeps
         // `import Testing` out of the release binary (01 P20, 06 T5a). Check 4 asserts it.
-        .library(name: "HunchCore", targets: ["Tokens", "Glyphs", "LawGeneration"])
+        .library(name: "HunchCore", targets: ["Tokens", "Glyphs", "Laws"])
     ],
     targets: [
         // A .target, never a .testTarget — test targets cannot be depended on (01 P20).
@@ -49,7 +49,7 @@ let package = Package(
         // only by test targets, and both asserted in CI rather than remembered.
         .target(
             name: "HunchTestSupport",
-            dependencies: ["LawGeneration"],
+            dependencies: ["Glyphs", "Laws"],
             swiftSettings: coreSettings
         ),
 
@@ -68,6 +68,14 @@ let package = Package(
 
         .target(name: "Glyphs", swiftSettings: coreSettings),
 
+        .target(name: "Laws", dependencies: ["Glyphs"], swiftSettings: coreSettings),
+
+        .testTarget(
+            name: "LawsTests",
+            dependencies: ["Laws", "HunchTestSupport"],
+            swiftSettings: coreSettings
+        ),
+
         .testTarget(
             name: "GlyphsTests",
             dependencies: ["Glyphs", "HunchTestSupport"],
@@ -76,13 +84,6 @@ let package = Package(
 
         // No dependencies: SplitMix64 imports nothing. The edges arrive with the files that
         // need them (package-manifests.md §4 rule 3).
-        .target(name: "LawGeneration", swiftSettings: coreSettings),
-
-        .testTarget(
-            name: "LawGenerationTests",
-            dependencies: ["LawGeneration", "HunchTestSupport"],
-            swiftSettings: coreSettings
-        ),
 
         .testTarget(
             name: "HunchTestSupportTests",

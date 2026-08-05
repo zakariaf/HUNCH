@@ -6,7 +6,9 @@
 /// the table would grow from 8 KiB to 2 MiB.
 ///
 /// Never persisted. A Codex page stores the AST and rebuilds this in ≈2 µs (§3.6).
-public struct Bitboard65536: Equatable, Sendable {
+/// `Hashable` because §3.6 makes the extension the dedup key: the Codex's identity is a
+/// 64-bit hash of the word array, with a full compare only on collision.
+public struct Bitboard65536: Hashable, Sendable {
 
     /// 65,536 bits ÷ 64.
     public static let wordCount = 1_024

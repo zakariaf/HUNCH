@@ -1,5 +1,12 @@
 /// The project's only random number generator.
 ///
+/// It lives in `Glyphs` rather than in `LawGeneration` because `Glyphs` is the universal leaf
+/// (`08 §1`: *"leaf; empty dependencies"*) and three things above it need the finaliser:
+/// `Laws.LawKey`, `Archive.Anomaly` (§11.6) and the generator itself. `LawGeneration` gains a
+/// dependency on `Laws` in E06, so importing it from `Laws` would be a cycle — and the
+/// alternative, re-typing §11.6's constants in a second place, is the exact failure that makes
+/// a globally shared daily law a coin flip. Recorded in DECISIONS.md.
+///
 /// A struct of one `UInt64`, therefore trivially `Sendable` and trivially copied. It is never
 /// stored: `generate(seed:band:targetDelta:mode:avoid:)` constructs one as a local `var` and
 /// threads `&rng` down a synchronous call tree, and it dies at the closing brace (08 §4).

@@ -1,7 +1,7 @@
 import Testing
 
+import Glyphs
 import HunchTestSupport
-import LawGeneration
 
 /// Reference vectors, not a golden order (06 T42). SplitMix64's outputs for seed 0 are published
 /// with the algorithm, so this suite compares against a foreign artefact rather than against
