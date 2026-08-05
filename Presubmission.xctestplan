@@ -1,0 +1,26 @@
+{
+  "configurations": [
+    {
+      "id": "11111111-1111-1111-1111-111111111111",
+      "name": "Default",
+      "options": {}
+    }
+  ],
+  "defaultOptions": {
+    "testExecutionOrdering": "random",
+    "testTimeoutsEnabled": true,
+    "includeTags": [
+      "presubmission"
+    ]
+  },
+  "testTargets": [
+    {
+      "target": {
+        "containerPath": "container:Hunch.xcodeproj",
+        "identifier": "C0F1000000000000000051",
+        "name": "HunchTests"
+      }
+    }
+  ],
+  "version": 1
+}

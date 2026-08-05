@@ -1,0 +1,87 @@
+name: CI
+on:
+  pull_request:
+  push: { branches: [main] }
+
+concurrency:                            # cancels superseded runs; directly saves macOS minutes
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Linux costs roughly a tenth of macOS (07 B32), and everything in this job is pure text.
+  lint:
+    runs-on: ubuntu-latest
+    container: swift:6.3.3              # the toolchain ships the formatter; on Linux it is `swift format`
+    steps:
+      - uses: actions/checkout@v4
+      - name: Format
+        run: swift format lint --strict --recursive App HunchCore/Sources HunchCore/Tests
+      - name: Source hygiene (text checks only)
+        run: Scripts/check-source-hygiene.sh --fast
+
+  test:
+    runs-on: macos-26                   # 07 B28 — never macos-latest
+    env:
+      SIM_NAME: iPhone 16               # confirm with `xcrun simctl list devices available`
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo xcode-select -s /Applications/Xcode_26.6.app   # 07 B29 — the image default moves
+
+      # No dependency cache: zero third-party packages means nothing to restore, and caching
+      # .build is 07 B34's mtime fragility bought for nothing. There is no Package.resolved,
+      # so hashFiles() on it would return "" and pin every run to one stale key.
+
+      # ── the gate ladder, cheapest first ────────────────────────────────────
+      # Each line is added by the task that creates its script. A gate is never added before
+      # its script exists: a step that cannot fail is worse than no step (07 B6).
+      - run: Scripts/check-source-hygiene.sh
+      - run: Scripts/check-pbxproj-clean.sh Hunch.xcodeproj
+      - run: Scripts/check-inventory.sh          # E01·T09
+      - run: Scripts/check-symbols.sh            # E01·T09
+      - run: Scripts/check-skills.sh             # E01·T09
+      # - run: .claude/skills/hunch-swift-code/scripts/check-boundary.sh --all   # E02·T01
+      # - run: swift .claude/skills/hunch-design-tokens/scripts/check-tokens.swift  # E03·T01
+      # - run: node .claude/skills/hunch-glyph-renderer/scripts/check-coverage-separation.js  # E04
+      # - run: node .claude/skills/hunch-sigil-drawing/scripts/check-sigil-distinctness.js    # E04
+
+      # 01 P23: swift test is the inner loop, so CI runs it too. No simulator, no host app.
+      # Build first, so the timer measures the suite and not a cold compile.
+      - name: Build HunchCore
+        run: swift build --package-path HunchCore --build-tests
+      - name: Fast suite, timed
+        run: |
+          start=$SECONDS
+          swift test --package-path HunchCore
+          elapsed=$(( SECONDS - start ))
+          echo "fast suite: ${elapsed}s"
+          if [ "$elapsed" -ge 10 ]; then
+            echo "::error::fast suite took ${elapsed}s, the budget is 10s — gate the offender .nightly or make it faster"
+            exit 1
+          fi
+
+      - name: Resolve simulator                       # 07 B30 — never a hardcoded name+OS pair
+        id: sim
+        run: |
+          set -o pipefail
+          udid=$(xcrun simctl list devices available --json \
+            | jq -r --arg n "$SIM_NAME" '.devices | to_entries[] | select(.key | test("iOS-26"))
+                     | .value[] | select(.name == $n) | .udid' | head -1)
+          if [ -z "$udid" ]; then
+            echo "::error::no available iOS 26 runtime for $SIM_NAME"; xcrun simctl list devices available; exit 1
+          fi
+          echo "udid=$udid" >> "$GITHUB_OUTPUT"
+
+      - name: App and UI tests
+        run: |
+          set -o pipefail                             # 07 B31 — without it, a failing test goes green
+          xcodebuild test \
+            -scheme Hunch \
+            -testPlan Presubmission \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -resultBundlePath TestResults.xcresult \
+            -derivedDataPath DerivedData \
+            CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            | xcbeautify --renderer github-actions
+
+      - if: always()                                  # 07 B33 — `get object` is deprecated
+        run: xcrun xcresulttool get test-results summary --path TestResults.xcresult --compact

@@ -1,0 +1,30 @@
+{
+  "configurations": [
+    {
+      "id": "33333333-3333-3333-3333-333333333333",
+      "name": "Default",
+      "options": {}
+    }
+  ],
+  "defaultOptions": {
+    "testExecutionOrdering": "random",
+    "testTimeoutsEnabled": true
+  },
+  "testTargets": [
+    {
+      "target": {
+        "containerPath": "container:Hunch.xcodeproj",
+        "identifier": "C0F1000000000000000051",
+        "name": "HunchTests"
+      }
+    },
+    {
+      "target": {
+        "containerPath": "container:Hunch.xcodeproj",
+        "identifier": "C0F1000000000000000052",
+        "name": "HunchAutomationTests"
+      }
+    }
+  ],
+  "version": 1
+}
