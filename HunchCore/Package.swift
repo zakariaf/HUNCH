@@ -41,7 +41,7 @@ let package = Package(
     products: [
         // HunchTestSupport is deliberately NEVER here — that absence is half of what keeps
         // `import Testing` out of the release binary (01 P20, 06 T5a). Check 4 asserts it.
-        .library(name: "HunchCore", targets: ["Glyphs", "LawGeneration"])
+        .library(name: "HunchCore", targets: ["Tokens", "Glyphs", "LawGeneration"])
     ],
     targets: [
         // A .target, never a .testTarget — test targets cannot be depended on (01 P20).
@@ -50,6 +50,19 @@ let package = Package(
         .target(
             name: "HunchTestSupport",
             dependencies: ["LawGeneration"],
+            swiftSettings: coreSettings
+        ),
+
+        // 08 §1's tree predates DESIGN-SYSTEM-SCOPE.md §4.4, which rules the token layer into
+        // HunchCore so `swift test` can assert every contrast ratio with no simulator.
+        // package-manifests.md §2 is the manifest of record. Leaf: no dependencies, and NOT on
+        // Glyphs — Palette.Hue mirrors Glyph.Hue's four cases, and that mapping is one switch
+        // owned by HunchUI/GlyphCanvas.swift, which is cheaper than a package edge.
+        .target(name: "Tokens", swiftSettings: coreSettings),
+
+        .testTarget(
+            name: "TokensTests",
+            dependencies: ["Tokens", "HunchTestSupport"],
             swiftSettings: coreSettings
         ),
 
