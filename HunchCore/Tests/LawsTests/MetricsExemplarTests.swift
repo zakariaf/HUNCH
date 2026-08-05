@@ -11,14 +11,12 @@ import Laws
 /// number for every law and the wrong band for some of them.
 @Suite("§5.2 exemplar metrics", .tags(.unit, .presubmission))
 struct MetricsExemplarTests {
-    static func sub(_ raw: UInt8) -> Subset4 { Subset4(rawValue: raw)! }  // swift-format-ignore: NeverForceUnwrap
-    static func attrs(_ raw: UInt8) -> AttributeSet { AttributeSet(rawValue: raw)! }  // swift-format-ignore: NeverForceUnwrap
 
     /// Band 1 — `fill ∈ {striped}`. An atom must score deficit 0: vary that attribute and the
     /// lamp answers, which is exactly what band 1 teaches.
     @Test("Band 1 LITERAL — p .250, deficit 0, 1 leaf, 3 free, 0 scattered")
     func bandOne() {
-        let law = Law(.atom(.init(attribute: .fill, subset: Self.sub(0b0100))))
+        let law = Law(.atom(.init(attribute: .fill, subset: Fixture.subset(0b0100))))
         expectApproximatelyEqual(law.admitRate, 0.250, absoluteTolerance: 0.001)
         expectApproximatelyEqual(law.marginalDeficit, 0.000, absoluteTolerance: 0.001)
         #expect(law.leafCount == 1)
@@ -32,9 +30,9 @@ struct MetricsExemplarTests {
     func bandTwo() {
         let law = Law(
             .coupled(
-                .atom(.init(attribute: .shape, subset: Self.sub(0b1010))),
+                .atom(.init(attribute: .shape, subset: Fixture.subset(0b1010))),
                 .and,
-                .atom(.init(attribute: .pips, subset: Self.sub(0b1100)))))
+                .atom(.init(attribute: .pips, subset: Fixture.subset(0b1100)))))
         expectApproximatelyEqual(law.admitRate, 0.250, absoluteTolerance: 0.001)
         expectApproximatelyEqual(law.marginalDeficit, 0.2857, absoluteTolerance: 0.001)
         #expect(law.leafCount == 2)
@@ -49,9 +47,9 @@ struct MetricsExemplarTests {
     func bandThree() {
         let law = Law(
             .coupled(
-                .atom(.init(attribute: .shape, subset: Self.sub(0b0011))),
+                .atom(.init(attribute: .shape, subset: Fixture.subset(0b0011))),
                 .xor,
-                .atom(.init(attribute: .fill, subset: Self.sub(0b0011)))))
+                .atom(.init(attribute: .fill, subset: Fixture.subset(0b0011)))))
         expectApproximatelyEqual(law.admitRate, 0.500, absoluteTolerance: 0.001)
         expectApproximatelyEqual(law.marginalDeficit, 1.000, absoluteTolerance: 0.001)
         for marginal in law.table.marginals {
@@ -89,7 +87,7 @@ struct MetricsExemplarTests {
             .guarded(
                 .init(
                     gate: .hue, gateValue: 0, branch: .pips,
-                    then: Self.sub(0b1100), otherwise: Self.sub(0b0001))))
+                    then: Fixture.subset(0b1100), otherwise: Fixture.subset(0b0001))))
         expectApproximatelyEqual(law.admitRate, 0.313, absoluteTolerance: 0.001)
         #expect(law.leafCount == 3)
         #expect(law.freeAttributeCount == 2)
@@ -114,7 +112,8 @@ struct MetricsExemplarTests {
     /// marginals.
     @Test("Band 8 SYSTEMIC — p .500, deficit 1.000, 4 leaves, 0 free")
     func bandEight() {
-        let law = Law(.aggregate(.parity(.init(attributes: Self.attrs(0b1111), isOdd: false))))
+        let law = Law(
+            .aggregate(.parity(.init(attributes: Fixture.attributeSet(0b1111), isOdd: false))))
         expectApproximatelyEqual(law.admitRate, 0.500, absoluteTolerance: 0.001)
         expectApproximatelyEqual(law.marginalDeficit, 1.000, absoluteTolerance: 0.001)
         #expect(law.leafCount == 4)
@@ -130,9 +129,9 @@ struct MetricsExemplarTests {
             .aggregate(
                 .count(
                     .init(
-                        attributes: Self.attrs(0b0111),  // fill, shape, pips
-                        rankIn: Self.sub(0b1100),  // ranks 3, 4
-                        countIn: CountSet(rawValue: 0b1100, over: 3)!))))  // swift-format-ignore: NeverForceUnwrap
+                        attributes: Fixture.attributeSet(0b0111),  // fill, shape, pips
+                        rankIn: Fixture.subset(0b1100),  // ranks 3, 4
+                        countIn: Fixture.countSet(0b1100, over: 3)))))
         expectApproximatelyEqual(law.admitRate, 0.500, absoluteTolerance: 0.001)
         expectApproximatelyEqual(law.marginalDeficit, 0.286, absoluteTolerance: 0.005)
     }

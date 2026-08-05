@@ -9,11 +9,10 @@ import Laws
 /// expression, so a test cannot inherit a bug from the resolver it checks.
 @Suite("LawTable", .tags(.unit, .presubmission))
 struct LawTableTests {
-    static func sub(_ raw: UInt8) -> Subset4 { Subset4(rawValue: raw)! }  // swift-format-ignore: NeverForceUnwrap
 
     @Test("An atom resolves to its mask, checked glyph by glyph")
     func atomResolves() {
-        let node = LawNode.atom(.init(attribute: .fill, subset: Self.sub(0b0100)))  // striped
+        let node = LawNode.atom(.init(attribute: .fill, subset: Fixture.subset(0b0100)))  // striped
         let table = LawTable(node)
         #expect(table.arity == .stateless)
         #expect(table.popCount == 64)
@@ -29,7 +28,7 @@ struct LawTableTests {
         let node = LawNode.guarded(
             .init(
                 gate: .hue, gateValue: 0, branch: .pips,
-                then: Self.sub(0b1100), otherwise: Self.sub(0b0001)))
+                then: Fixture.subset(0b1100), otherwise: Fixture.subset(0b0001)))
         let table = LawTable(node)
         for g in Deck.all {
             let expected = g.hue == .amber ? (g.pips.rank >= 3) : (g.pips == .one)
@@ -61,7 +60,7 @@ struct LawTableTests {
     @Test("A coupler over mixed arities lifts the stateless side (§3.6)")
     func mixedArityCoupling() {
         let ctx = LawNode.contextual(.init(current: .pips, comparator: .gt, previous: .pips))
-        let atom = LawNode.atom(.init(attribute: .shape, subset: Self.sub(0b1010)))
+        let atom = LawNode.atom(.init(attribute: .shape, subset: Fixture.subset(0b1010)))
         let table = LawTable(.coupled(ctx, .and, atom))
         #expect(table.arity == .contextual)
         for prev in stride(from: 0, to: 256, by: 37) {
@@ -79,7 +78,7 @@ struct LawTableTests {
     @Test("An aggregate resolves; §5.2's band-8 parity exemplar admits exactly half the deck")
     func aggregateResolves() {
         let node = LawNode.aggregate(
-            .parity(.init(attributes: AttributeSet(rawValue: 0b1111)!, isOdd: false)))  // swift-format-ignore: NeverForceUnwrap
+            .parity(.init(attributes: Fixture.attributeSet(0b1111), isOdd: false)))
         let table = LawTable(node)
         #expect(table.popCount == 128)
         #expect(table.admitRate == 0.5)
@@ -95,7 +94,7 @@ struct LawTableTests {
 
     @Test("There are exactly 16 marginals, and they average to the admit rate")
     func marginalsShape() {
-        let node = LawNode.atom(.init(attribute: .shape, subset: Self.sub(0b0110)))
+        let node = LawNode.atom(.init(attribute: .shape, subset: Fixture.subset(0b0110)))
         let table = LawTable(node)
         let m = table.marginals
         #expect(m.count == 16)
