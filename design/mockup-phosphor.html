@@ -1,0 +1,2763 @@
+<title>PHOSPHOR — Direction A for HUNCH</title>
+
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   PAGE CHROME TOKENS — these adapt to the viewer.
+   The specimens below do not. That distinction is the whole point of the page.
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root{
+  /* light — the technical drawing */
+  --pg-bg:#E6E9E8;
+  --pg-plate:#F2F4F3;
+  --pg-well:#DCE0DF;
+  --pg-ink:#14181A;
+  --pg-ink2:#5A6265;
+  --pg-rule:#C7CDCC;
+  --pg-rule2:#A6AEAD;
+  --pg-brass:#8A5E14;
+  --pg-cold:#0E5F72;
+  --pg-tick-off:#BEC5C4;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    /* dark — the unlit room, but a COOL near-black, so the app's warm
+       near-black specimen reads as an object sitting on it */
+    --pg-bg:#16181A;
+    --pg-plate:#1C1F21;
+    --pg-well:#111315;
+    --pg-ink:#E6EAE9;
+    --pg-ink2:#939B9D;
+    --pg-rule:#2B2F31;
+    --pg-rule2:#3D4346;
+    --pg-brass:#C9922F;
+    --pg-cold:#7FD8E0;
+    --pg-tick-off:#33383A;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="light"]{
+  --pg-bg:#E6E9E8; --pg-plate:#F2F4F3; --pg-well:#DCE0DF;
+  --pg-ink:#14181A; --pg-ink2:#5A6265; --pg-rule:#C7CDCC; --pg-rule2:#A6AEAD;
+  --pg-brass:#8A5E14; --pg-cold:#0E5F72; --pg-tick-off:#BEC5C4; color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --pg-bg:#16181A; --pg-plate:#1C1F21; --pg-well:#111315;
+  --pg-ink:#E6EAE9; --pg-ink2:#939B9D; --pg-rule:#2B2F31; --pg-rule2:#3D4346;
+  --pg-brass:#C9922F; --pg-cold:#7FD8E0; --pg-tick-off:#33383A; color-scheme:dark;
+}
+
+/* ═══ TYPE — the app's own §13.4 role table, applied to a web page.
+       System faces only. Roles separate by weight, width and tracking. ═══ */
+:root{
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,"Cascadia Mono","Roboto Mono",monospace;
+  --col:1080px;
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0; background:var(--pg-bg); color:var(--pg-ink);
+  font-family:var(--sans); font-size:17px; line-height:1.58;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+
+/* No shadow, no elevation, nothing above 2px radius — anywhere on this page.
+   That is the direction's own depth rule, obeyed by its own pitch. */
+
+.wrap{max-width:var(--col); margin:0 auto; padding:0 20px;}
+
+.d-display{font-size:clamp(32px,5.6vw,52px); font-weight:600; font-stretch:87.5%;
+  letter-spacing:0.005em; line-height:1.06; text-wrap:balance; margin:0;}
+.d-title{font-size:clamp(21px,2.6vw,27px); font-weight:600; font-stretch:87.5%;
+  letter-spacing:0.02em; line-height:1.18; text-wrap:balance; margin:0;}
+.d-section{font-size:13px; font-weight:500; font-stretch:87.5%;
+  letter-spacing:0.14em; text-transform:uppercase; margin:0;}
+.d-micro{font-size:11px; font-weight:500; font-stretch:87.5%;
+  letter-spacing:0.16em; text-transform:uppercase; margin:0; color:var(--pg-ink2);}
+.d-body{font-size:17px; line-height:1.6; margin:0; max-width:66ch;}
+.d-caption{font-size:14px; line-height:1.55; color:var(--pg-ink2); margin:0; max-width:74ch;}
+.d-num{font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:13px;
+  letter-spacing:0.01em;}
+
+.lede{font-size:clamp(18px,2.1vw,21px); line-height:1.5; max-width:56ch;
+  font-stretch:96%; margin:0;}
+
+strong{font-weight:600;}
+em{font-style:italic;}
+a{color:inherit;}
+code,.k{font-family:var(--mono); font-size:0.86em; font-variant-numeric:tabular-nums;
+  letter-spacing:0; color:var(--pg-ink2);}
+
+/* ═══ LAYOUT PRIMITIVES ═══ */
+.stack{display:flex; flex-direction:column;}
+.g8{gap:8px;} .g12{gap:12px;} .g16{gap:16px;} .g20{gap:20px;} .g24{gap:24px;}
+.g32{gap:32px;} .g44{gap:44px;} .g64{gap:64px;}
+
+.rule{height:0; border:0; border-top:1px solid var(--pg-rule); margin:0;}
+
+.exhibit{padding:64px 0 8px; border-top:1px solid var(--pg-rule);}
+.exhibit:first-of-type{border-top:0;}
+.ex-head{display:flex; flex-direction:column; gap:12px; margin-bottom:32px;}
+.ex-tag{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;}
+.ex-no{font-family:var(--mono); font-size:11px; letter-spacing:0.16em;
+  text-transform:uppercase; color:var(--pg-ink2);}
+.ex-no b{color:var(--pg-ink); font-weight:600;}
+
+/* the measure rail — the app's par-tick idiom, encoding the 8 exhibits.
+   The tick is 14 × 2 px of ink; the ANCHOR is 24 px tall, because a link the
+   page can focus is a target and this page holds itself to a target floor. */
+.rail{position:fixed; left:24px; top:50%; transform:translateY(-50%);
+  display:none; flex-direction:column; gap:0; z-index:5;}
+.rail-t{display:flex; align-items:center; width:24px; height:24px; margin:0;}
+.rail-t::before{content:""; display:block; width:14px; height:2px;
+  background:var(--pg-tick-off);
+  transition:background 120ms linear,width 120ms linear;}
+.rail-t.on::before{background:var(--pg-ink); width:22px;}
+@media (min-width:1240px){ .rail{display:flex;} }
+
+/* skip link */
+.skip{position:absolute; left:-9999px; top:0; background:var(--pg-plate);
+  color:var(--pg-ink); padding:10px 16px; border:1px solid var(--pg-ink); z-index:99;}
+.skip:focus{left:16px; top:16px;}
+
+:focus-visible{outline:2px solid var(--pg-ink); outline-offset:2px; border-radius:0;}
+
+/* ═══ PLATES — a plate separates by a hairline and a ground step. Never by a shadow. ═══ */
+.plate{background:var(--pg-plate); border:1px solid var(--pg-rule); border-radius:2px;}
+.plate-pad{padding:24px;}
+.figure{display:flex; flex-direction:column; gap:16px;}
+.fig-cap{display:flex; flex-direction:column; gap:6px;}
+.scrollx{overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch;}
+.scrollx:focus-visible{outline-offset:-2px;}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE APP'S OWN TOKENS — fixed. These never respond to the viewer's theme.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.app{
+  --ground:#0B0A08; --ground-raised:#15120D; --ground-sunken:#050504;
+  --cell:#100E0A; --cell-lit:#1C1811;
+  --stroke-primary:#EFE3D0; --stroke-secondary:#6B6153; --hairline:#3A342B;
+  /* text.secondary ‡ — NEW. stroke.secondary is 3.26 : 1 on ground and 3.08 : 1
+     on ground.raised, which is a graphical-object number, not a text number.
+     Every text run below stroke.primary uses this instead: 4.79 / 4.52 / 4.67
+     against ground / ground.raised / surface.cell. stroke.secondary keeps its
+     canon hex and is now confined to rules, ticks and non-text marks. */
+  --text-secondary:#887B69;
+  --brass:#C9922F; --brass-press:#8A6420; --cold:#7FD8E0; --cold-press:#4E9AA2;
+  --hue-amber:#E69F00; --hue-teal:#009E73; --hue-frost:#56B4E9; --hue-rose:#CC79A7;
+  --keyline:transparent;
+  background:var(--ground); color:var(--stroke-primary);
+}
+.app.t-light{
+  --ground:#F4EFE4; --ground-raised:#FBF7EE; --ground-sunken:#EBE4D5;
+  --cell:#F7F3EA; --cell-lit:#FDFBF6;
+  --stroke-primary:#1A1712; --stroke-secondary:#6E6659; --hairline:#D6CDBC;
+  --text-secondary:#6E6659;   /* already 4.94 / 5.30 / 5.11 — no lift needed */
+  --brass:#8A5E14; --brass-press:#5E3F0C; --cold:#0E5F72; --cold-press:#093F4C;
+  --hue-amber:#E69F00; --hue-teal:#009E73; --hue-frost:#56B4E9; --hue-rose:#CC79A7;
+  --keyline:#1A1712;
+}
+.app.t-hc{
+  --ground:#000000; --ground-raised:#0A0A0A; --ground-sunken:#000000;
+  --cell:#000000; --cell-lit:#141414;
+  --stroke-primary:#FFFFFF; --stroke-secondary:#B0B0B0; --hairline:#5A5A5A;
+  --text-secondary:#B0B0B0;   /* 9.68 / 9.13 / 8.49 */
+  --brass:#FFC24D; --brass-press:#C99433; --cold:#7FE9FF; --cold-press:#4FB8CC;
+  --hue-amber:#FFFFFF; --hue-teal:#FFFFFF; --hue-frost:#FFFFFF; --hue-rose:#FFFFFF;
+  --keyline:transparent;
+}
+.app :focus-visible{outline:2px solid var(--stroke-primary); outline-offset:2px;}
+
+/* bloom pass A — one blurred clone per glyph-bearing REGION, never per glyph */
+.region{position:relative; isolation:isolate;}
+.region>.bed{position:absolute; inset:0; opacity:0.35; pointer-events:none;
+  mix-blend-mode:screen;}
+@supports (mix-blend-mode:plus-lighter){ .region>.bed{mix-blend-mode:plus-lighter;} }
+.t-light .region>.bed, .t-hc .region>.bed{display:none;}
+@media (prefers-reduced-transparency:reduce),(prefers-contrast:more){
+  .region>.bed{display:none;}
+}
+
+/* the §13.6 shader, standing in for the Metal pass: 3px scanline + vignette.
+   Static here; it reseeds at 8 Hz in the app and freezes under Reduce Motion. */
+.grain{position:absolute; inset:0; pointer-events:none; z-index:3;
+  background:
+    radial-gradient(118% 88% at 50% 46%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.14) 100%),
+    repeating-linear-gradient(to bottom,
+      rgba(255,255,255,0.028) 0px, rgba(255,255,255,0.028) 1px,
+      rgba(0,0,0,0.028) 1px, rgba(0,0,0,0.028) 3px);
+}
+.t-light .grain, .t-hc .grain{display:none;}
+
+/* ═══ THE PHONE — 375 × 667 CSS px. True scale. Not scaled up. ═══
+   The bezel is an OUTLINE, not a border: with box-sizing:border-box a 1 px
+   border would eat two of the 375, and the Assay's trailing column sits at
+   x 311–375. A specimen that claims true scale has to be true scale. */
+.phone{
+  position:relative; width:375px; height:667px; flex:0 0 375px;
+  outline:1px solid var(--pg-rule2); border-radius:2px; overflow:hidden;
+}
+.chrome-spec{
+  position:relative; width:375px; border-radius:2px; overflow:hidden;
+  outline:1px solid var(--pg-rule2); padding:20px 0 24px;
+}
+/* below 375 + margins the specimen scrolls inside its own holder rather than
+   shrinking — a 44 pt target has to stay 44 pt to be worth showing */
+.holder{max-width:100%; overflow-x:auto; overflow-y:hidden; flex:0 0 auto;
+  -webkit-overflow-scrolling:touch;}
+.holder>*{flex:0 0 auto;}
+.specimen-row{display:flex; gap:32px; align-items:flex-start; flex-wrap:wrap;}
+.spec-note{display:flex; flex-direction:column; gap:20px; max-width:38ch; min-width:260px; flex:1;}
+.spec-note h4{margin:0; font-size:13px; font-weight:500; font-stretch:87.5%;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--pg-ink);}
+.spec-note p{margin:0; font-size:14px; line-height:1.55; color:var(--pg-ink2);}
+
+/* interactive keys inside the specimen */
+.hit{position:absolute; background:none; border:0; padding:0; margin:0;
+  cursor:pointer; -webkit-tap-highlight-color:transparent; font:inherit; color:inherit;}
+.hit:active{opacity:0.7;}
+
+/* ═══ THE GREYSCALE PROOF ═══ */
+.grey{filter:grayscale(1);}
+.proof{display:grid; grid-template-columns:1fr; gap:2px;}
+@media (min-width:900px){ .proof{grid-template-columns:1fr 1fr;} }
+.proof-half{position:relative;}
+.proof-lab{display:flex; align-items:baseline; justify-content:space-between; gap:16px;
+  padding:0 0 12px; flex-wrap:wrap;}
+
+/* ═══ TOKEN SHEET ═══ */
+table.tok{border-collapse:collapse; font-size:13px; min-width:760px; width:100%;}
+table.tok th{text-align:left; font-size:11px; font-weight:500; font-stretch:87.5%;
+  letter-spacing:0.16em; text-transform:uppercase; color:var(--pg-ink2);
+  padding:0 14px 10px 0; border-bottom:1px solid var(--pg-rule); white-space:nowrap;}
+table.tok td{padding:9px 14px 9px 0; border-bottom:1px solid var(--pg-rule);
+  vertical-align:middle; white-space:nowrap;}
+table.tok tr:last-child td{border-bottom:0;}
+table.tok .tname{font-family:var(--mono); font-size:12.5px; color:var(--pg-ink);}
+table.tok .thex{font-family:var(--mono); font-size:12.5px; color:var(--pg-ink2);
+  font-variant-numeric:tabular-nums;}
+table.tok .trat{font-family:var(--mono); font-size:12.5px; text-align:right;
+  font-variant-numeric:tabular-nums; padding-right:20px;}
+table.tok .trat.hi{color:var(--pg-ink); font-weight:600;}
+table.tok .use{white-space:normal; color:var(--pg-ink2); font-size:13px; min-width:170px;}
+.sw{display:inline-block; width:26px; height:16px; border:1px solid var(--pg-rule2);
+  vertical-align:-3px; margin-right:9px;}
+.tok-grid{display:grid; gap:2px 28px; grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+  font-family:var(--mono); font-size:12.5px; font-variant-numeric:tabular-nums;}
+.tok-grid div{display:flex; justify-content:space-between; gap:14px; padding:6px 0;
+  border-bottom:1px solid var(--pg-rule);}
+.tok-grid span:last-child{color:var(--pg-ink2);}
+
+/* type roles, shown as type rather than described as type */
+.typespec{display:flex; flex-direction:column; gap:0;}
+.typespec .r{display:grid; grid-template-columns:1fr; gap:6px; padding:18px 0;
+  border-bottom:1px solid var(--pg-rule);}
+@media (min-width:820px){ .typespec .r{grid-template-columns:minmax(0,1fr) 300px; gap:24px;
+  align-items:baseline;} }
+.typespec .r:last-child{border-bottom:0;}
+.typespec .meta{font-family:var(--mono); font-size:12px; color:var(--pg-ink2);
+  font-variant-numeric:tabular-nums;}
+.typespec .samp{color:var(--pg-ink); min-width:0; overflow-wrap:anywhere;}
+
+/* the fill × hue coverage matrix — every number computed from the token hexes */
+table.mx{border-collapse:collapse; font-family:var(--mono); font-size:12.5px;
+  font-variant-numeric:tabular-nums; min-width:520px;}
+table.mx th{font-family:var(--sans); font-size:11px; font-weight:500; font-stretch:87.5%;
+  letter-spacing:0.16em; text-transform:uppercase; color:var(--pg-ink2);
+  padding:0 16px 9px 0; text-align:right; white-space:nowrap;}
+table.mx th:first-child{text-align:left;}
+table.mx td{padding:7px 16px 7px 0; text-align:right; border-top:1px solid var(--pg-rule);
+  white-space:nowrap;}
+table.mx td:first-child{text-align:left; color:var(--pg-ink);}
+table.mx td.bad{color:var(--pg-cold); font-weight:600;}
+
+/* ═══ SPEC BAR ═══ */
+.specbar{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  border-top:1px solid var(--pg-rule); border-bottom:1px solid var(--pg-rule);}
+.specbar div{padding:16px 20px 16px 0; display:flex; flex-direction:column; gap:5px;}
+.specbar b{font-family:var(--mono); font-size:20px; font-weight:400; letter-spacing:-0.01em;
+  font-variant-numeric:tabular-nums; color:var(--pg-ink);}
+.specbar span{font-size:11px; font-weight:500; font-stretch:87.5%; letter-spacing:0.16em;
+  text-transform:uppercase; color:var(--pg-ink2);}
+
+/* ═══ HERO ═══ */
+.hero{padding:56px 0 44px;}
+.hero-grid{display:grid; gap:40px; grid-template-columns:1fr; align-items:end;}
+@media (min-width:940px){ .hero-grid{grid-template-columns:minmax(0,1fr) 420px; gap:56px;} }
+.room{position:relative; width:100%; max-width:420px; height:300px; border-radius:2px;
+  border:1px solid var(--pg-rule2); overflow:hidden;}
+.eyebrow{display:flex; align-items:center; gap:12px; margin-bottom:22px;}
+.eyebrow .bar{width:28px; height:2px; background:var(--pg-brass);}
+
+/* ═══ WEAKNESSES — cold register. The app's own colour for "the machine refuses". ═══ */
+.weak{border-top:1px solid var(--pg-rule); padding:64px 0 24px;}
+.weak-list{display:flex; flex-direction:column; gap:0; counter-reset:w;}
+.weak-item{display:grid; grid-template-columns:44px 1fr; gap:0 20px;
+  padding:24px 0; border-bottom:1px solid var(--pg-rule); align-items:start;}
+.weak-item:first-child{border-top:1px solid var(--pg-rule);}
+.weak-n{font-family:var(--mono); font-size:13px; color:var(--pg-cold);
+  font-variant-numeric:tabular-nums; padding-top:4px;}
+.weak-item p{margin:0; font-size:16px; line-height:1.6; max-width:70ch;}
+
+/* ═══ THEME TRIPTYCH ═══ */
+.tri{display:grid; gap:2px; grid-template-columns:1fr;}
+@media (min-width:760px){ .tri{grid-template-columns:repeat(3,1fr);} }
+.tri-cell{padding:26px 22px 30px; display:flex; flex-direction:column; gap:22px;
+  align-items:center; border:1px solid var(--pg-rule2); border-radius:2px;}
+.tri-lab{display:flex; flex-direction:column; gap:4px; align-items:center; text-align:center;}
+.tri-lab .n{font-size:11px; font-weight:500; font-stretch:87.5%; letter-spacing:0.16em;
+  text-transform:uppercase;}
+.tri-lab .h{font-family:var(--mono); font-size:11px; opacity:0.7;}
+
+/* ═══ CHROME EXHIBIT ═══ */
+.chrome-row{display:flex; gap:32px; flex-wrap:wrap; align-items:flex-start;}
+
+/* ═══ CODEX SHELF ═══ */
+.shelf-wrap{padding:22px; border-radius:2px; border:1px solid var(--pg-rule2);}
+.shelf{display:grid; grid-template-columns:repeat(5,60px); gap:14px;
+  justify-content:center; width:356px; margin:0 auto;}
+.shelf-scroll{overflow-x:auto; overflow-y:hidden; max-width:100%;}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:0.001ms !important; animation-iteration-count:1 !important;
+    transition-duration:0.001ms !important;}
+}
+
+@media (max-width:460px){
+  .plate-pad{padding:16px;}
+  .wrap{padding:0 14px;}
+  .phone{transform-origin:top left;}
+}
+</style>
+
+<a class="skip" href="#e1">Skip to the exhibits</a>
+
+<nav class="rail" aria-label="Exhibits" id="rail"></nav>
+
+<main class="wrap">
+
+<!-- ══════════════════════════ HERO ══════════════════════════ -->
+<header class="hero">
+  <div class="eyebrow">
+    <i class="bar"></i>
+    <span class="d-micro">Direction A · Phosphor · for HUNCH</span>
+  </div>
+
+  <div class="hero-grid">
+    <div class="stack g24">
+      <h1 class="d-display">A dead machine<br>in a dark room.</h1>
+      <p class="lede">The room is not styled — it is simply unlit. The Loom's chrome is
+        etched, not printed, and the only thing in the building with power is the mark
+        itself.</p>
+      <p class="d-caption" style="max-width:52ch">To the right is the whole direction in one
+        frame: an instrument bar you can barely see, and one glyph that is the only light
+        on the screen. Nothing else in HUNCH is brighter than this.</p>
+    </div>
+
+    <div class="room app" id="hero-room">
+      <div class="grain"></div>
+    </div>
+  </div>
+
+  <div class="specbar" style="margin-top:44px">
+    <div><b>1</b><span>accent, rationed to<br>three elements per screen</span></div>
+    <div><b>0</b><span>shadows, in the app<br>and on this page</span></div>
+    <div><b>0</b><span>words on the<br>play surface</span></div>
+    <div><b>256</b><span>glyphs, all from<br>one function</span></div>
+    <div><b>3</b><span>themes, all<br>fully playable</span></div>
+  </div>
+
+  <div class="stack g12" style="margin-top:40px;padding:20px 0 0;border-top:1px solid var(--pg-rule)">
+    <h2 class="d-section" style="color:var(--pg-cold)">The criterion, before anything else</h2>
+    <p class="d-body" style="max-width:70ch">The brief carries one instruction about this
+      choice, and it is worth putting at the top rather than in a footnote:
+      <em>“Offer light and dark themes, but design dark-first — that's the real one.”</em>
+      <strong>PHOSPHOR complies with that instruction.</strong> Direction B, PLATE, overrules it
+      explicitly and says so in its own first cost. Neither page is entitled to decide whether
+      the mandate is negotiable — <strong>that call belongs to whoever owns the brief</strong>,
+      and it should be made before the eight exhibits are read, not after. If the mandate holds,
+      this comparison is a formality and PLATE's other arguments are notes for a later revision.
+      If it does not, the two directions should be judged on the exhibits, and PLATE's attacks on
+      the fill ladder and on frame cost are live — costs 7 and 8 below answer both.</p>
+  </div>
+
+  <p class="d-caption" style="margin-top:26px">Eight exhibits follow. Both directions render
+    the same eight, in the same order, so you can lay them side by side. <strong>They are not
+    yet drawn at a contracted scale</strong> — three of the eight differ in specimen size or
+    sample between the two pages, so every specimen here prints the size it was drawn at rather
+    than asking you to remember one. The phones are 375 × 667 — true scale, not scaled up,
+    because a 44 pt target has to be judged at the size a thumb will meet it.</p>
+</header>
+
+<!-- ══════════════════════════ 1. THE GLYPH SYSTEM ══════════════════════════ -->
+<section class="exhibit" id="e1">
+  <div class="ex-head">
+    <div class="ex-tag">
+      <span class="ex-no"><b>Exhibit 1</b></span>
+      <span class="ex-no">The glyph system</span>
+    </div>
+    <h2 class="d-title">Four channels, four ranks each, and no channel that needs colour</h2>
+    <p class="d-body">Each row below is one channel walked from rank 1 to rank 4. Judge the
+      ladders: does each one read as an <em>order</em> and not just a set? Fill should look
+      like ink accumulating. Shape should look like corners accumulating. Pips should be
+      countable without counting. The index stroke should sweep 135°, not cycle.</p>
+  </div>
+
+  <div class="stack g32">
+    <div class="figure">
+      <div class="app plate-pad" style="border-radius:2px;position:relative;overflow:hidden"
+           id="ladders">
+        <div class="grain"></div>
+      </div>
+      <div class="fig-cap">
+        <p class="d-caption" style="max-width:82ch"><strong>What to judge.</strong> Every mark
+          here comes from the same generator that draws the game, at the geometry in the spec —
+          body radius 0.37&thinsp;S, index register at 0.43&thinsp;S below centre, pitch floored
+          at 5 pt, rungs drawn at <span class="k">S = 56</span>. Nothing is hand-drawn. If a
+          ladder reads wrong here, it reads wrong in the app. <strong>One geometry fix is
+          visible in the pips rung.</strong> On <span class="k">circle</span> and
+          <span class="k">hexagon</span> the S node lands at
+          <span class="k">y = 0.27&thinsp;S</span> while the index register starts at
+          <span class="k">0.2935&thinsp;S</span> — 1.03 pt apart at S = 44, so at three and four
+          pips the node and the top of a 90° index stroke overlap by about 3 pt and used to weld
+          into one blob. The registers are structurally adjacent at <em>every</em> size, so no
+          repositioning inside canon's numbers can separate them; instead the index stroke is now
+          drawn <em>before</em> the pips, and §13.5's own 1 pt <span class="k">ground</span>
+          knockout ring — whose stated job is to separate a node “from the body stroke and from
+          fill texture reaching the contour” — cuts the gap. The node stays countable and the
+          tick stays a tick.</p>
+      </div>
+    </div>
+
+    <div class="figure">
+      <div class="stack g16">
+        <h3 class="d-section">The one measurement Exhibit 1 was asserting without taking</h3>
+        <p class="d-caption" style="max-width:82ch">The ladders above pin hue to
+          <span class="k">amber</span>, which is the flattering case. Below is the fill ladder's
+          patch lightness <span class="k">L*</span> on <span class="k">ground #0B0A08</span> for
+          all four hues, computed in the page from the shipped hexes and the spec's coverage
+          figures — not quoted. Read down a column and the ladder is clean. Read
+          <em>across</em> and it is not.</p>
+        <div class="scrollx" tabindex="0" role="region" aria-label="Fill by hue lightness matrix, scrollable">
+          <table class="mx" id="mx-fill"></table>
+        </div>
+        <p class="d-caption" style="max-width:82ch" id="mx-note"></p>
+      </div>
+    </div>
+
+    <div class="figure">
+      <div class="proof">
+        <div class="proof-half">
+          <div class="proof-lab">
+            <span class="d-section">32 of the 256, in colour</span>
+            <span class="d-num" style="color:var(--pg-ink2)">S = 64</span>
+          </div>
+          <div class="app plate-pad" style="border-radius:2px;position:relative;overflow:hidden"
+               id="grid-colour"><div class="grain"></div></div>
+        </div>
+        <div class="proof-half">
+          <div class="proof-lab">
+            <span class="d-section" style="color:var(--pg-brass)">The same 32, colour removed</span>
+            <span class="d-num" style="color:var(--pg-ink2)">grayscale(1)</span>
+          </div>
+          <div class="app plate-pad grey" style="border-radius:2px;position:relative;overflow:hidden"
+               id="grid-grey"><div class="grain"></div></div>
+        </div>
+      </div>
+      <div class="fig-cap">
+        <p class="d-caption" style="max-width:82ch"><strong>This panel is the one to spend time
+          on,</strong> and the sample is built so that it can actually be checked. The 32 are
+          laid out four to a row. <strong>The first four rows each vary exactly one channel and
+          hold the other three fixed</strong> — row 1 is hue alone (a striped triangle with two
+          pips, walked 0° → 45° → 90° → 135°), row 2 is fill alone, row 3 is shape alone, row 4
+          is pips alone. Those are the four controlled ladders, and they are here in
+          <em>greyscale</em>, which is the only place the claim can be tested. Rows 5–8 are a
+          spread across the rest of the deck. An earlier sample walked the deck at a stride of
+          39 and contained no pair anywhere differing in one channel, so it could not test
+          three of the four.</p>
+        <p class="d-caption" style="max-width:82ch" id="grey-note">The right half is the left
+          half with every hue destroyed.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 2. THE PROBE SURFACE ══════════════════════════ -->
+<section class="exhibit" id="e2">
+  <div class="ex-head">
+    <div class="ex-tag">
+      <span class="ex-no"><b>Exhibit 2</b></span>
+      <span class="ex-no">The PROBE play surface · 375 × 667</span>
+    </div>
+    <h2 class="d-title">The whole game, at the size it will actually be held</h2>
+    <p class="d-body">This one is live. Tap the Dial to build a glyph, then tap the leading key
+      to feed it to the Loom. The Loom in this specimen is running one law and will answer
+      honestly; the seven tiles already on the ribbon are consistent with it. Nothing on this
+      screen is text, in any language.</p>
+  </div>
+
+  <div class="specimen-row">
+    <div class="holder"><div class="phone app" id="probe-phone">
+      <div class="grain"></div>
+    </div></div>
+    <div class="spec-note">
+      <div class="stack g8">
+        <h4>What to judge</h4>
+        <p>Whether the top third reads as an instrument someone else built. The bar at
+          <span class="k">y 20–64</span> is deliberately at the edge of visibility: a mode
+          sigil and a tick row per probe, in <span class="k">stroke.secondary</span> at 3.26&thinsp;:&thinsp;1.
+          It is etched, not lit.</p>
+        <p><strong>The tick row's state is a height step, not a tint.</strong> Probes taken are
+          full 11 pt ticks, probes remaining are 4 pt stubs on the same baseline —
+          <em>both</em> in <span class="k">stroke.secondary</span>, so both clear the 3&thinsp;:&thinsp;1
+          graphical floor and the count is carried by length. It used to run taken ticks against
+          <span class="k">stroke.hairline</span>, which put the only running state readout on the
+          play surface at a 2.03&thinsp;:&thinsp;1 state gap and made a hairline state-bearing —
+          which the token sheet's own row forbids.</p>
+      </div>
+      <div class="stack g8">
+        <h4>Whether the light is rationed</h4>
+        <p>Count the bright things. There should be one 96 pt glyph in the throat, seven small
+          ones on the ribbon, and one lit cell per Dial ramp. Everything else is a hairline.
+          If a second thing competes with the throat, the direction has failed its own rule.</p>
+      </div>
+      <div class="stack g8">
+        <h4>Whether the targets are big enough</h4>
+        <p>Dial cells are 70 × 48, the three commit keys are 44 tall, and everything you can
+          touch sits below <span class="k">y 240</span>, inside a right thumb's arc. The Loom
+          is in the unreachable top third on purpose — it is read, never touched.</p>
+      </div>
+      <div class="stack g8">
+        <h4>The par crossing</h4>
+        <p>Keep probing past thirteen. On the probe that fills the last tick, the row inverts
+          to one solid rule and a dim row below begins emptying the other way. It is the only
+          direction reversal in the instrument bar, and the only thing the machine marks that
+          is not a verdict.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 3. THE VERDICT PAIR ══════════════════════════ -->
+<section class="exhibit" id="e3">
+  <div class="ex-head">
+    <div class="ex-tag">
+      <span class="ex-no"><b>Exhibit 3</b></span>
+      <span class="ex-no">The verdict pair</span>
+    </div>
+    <h2 class="d-title">Closed and growing, against broken and shrinking</h2>
+    <p class="d-body">These two are unlabelled on purpose. The claim is that you already know
+      which is which, and that you would still know with the colour gone, the sound off and
+      the phone in a pocket. This is where the two directions differ most, so read them
+      slowly.</p>
+  </div>
+
+  <div class="stack g32">
+    <div class="figure">
+      <div class="app plate-pad" style="border-radius:2px;position:relative;overflow:hidden"
+           id="verdict-pair"><div class="grain"></div></div>
+      <div class="fig-cap">
+        <p class="d-caption" style="max-width:82ch"><strong>What to judge.</strong> The left
+          ring stays closed and expands R → 1.35 R over 200 ms, weight 3 → 1, with a 6 px
+          outward bloom. The right ring contracts 1.35 R → R over 160 ms, collapses to a
+          1.5 pt hairline, breaks into four arcs that separate 3 pt, and takes one diagonal
+          cancel stroke — with a 130 ms ∓2 pt shudder that is a shudder, not a bounce. Colour
+          is the third copy, after direction and closure. Below, the same pair with colour
+          removed.</p>
+      </div>
+    </div>
+
+    <div class="figure">
+      <div class="app plate-pad grey" style="border-radius:2px;position:relative;overflow:hidden"
+           id="verdict-grey"><div class="grain"></div></div>
+      <div class="fig-cap">
+        <p class="d-caption"><strong>Still opposite.</strong> If you can tell these two apart,
+          the verdict channel does not depend on colour vision, on a working speaker, or on
+          the player having been told anything.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 4. THE BENCH ══════════════════════════ -->
+<section class="exhibit" id="e4">
+  <div class="ex-head">
+    <div class="ex-tag">
+      <span class="ex-no"><b>Exhibit 4</b></span>
+      <span class="ex-no">The Bench · 375 × 667</span>
+    </div>
+    <h2 class="d-title">Stating a law without a single word</h2>
+    <p class="d-body">The player has two rails, a coupler between them, and a live 16 × 16
+      picture of what their half-built law currently admits. The draft on the Bench here is
+      <strong>pips(cur) &gt; pips(prev) AND shape ∈ {triangle, hexagon}</strong> — a Bridge on
+      pips with the trailing socket ghosted, welded with AND to a Ramp on shape. The pinned
+      <span class="k">prev</span> is the ghost-framed tile at the end of the ribbon, which is
+      also the glyph the throat is holding, and it carries <span class="k">pips = two</span>.
+      Against that pin the Assay lights <b id="bench-count">—</b> of 256. That number is read
+      off the rendered grid at load, and the grid's predicate is derived from the wedge and the
+      ramp drawn beside it rather than typed in a second time — the two cannot disagree.
+      It is also, deliberately, the same law Direction B draws in the same slot.</p>
+  </div>
+
+  <div class="specimen-row">
+    <div class="holder"><div class="phone app" id="bench-phone">
+      <div class="grain"></div>
+    </div></div>
+    <div class="spec-note">
+      <div class="stack g8">
+        <h4>The ghost</h4>
+        <p>The trailing socket wears a dashed frame and a backward chevron. That is the entire
+          contextual grammar — one toggle — and the player has already met that exact mark
+          twice: on the seed glyph at round start, and on the trailing ribbon tile, every
+          frame of every round. The symbol does the naming that words are forbidden from
+          doing.</p>
+      </div>
+      <div class="stack g8">
+        <h4>Three ways to be off, and a withdrawn token</h4>
+        <p>An unlit ramp cell swaps its mark from <span class="k">stroke.primary</span> to
+          <span class="k">stroke.secondary</span>, gains a diagonal cancel hatch, and drops its
+          border to a hairline. Three non-colour channels, each measured at
+          <strong>3.18&thinsp;:&thinsp;1</strong> or better against
+          <span class="k">surface.cell</span>, with a 4.4× gap between the lit mark and the unlit
+          one. <span class="k">opacity.cellUnlit = 0.25</span> is withdrawn: 25 % of a 3.3&thinsp;:&thinsp;1
+          token over <span class="k">#100E0A</span> resolves to <strong>1.23&thinsp;:&thinsp;1</strong>,
+          and the cancel hatch at 55 % to 1.77&thinsp;:&thinsp;1. Two channels neither of which
+          clears 3&thinsp;:&thinsp;1 is not two channels. This is an amendment to §4.2 and it is
+          the only one on the page that changes a canon value rather than adding one.</p>
+      </div>
+      <div class="stack g8">
+        <h4>Where the 343 pt column breaks</h4>
+        <p>The rails are <strong>291 pt</strong> and the ramp cells <strong>56 × 44</strong>,
+          both exactly as §4.2 specifies, so this Bench and Direction B's are the same widget at
+          the same size. But §4.2's own row — <em>rails 291 | Assay, 64 pt trailing column</em> —
+          sums to 355, and §13.3's content column is 343 inside 16 pt margins. It does not fit,
+          by 24 pt. Both directions resolve it the same way, by running the Assay column to the
+          trailing edge at <span class="k">x 311–375</span>. That is a real contradiction in the
+          GDD, it is not ours to settle silently, and it is flagged here rather than hidden by
+          quietly narrowing the rail to 267 — which is what this page used to do.</p>
+      </div>
+      <div class="stack g8">
+        <h4>Barred, and ready</h4>
+        <p>Below: the same Seal in both states, at <span class="k">S = 76</span>. The machine
+          says "not yet" by putting a 4 pt machined bar across the control. No error text, no
+          modal, no red — the bar is a machine state, not a warning, and pressing it pulses the
+          rail that is at fault and nothing else.</p>
+      </div>
+      <div class="app plate-pad" style="border-radius:2px;position:relative;overflow:hidden"
+           id="seal-pair"><div class="grain"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 5. THE CODEX SHELF ══════════════════════════ -->
+<section class="exhibit" id="e5">
+  <div class="ex-head">
+    <div class="ex-tag">
+      <span class="ex-no"><b>Exhibit 5</b></span>
+      <span class="ex-no">The Codex shelf</span>
+    </div>
+    <h2 class="d-title">A wall of constellations</h2>
+    <p class="d-body">Every law the player has ever found becomes one 60 pt cell: the 16 × 16
+      deck grid with the cells that law admits lit. The thumbnail is the law's
+      <em>extension</em>, not its spelling — so no two can collide, and a filling shelf
+      acquires a texture you can genuinely read from arm's length.</p>
+  </div>
+
+  <div class="figure">
+    <div class="app shelf-wrap" style="position:relative" id="codex">
+      <div class="grain"></div>
+    </div>
+    <div class="fig-cap">
+      <p class="d-caption" style="max-width:82ch"><strong>What to judge.</strong> Whether
+        fifteen of these on one shelf are distinguishable at a glance, and whether you would
+        want two hundred. Two carry overlays: one has a 2 pt corner notch — a
+        <em>fracture</em>, a page won after a wrong declaration — and one has the doubled rim
+        of an Anomaly page. Both are geometry first, colour second. The two densest cells are
+        contextual laws, whose thumbnails quantise to the same four-step ink ladder the fill
+        channel already uses — and they now really do. The rungs are derived from
+        <span class="k">{0, 22.7, 38.6, 100}&thinsp;%</span> by taking the square root of the
+        coverage to get a side length, which puts the insets at
+        <span class="k">0 · 0.2618 · 0.1894 · 0</span> of the cell. They were eyeballed at
+        <span class="k">0.36</span> and <span class="k">0.20</span>, which produced 7.8 % and
+        36 % — the <span class="k">dotted</span> rung was a third of its stated weight and read
+        as an almost-empty cell, so the claim of one shared ink ladder was false as rendered.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 6. CHROME ══════════════════════════ -->
+<section class="exhibit" id="e6">
+  <div class="ex-head">
+    <div class="ex-tag">
+      <span class="ex-no"><b>Exhibit 6</b></span>
+      <span class="ex-no">Chrome — where the words live</span>
+    </div>
+    <h2 class="d-title">The only three screens with letterforms on them</h2>
+    <p class="d-body">Text is banned below the chrome bar, so all of it collects in Settings,
+      the Codex, Statistics and About. That makes the typography load-bearing in a narrow
+      place: it has to sound like an instrument panel and still be a comfortable iOS list.</p>
+  </div>
+
+  <div class="chrome-row">
+    <div class="figure">
+      <div class="holder"><div class="app chrome-spec" id="settings">
+        <div class="grain"></div>
+      </div></div>
+      <p class="d-caption" style="max-width:44ch"><strong>Three Settings rows.</strong> The
+        switch is <em>drawn</em>, not tinted — a 51 × 31 track and a 27 pt slug, ON = filled
+        and trailing, OFF = hollow and leading. Two non-colour channels and no accent at all,
+        because the accent budget is three elements per screen and a Settings list has eight
+        toggles. The Theme control is the tightest text in the app: four segments inside
+        343 pt, and <span class="k">HIGH CONTRAST</span> is what sets the size.</p>
+    </div>
+
+    <div class="figure">
+      <div class="holder"><div class="app chrome-spec" id="codexstrip">
+        <div class="grain"></div>
+      </div></div>
+      <p class="d-caption" style="max-width:44ch"><strong>A Codex page's instrument strip.</strong>
+        Every numeral is monospaced, always — a proportional digit that shifts a column on
+        every probe is a bug, not a preference. The tick row is the player's best probe count
+        against that band's par; the two brass marks are the Seal marks; the hairline across
+        the rim is a fracture. This one page is the single element on the screen allowed to
+        spend the brass.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 7. THE THREE THEMES ══════════════════════════ -->
+<section class="exhibit" id="e7">
+  <div class="ex-head">
+    <div class="ex-tag">
+      <span class="ex-no"><b>Exhibit 7</b></span>
+      <span class="ex-no">The three themes</span>
+    </div>
+    <h2 class="d-title">One sample, three worlds, no lost information</h2>
+    <p class="d-body">The same glyph, the same admit ring and the same ramp, resolved in
+      Dark, Light and High Contrast. Dark is the design. Light keeps every piece of geometry
+      and swaps the ground, carrying an ink keyline under <em>every state-bearing register</em>.
+      High Contrast collapses all four hues to the foreground colour — and the game is still
+      fully playable, because the hue channel was never the colour. The ramp shown is the
+      <span class="k">hue</span> ramp, which is the one that makes that last sentence checkable.</p>
+  </div>
+
+  <div class="figure">
+    <div class="tri" id="themes"></div>
+    <div class="fig-cap">
+      <p class="d-caption" style="max-width:82ch"><strong>What to judge.</strong> Sample
+        <span class="k">striped / hexagon / three / frost</span> at <span class="k">S = 96</span>.
+        In High Contrast the index stroke lengthens from 0.273&thinsp;S to 0.409&thinsp;S — 12 pt
+        to 18 pt at ribbon size — every stroke gains 0.5 pt, both bloom passes and the grain die,
+        and unlit ramp cells carry their mark and hatch at full weight in
+        <span class="k">stroke.secondary</span> (9.68&thinsp;:&thinsp;1 on black) rather than
+        being dimmed. One colour, four hues, no loss.</p>
+      <p class="d-caption" style="max-width:82ch"><strong>The light theme's hue channel, stated
+        without the flattering version.</strong> Okabe–Ito is canon and verbatim in both themes,
+        so on <span class="k">#F4EFE4</span> the raw hue ratios are
+        <span class="k">amber 1.96</span> · <span class="k">teal 2.98</span> ·
+        <span class="k">frost 2.01</span> · <span class="k">rose 2.67</span> — every one below
+        the 3&thinsp;:&thinsp;1 graphical floor. Canon's answer is a
+        <span class="k">stroke.primary</span> keyline, but it was drawn under the
+        <em>silhouette only</em>, which is the one register that is not the hue channel. The
+        index stroke <em>is</em> the hue channel; the pip discs <em>are</em> the pips channel;
+        the interior texture <em>is</em> the fill channel. All three were sitting at 1.96–2.98.
+        The keyline now runs under all four: the index at <span class="k">IW + 1</span>, the pip
+        knockout ring painted in ink rather than ground, and the fill texture given an ink core
+        with the hue drawn inside it, <strong>so measured coverage stays exactly 0 / 22.7 / 38.6 /
+        100 %</strong> and the ladder is untouched. Every state-bearing edge in the light theme is
+        now 15.6&thinsp;:&thinsp;1, with Okabe–Ito unre-lit. And note honestly what the light theme
+        still is: the same machine, lit — a faithful translation and a thinner idea than the dark.
+        Weakness 2 says so in the direction's own words. Its hexes stay
+        <strong>provisional</strong> until something ships in it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 8. THE TOKEN SHEET ══════════════════════════ -->
+<section class="exhibit" id="e8">
+  <div class="ex-head">
+    <div class="ex-tag">
+      <span class="ex-no"><b>Exhibit 8</b></span>
+      <span class="ex-no">The token sheet</span>
+    </div>
+    <h2 class="d-title">Every value, in all three themes, with its contrast against its own ground</h2>
+    <p class="d-body">Flat, named, exhaustive. <span class="k">Theme.token(_:)</span> resolves
+      against the active theme and there is no literal hex anywhere in view code. Ratios are
+      WCAG 2.1 against <em>that theme's own</em> <span class="k">ground</span> — and they are
+      <strong>computed in this page from the hexes in the row beside them</strong>, every cell,
+      on load. Where canon's published figure differs by more than a rounding step it is printed
+      after the measured one in brackets, so you can see both rather than take either on
+      trust.</p>
+  </div>
+
+  <div class="stack g44">
+    <div class="figure">
+      <div class="scrollx" tabindex="0" role="region" aria-label="Colour tokens, scrollable">
+        <table class="tok" id="tok-colour"></table>
+      </div>
+      <p class="d-caption" style="max-width:82ch" id="tok-note"></p>
+      <p class="d-caption" style="max-width:82ch"><span class="k">†</span> In the light theme
+        every glyph carries a <span class="k">stroke.primary</span> keyline beneath the hue —
+        and, as of this page, beneath the index stroke, the pip discs and the fill texture too,
+        so every state-bearing edge is 15.6&thinsp;:&thinsp;1 rather than only the silhouette.
+        The raw hue ratios in the light column are the honest ones and they are all below
+        3&thinsp;:&thinsp;1; the keyline is what carries the channel, not the hue.
+        <span class="k">‡</span> <span class="k">text.secondary</span> is new here.
+        <span class="k">stroke.secondary</span>'s own Use cell says “chrome rules, tick marks”,
+        and at 3.26&thinsp;:&thinsp;1 it is a graphical-object value, not a text value — but the
+        in-app specimens were setting 10.5–15 px copy in it, which is a WCAG 1.4.3 failure at
+        every one of those sizes. Text now resolves to <span class="k">text.secondary</span> and
+        <span class="k">stroke.secondary</span> is confined to marks.</p>
+    </div>
+
+    <div class="stack g24">
+      <h3 class="d-section">Dimension, radius and stroke</h3>
+      <div class="tok-grid" id="tok-dim"></div>
+    </div>
+
+    <div class="stack g24">
+      <h3 class="d-section">Opacity</h3>
+      <div class="tok-grid" id="tok-op"></div>
+    </div>
+
+    <div class="stack g24">
+      <h3 class="d-section">Duration, in milliseconds</h3>
+      <div class="tok-grid" id="tok-dur"></div>
+    </div>
+
+    <div class="stack g24">
+      <h3 class="d-section">Type roles — system faces only, no bundled bytes</h3>
+      <p class="d-caption" style="max-width:74ch">Exhibit 6 argues the typography is
+        load-bearing because it has to sound like an instrument panel. A table of adjectives
+        cannot carry that argument, so each role is set here in itself — its own size, weight,
+        <span class="k">font-stretch</span> and tracking — with the numbers alongside.</p>
+      <div class="typespec" id="tok-type-spec"></div>
+      <div class="scrollx" tabindex="0" role="region" aria-label="Type roles, scrollable">
+        <table class="tok" id="tok-type"></table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ WEAKNESSES ══════════════════════════ -->
+<section class="weak" id="weak">
+  <div class="ex-head">
+    <div class="ex-tag">
+      <span class="ex-no" style="color:var(--pg-cold)"><b>Costs</b></span>
+      <span class="ex-no">Weaknesses — honest</span>
+    </div>
+    <h2 class="d-title">Eight ways this direction can fail</h2>
+    <p class="d-body">The first six are quoted verbatim from the direction document, unedited.
+      <strong>Costs 7 and 8 are new to this page</strong> and are marked as such: they are the
+      two the document does not carry, they are both places Direction B attacks and PHOSPHOR had
+      no answer, and one of them contradicts a sentence inside cost 1. A pitch that hides its
+      costs is worthless for a decision, and a pitch that only lists the costs its own author
+      thought of is not much better.</p>
+  </div>
+
+  <div class="weak-list" id="weaknesses"></div>
+
+  <div class="stack g20" style="margin-top:56px">
+    <h3 class="d-section">One note on this page, since you will notice it</h3>
+    <p class="d-body">Nothing on this page casts a shadow. No card, no plate, no phone frame,
+      and nothing has a corner radius above 2 px. Surfaces separate the way they separate in
+      the app — by a hairline and a small step in ground — because a pitch for a direction
+      whose only depth cue is luminance should not be allowed to cheat with elevation. And in
+      your light theme the page is not a dark room: it is a technical drawing, which is
+      exactly what weakness 2 says PHOSPHOR becomes when you turn the lights on. The
+      specimens never change. Only the room around them does.</p>
+  </div>
+</section>
+
+</main>
+
+<script>
+"use strict";
+(function(){
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE RENDERER — one function, all 256, no hand-authored path data.
+   Screen frame (y down, angles clockwise from East); the spec's y-up values
+   are negated so apex-up, N-at-top and index-below-body all hold at once.
+   ═══════════════════════════════════════════════════════════════════════════ */
+var SVGNS="http://www.w3.org/2000/svg";
+function rad(d){return d*Math.PI/180;}
+function X(a,b){return a[0]*b[1]-a[1]*b[0];}
+
+var VERTS={circle:null, triangle:[-90,30,150], square:[-135,-45,45,135],
+           hexagon:[-90,-30,30,90,150,210]};
+var PIP_RAYS=[-90,0,90,180], PIP_N={one:1,two:2,three:3,four:4};
+var ROT={amber:0, teal:45, frost:90, rose:135};
+var FILLS=["hollow","dotted","striped","solid"];
+var SHAPES=["circle","triangle","square","hexagon"];
+var PIPS=["one","two","three","four"];
+var HUES=["amber","teal","frost","rose"];
+var CLIPN=0;
+
+function mk(p,t,a){var e=document.createElementNS(SVGNS,t);
+  for(var k in a){ if(a[k]!==null&&a[k]!==undefined) e.setAttribute(k,a[k]); }
+  if(p) p.appendChild(e); return e;}
+
+function glyph(fill, shape, pips, hue, size, opt){
+  opt=opt||{};
+  var S=size, hc=!!opt.highContrast, bold=opt.boldText?1.25:1, hcw=hc?0.5:0;
+  var bloom=(opt.bloom!==false) && !hc && S>=32;
+  var ink=hc?"var(--stroke-primary)":("var(--hue-"+hue+")");
+  var gnd="var(--ground)";
+  /* LIGHT THEME. Okabe–Ito is canon and verbatim, so on #F4EFE4 the raw hue
+     ratios are 1.96 – 2.98 : 1 — all below the 3 : 1 graphical floor. Canon's
+     answer is a stroke.primary keyline, but a keyline under the SILHOUETTE only
+     covers the one register that is not a colour channel. The index stroke IS
+     the hue channel, the pip discs ARE the pips channel and the interior texture
+     IS the fill channel, so the keyline runs under all four. The texture keyline
+     is an ink CORE with the hue drawn inside it, never a widened underlay, so
+     measured coverage stays exactly 0 / 22.7 / 38.6 / 100 %. */
+  var kl=opt.keyline?"var(--keyline)":null;
+  var C=[0,-0.10*S], R=0.37*S, IC=[0,0.43*S];
+  var W=(S>=48?3:1.5)*bold+hcw, IW=3*bold+hcw;
+  var ILEN=(hc?0.409:0.273)*S, pitch=Math.max(5,0.22*R), pipR=Math.max(3,0.11*R);
+
+  var svg=document.createElementNS(SVGNS,"svg");
+  svg.setAttribute("width",S); svg.setAttribute("height",S);
+  svg.setAttribute("aria-hidden","true");
+  svg.setAttribute("viewBox",(-S/2)+" "+(-S/2)+" "+S+" "+S);
+  svg.style.overflow="visible";
+
+  function vAt(k){ return VERTS[shape].map(function(a){
+    return [C[0]+k*R*Math.cos(rad(a)), C[1]+k*R*Math.sin(rad(a))]; }); }
+  function poly(k){ return vAt(k).map(function(p){
+    return p.map(function(n){return n.toFixed(3);}).join(","); }).join(" "); }
+  function body(par,a){
+    a=a||{};
+    if(shape==="circle"){ a.cx=C[0]; a.cy=C[1]; a.r=R; return mk(par,"circle",a); }
+    a.points=poly(1); a["stroke-miterlimit"]=10; return mk(par,"polygon",a);
+  }
+  function idx(a){
+    a=a||{};
+    var h=ILEN/2, u=[Math.cos(rad(ROT[hue])), Math.sin(rad(ROT[hue]))];
+    a.x1=(IC[0]-u[0]*h).toFixed(3); a.y1=(IC[1]-u[1]*h).toFixed(3);
+    a.x2=(IC[0]+u[0]*h).toFixed(3); a.y2=(IC[1]+u[1]*h).toFixed(3);
+    a.fill="none"; a["stroke-linecap"]="butt"; return a;
+  }
+  function hit(deg){
+    var d=[Math.cos(rad(deg)), Math.sin(rad(deg))];
+    if(shape==="circle") return [C[0]+d[0]*R, C[1]+d[1]*R];
+    var v=vAt(1);
+    for(var i=0;i<v.length;i++){
+      var p=v[i], q=v[(i+1)%v.length];
+      var e=[q[0]-p[0],q[1]-p[1]], w=[p[0]-C[0],p[1]-C[1]], den=X(d,e);
+      if(Math.abs(den)<1e-9) continue;
+      var t=X(w,e)/den, u=X(w,d)/den;
+      if(t>0 && u>=-1e-9 && u<=1+1e-9) return [C[0]+d[0]*t, C[1]+d[1]*t];
+    }
+    return [C[0]+d[0]*R, C[1]+d[1]*R];
+  }
+
+  /* light theme: an ink keyline at bodyWeight + 1.0 sits beneath the hue */
+  if(kl){
+    body(svg,{fill:"none",stroke:kl,"stroke-width":W+1,
+              "stroke-linejoin":"miter"});
+  }
+
+  /* PASS B — halo (pass A, the blurred bed, is per region, not per glyph) */
+  if(bloom){
+    var g=mk(svg,"g",{opacity:0.12,"stroke-linejoin":"round",fill:"none",stroke:ink});
+    body(g,{"stroke-width":W*3});
+    mk(g,"line",idx({"stroke-width":IW*3}));
+  }
+
+  /* PASS C — texture, inset by exactly 1.5·W and clipped to the silhouette */
+  if(fill!=="hollow"){
+    var n = shape==="circle" ? 0 : VERTS[shape].length;
+    var apo = shape==="circle" ? R : R*Math.cos(Math.PI/n);
+    var k=(apo-1.5*W)/apo;
+    var id="clip-"+(++CLIPN);
+    var cp=mk(mk(svg,"defs",{}),"clipPath",{id:id});
+    if(shape==="circle") mk(cp,"circle",{cx:C[0],cy:C[1],r:R*k});
+    else mk(cp,"polygon",{points:poly(k)});
+    var gg=mk(svg,"g",{"clip-path":"url(#"+id+")"}), r=R*k;
+    if(fill==="solid") body(gg,{fill:ink,stroke:"none"});
+    if(fill==="dotted"){
+      /* passes: outermost first. With a keyline the ink disc holds the spec
+         radius and the hue disc sits inside it — the footprint, and therefore
+         the 22.7 % coverage, is identical either way. */
+      var rr=0.25*pitch, dy=pitch*Math.sqrt(3)/2;
+      var dpass = kl ? [[kl,rr],[ink,Math.max(0.35,rr-0.5)]] : [[ink,rr]];
+      dpass.forEach(function(pz){
+        for(var j=0,y=C[1]-r; y<=C[1]+r+dy; y+=dy, j++){
+          for(var x=C[0]-r+((j%2)?pitch/2:0); x<=C[0]+r+pitch; x+=pitch){
+            mk(gg,"circle",{cx:x.toFixed(3),cy:y.toFixed(3),
+              r:pz[1].toFixed(3),fill:pz[0]});
+          }
+        }
+      });
+    }
+    if(fill==="striped"){
+      var sw=0.386*pitch, L=2*r, u=[Math.SQRT1_2,Math.SQRT1_2], nv=[-u[1],u[0]];
+      var spass = kl ? [[kl,sw],[ink,Math.max(0.5,sw-1)]] : [[ink,sw]];
+      spass.forEach(function(pz){
+        for(var m=-Math.ceil(L/pitch); m<=Math.ceil(L/pitch); m++){
+          var o=[C[0]+nv[0]*m*pitch, C[1]+nv[1]*m*pitch];
+          mk(gg,"line",{x1:(o[0]-u[0]*L).toFixed(3), y1:(o[1]-u[1]*L).toFixed(3),
+            x2:(o[0]+u[0]*L).toFixed(3), y2:(o[1]+u[1]*L).toFixed(3),
+            stroke:pz[0], "stroke-width":pz[1].toFixed(3), "stroke-linecap":"butt"});
+        }
+      });
+    }
+  }
+
+  /* PASS C — the keyline itself */
+  body(svg,{fill:"none",stroke:ink,"stroke-width":W,"stroke-linejoin":"miter"});
+
+  /* PASS D — the index stroke, THEN the contour nodes.
+     Order matters and this is the fix for a real collision. On circle and
+     hexagon the S node sits at y = C.y + R = 0.27·S while the index register
+     opens at 0.43·S − ILEN/2 − IW/2 = 0.2935·S − 1.5 — 1.03 pt of clearance at
+     S = 44, and the gap closes further as S grows, so the two registers are
+     structurally adjacent at every size and no repositioning inside canon's
+     values separates them. Drawing the index LAST welded the node and the top
+     third of a 90° stroke into one blob on 16 glyphs (circle|hexagon ×
+     pips ≥ three × frost) and grazed 32 more (teal, rose). Drawing it FIRST
+     lets §13.5's own 1 pt knockout ring — whose stated job is to separate a node
+     "from the body stroke and from fill texture reaching the contour" — cut a
+     clean gap through it. The node stays countable; the tick stays a tick. */
+  if(kl) mk(svg,"line",idx({stroke:kl,"stroke-width":IW+1}));
+  mk(svg,"line",idx({stroke:ink,"stroke-width":IW}));
+  for(var i=0;i<PIP_N[pips];i++){
+    var h2=hit(PIP_RAYS[i]);
+    mk(svg,"circle",{cx:h2[0].toFixed(3), cy:h2[1].toFixed(3),
+      r:(pipR+0.5).toFixed(3), fill:ink, stroke:kl||gnd, "stroke-width":1});
+  }
+  return svg;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ONE FILL GENERATOR, shared by glyph(), the Dial value marks and the ramp
+   attribute headers. §13.5's ladder is {0, 22.7, 38.6, 100 %} and it is pinned
+   by three numbers: pitch = max(5 pt, 0.22·R), dotRadius = 0.25·pitch,
+   stripeWeight = 0.386·pitch. They are computed here, once. The header emblem
+   used to hand-draw a 45° hatch at an x-step of 4 — a perpendicular pitch of
+   2.83 pt, under the 5 pt floor, at 49.5 % coverage: a density on no rung of
+   the ladder at all, shown on all four Dial rows, both Bridge sockets and the
+   theme triptych.
+   ═══════════════════════════════════════════════════════════════════════════ */
+var FILL_COVERAGE={hollow:0, dotted:0.227, striped:0.386, solid:1};
+function fillPitch(R){ return Math.max(5, 0.22*R); }
+function paintFill(par, kind, cx, cy, r, R, col){
+  var pitch=fillPitch(R), rr=0.25*pitch, sw=0.386*pitch, j, x, y, m;
+  if(kind==="solid"){
+    mk(par,"rect",{x:(cx-r).toFixed(2),y:(cy-r).toFixed(2),
+      width:(2*r).toFixed(2),height:(2*r).toFixed(2),fill:col}); return;
+  }
+  if(kind==="dotted"){
+    var dy=pitch*Math.sqrt(3)/2;
+    for(j=0,y=cy-r; y<=cy+r+dy; y+=dy, j++)
+      for(x=cx-r+((j%2)?pitch/2:0); x<=cx+r+pitch; x+=pitch)
+        mk(par,"circle",{cx:x.toFixed(2),cy:y.toFixed(2),r:rr.toFixed(2),fill:col});
+    return;
+  }
+  if(kind==="striped"){
+    var L=2.4*r, u=[Math.SQRT1_2,Math.SQRT1_2], nv=[-u[1],u[0]];
+    var span=Math.ceil(2*r/pitch)+1;
+    for(m=-span; m<=span; m++){
+      var o=[cx+nv[0]*m*pitch, cy+nv[1]*m*pitch];
+      mk(par,"line",{x1:(o[0]-u[0]*L).toFixed(2),y1:(o[1]-u[1]*L).toFixed(2),
+        x2:(o[0]+u[0]*L).toFixed(2),y2:(o[1]+u[1]*L).toFixed(2),
+        stroke:col,"stroke-width":sw.toFixed(2),"stroke-linecap":"butt"});
+    }
+  }
+}
+
+function decode(id){ return {fill:FILLS[(id>>6)&3], shape:SHAPES[(id>>4)&3],
+  pips:PIPS[(id>>2)&3], hue:HUES[id&3]}; }
+function glyphById(id,S,opt){ var g=decode(id); return glyph(g.fill,g.shape,g.pips,g.hue,S,opt); }
+
+/* ═══ bloom pass A — one blurred clone per glyph-bearing region ═══ */
+function bed(region, S){
+  var old=region.querySelector(":scope > .bed"); if(old) old.remove();
+  var b=document.createElement("div");
+  b.className="bed";
+  b.style.filter="blur("+(S*0.062).toFixed(2)+"px)";
+  var kids=region.children, i, j;
+  for(i=0;i<kids.length;i++){
+    var k=kids[i];
+    if(k.classList.contains("grain")||k.classList.contains("bed")||
+       k.hasAttribute("data-nobed")) continue;
+    b.appendChild(k.cloneNode(true));
+  }
+  /* re-key every clipPath inside the clone, so the clone can never capture the
+     original's reference (the bed is inserted first in document order) */
+  var cps=b.querySelectorAll("clipPath");
+  for(i=0;i<cps.length;i++){
+    var oldId=cps[i].getAttribute("id"); if(!oldId) continue;
+    var newId=oldId+"-bed";
+    cps[i].setAttribute("id",newId);
+    var users=b.querySelectorAll('[clip-path="url(#'+oldId+')"]');
+    for(j=0;j<users.length;j++) users[j].setAttribute("clip-path","url(#"+newId+")");
+  }
+  region.insertBefore(b, region.firstChild);
+}
+
+/* ═══ small helpers ═══ */
+function svgEl(w,h,vb){
+  var s=document.createElementNS(SVGNS,"svg");
+  s.setAttribute("width",w); s.setAttribute("height",h);
+  s.setAttribute("viewBox", vb || ("0 0 "+w+" "+h));
+  s.setAttribute("aria-hidden","true"); s.style.overflow="visible";
+  return s;
+}
+function place(el,x,y){ el.style.position="absolute"; el.style.left=x+"px"; el.style.top=y+"px"; return el; }
+function box(x,y,w,h,cls){
+  var d=document.createElement("div"); d.className=cls||"";
+  d.style.cssText="position:absolute;left:"+x+"px;top:"+y+"px;width:"+w+"px;height:"+h+"px;";
+  return d;
+}
+function centreGlyph(host,S,g){
+  /* the glyph's own box is S×S with body centre at -0.10·S; the index
+     register overhangs to +0.567·S, so overflow must stay visible */
+  var w=document.createElement("div");
+  w.style.cssText="position:absolute;left:0;top:0;width:"+S+"px;height:"+S+"px;overflow:visible;";
+  g.style.cssText="display:block;overflow:visible;";
+  w.appendChild(g); host.appendChild(w); return w;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   REGISTER DRAWINGS — the ramp is a picture of its own attribute, so each
+   cell isolates one register rather than showing a whole glyph.
+   ═══════════════════════════════════════════════════════════════════════════ */
+function attrHeader(attr,w,h,col){
+  /* a glyph skeleton with one register brought up to full weight */
+  var s=svgEl(w,h,(-w/2)+" "+(-h/2)+" "+w+" "+h);
+  var S=Math.min(w,h)*0.86;
+  var C=[0,-0.10*S], R=0.37*S, IC=[0,0.43*S];
+  var dim="var(--hairline)", lit=col||"var(--stroke-secondary)";
+  var isF=attr==="fill", isS=attr==="shape", isP=attr==="pips", isH=attr==="hue";
+  var bodyW=isS?2:1;
+  if(isF){
+    /* an explicit rung — `striped`, 38.6 % — not an off-ladder hatch, and inset
+       by 1.5 × bodyWeight per §13.5 rather than a flat 2 pt */
+    var id="hclip-"+(++CLIPN);
+    var cp=mk(mk(s,"defs",{}),"clipPath",{id:id});
+    var ir=R-1.5*bodyW;
+    mk(cp,"circle",{cx:C[0],cy:C[1],r:ir});
+    var g=mk(s,"g",{"clip-path":"url(#"+id+")"});
+    paintFill(g,"striped",C[0],C[1],ir,R,lit);
+  }
+  mk(s,"circle",{cx:C[0],cy:C[1],r:R,fill:"none",
+    stroke:isS?lit:dim,"stroke-width":bodyW});
+  if(isP){
+    var rays=[-90,0];
+    for(var i=0;i<rays.length;i++){
+      mk(s,"circle",{cx:C[0]+R*Math.cos(rad(rays[i])), cy:C[1]+R*Math.sin(rad(rays[i])),
+        r:2.6, fill:lit, stroke:"var(--ground)","stroke-width":1});
+    }
+  }
+  mk(s,"line",{x1:-0.10*S,y1:IC[1],x2:0.10*S,y2:IC[1],
+    stroke:isH?lit:dim,"stroke-width":isH?2.4:1,"stroke-linecap":"butt"});
+  return s;
+}
+
+function valueMark(attr,idx,w,h,col,opt){
+  opt=opt||{};
+  var s=svgEl(w,h,(-w/2)+" "+(-h/2)+" "+w+" "+h);
+  var c=col||"var(--stroke-primary)";
+  var sw=opt.sw||1.6;
+  if(attr==="fill"){
+    /* the same generator as glyph(): pitch = max(5, 0.22·R), inset 1.5 × W */
+    var R=Math.min(w,h)*0.30, fillName=FILLS[idx], inset=1.5*sw;
+    var id="vclip-"+(++CLIPN);
+    var cp=mk(mk(s,"defs",{}),"clipPath",{id:id});
+    mk(cp,"rect",{x:-R+inset,y:-R+inset,width:2*(R-inset),height:2*(R-inset)});
+    var g=mk(s,"g",{"clip-path":"url(#"+id+")"});
+    if(fillName!=="hollow") paintFill(g,fillName,0,0,R,R,c);
+    mk(s,"rect",{x:-R,y:-R,width:2*R,height:2*R,fill:"none",stroke:c,
+      "stroke-width":sw,"stroke-linejoin":"miter"});
+  }
+  if(attr==="shape"){
+    var shp=SHAPES[idx], R2=Math.min(w,h)*0.31;
+    if(shp==="circle") mk(s,"circle",{cx:0,cy:0,r:R2,fill:"none",stroke:c,"stroke-width":sw});
+    else{
+      var pts=VERTS[shp].map(function(a){
+        return (R2*Math.cos(rad(a))).toFixed(2)+","+(R2*Math.sin(rad(a))).toFixed(2);
+      }).join(" ");
+      mk(s,"polygon",{points:pts,fill:"none",stroke:c,"stroke-width":sw,
+        "stroke-linejoin":"miter","stroke-miterlimit":10});
+    }
+  }
+  if(attr==="pips"){
+    var R3=Math.min(w,h)*0.27, n=idx+1;
+    mk(s,"circle",{cx:0,cy:0,r:R3,fill:"none",stroke:c,"stroke-width":sw});
+    for(var q=0;q<n;q++){
+      mk(s,"circle",{cx:(R3*Math.cos(rad(PIP_RAYS[q]))).toFixed(2),
+        cy:(R3*Math.sin(rad(PIP_RAYS[q]))).toFixed(2), r:3,
+        fill:c, stroke:"var(--ground)","stroke-width":1});
+    }
+  }
+  if(attr==="hue"){
+    var ang=[0,45,90,135][idx], LEN=opt.ilen||Math.min(w,h)*0.46;
+    var u=[Math.cos(rad(ang)),Math.sin(rad(ang))], hh=LEN/2;
+    mk(s,"line",{x1:(-u[0]*hh).toFixed(2),y1:(-u[1]*hh).toFixed(2),
+      x2:(u[0]*hh).toFixed(2),y2:(u[1]*hh).toFixed(2),
+      stroke:col||("var(--hue-"+HUES[idx]+")"),"stroke-width":opt.iw||3,
+      "stroke-linecap":"butt"});
+  }
+  return s;
+}
+
+/* ═══ verdict rings ═══ */
+function verdictRing(kind,S,opt){
+  opt=opt||{};
+  var s=svgEl(S,S,(-S/2)+" "+(-S/2)+" "+S+" "+S);
+  var cy=-0.10*S, R=0.37*S;
+  if(kind==="admit"){
+    var r=(opt.r||1.35)*R;
+    if(opt.bloom!==false)
+      mk(s,"circle",{cx:0,cy:cy,r:r,fill:"none",stroke:"var(--brass)",
+        "stroke-width":opt.w?opt.w*2:6,opacity:0.20});
+    mk(s,"circle",{cx:0,cy:cy,r:r,fill:"none",stroke:"var(--brass)",
+      "stroke-width":opt.w||3,opacity:opt.o===undefined?0.9:opt.o});
+  } else {
+    var rr=(opt.r||1.0)*R, gapDeg=opt.gap||14, w=opt.w||1.5;
+    for(var i=0;i<4;i++){
+      var a0=i*90-45+gapDeg/2, a1=i*90+45-gapDeg/2;
+      var p0=[rr*Math.cos(rad(a0)), cy+rr*Math.sin(rad(a0))];
+      var p1=[rr*Math.cos(rad(a1)), cy+rr*Math.sin(rad(a1))];
+      mk(s,"path",{d:"M "+p0[0].toFixed(2)+" "+p0[1].toFixed(2)+
+        " A "+rr.toFixed(2)+" "+rr.toFixed(2)+" 0 0 1 "+p1[0].toFixed(2)+" "+p1[1].toFixed(2),
+        fill:"none",stroke:"var(--cold)","stroke-width":w,"stroke-linecap":"butt"});
+    }
+    if(opt.cancel){
+      var L=rr*1.06, u=[Math.cos(rad(-45)),Math.sin(rad(-45))];
+      mk(s,"line",{x1:(-u[0]*L).toFixed(2),y1:(cy-u[1]*L).toFixed(2),
+        x2:(u[0]*L).toFixed(2),y2:(cy+u[1]*L).toFixed(2),
+        stroke:"var(--cold)","stroke-width":w,"stroke-linecap":"butt"});
+    }
+  }
+  return s;
+}
+
+/* ═══ the ghost mark — dashed hollow frame + backward chevron ═══ */
+function ghostFrame(size){
+  var s=svgEl(size,size);
+  var m=1;
+  mk(s,"rect",{x:m,y:m,width:size-2*m,height:size-2*m,fill:"none",
+    stroke:"var(--stroke-secondary)","stroke-width":1,"stroke-dasharray":"3 3"});
+  var cy=size/2;
+  mk(s,"polyline",{points:(m+7)+","+(cy-4)+" "+(m+3)+","+cy+" "+(m+7)+","+(cy+4),
+    fill:"none",stroke:"var(--stroke-secondary)","stroke-width":1.4,
+    "stroke-linecap":"butt","stroke-linejoin":"miter"});
+  return s;
+}
+
+/* ═══ the par tick row ═══════════════════════════════════════════════════════
+   Probes taken against par is the only running state readout on the play
+   surface, so its two states may not be told apart by a tint that fails the
+   graphical floor. It used to run taken ticks in stroke.secondary (3.26 : 1)
+   against untaken in stroke.hairline (1.61 : 1) — a state gap of 2.03 : 1 on a
+   2 × 11 pt mark, and a hairline doing state duty, which the token sheet's own
+   row forbids outright. Both states now carry the SAME colour and differ by
+   HEIGHT: 11 pt taken, 4 pt remaining, on a shared baseline. Both clear 3 : 1;
+   the count is read off the length of the filled run. ═══════════════════════ */
+var TICK_FULL=11, TICK_STUB=4, TICK_PITCH=9;
+function tickRow(par, taken, x0, y0, col){
+  var s=svgEl(par*TICK_PITCH, TICK_FULL+2);
+  if(x0!==null) place(s,x0,y0);
+  var c=col||"var(--stroke-secondary)";
+  for(var i=0;i<par;i++){
+    var h=i<taken?TICK_FULL:TICK_STUB;
+    mk(s,"rect",{x:i*TICK_PITCH, y:1+(TICK_FULL-h), width:2, height:h, fill:c});
+  }
+  return s;
+}
+
+/* ═══ the mode sigil — one stroke entering a ring ═══ */
+function modeSigil(size,col){
+  var s=svgEl(size,size,(-size/2)+" "+(-size/2)+" "+size+" "+size);
+  var c=col||"var(--stroke-secondary)", r=size*0.26;
+  mk(s,"circle",{cx:size*0.08,cy:0,r:r,fill:"none",stroke:c,"stroke-width":1.6});
+  mk(s,"line",{x1:-size*0.44,y1:0,x2:size*0.08-r*0.2,y2:0,stroke:c,
+    "stroke-width":1.6,"stroke-linecap":"butt"});
+  return s;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HERO ROOM
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function(){
+  var room=document.getElementById("hero-room");
+  var reg=document.createElement("div");
+  reg.className="region";
+  reg.style.cssText="position:absolute;inset:0;";
+  room.insertBefore(reg, room.firstChild);
+
+  var ink=document.createElement("div");
+  ink.style.cssText="position:absolute;inset:0;";
+  reg.appendChild(ink);
+
+  /* instrument bar — etched, not lit */
+  var sig=modeSigil(22); sig.style.position="absolute";
+  sig.style.left="26px"; sig.style.top="30px"; ink.appendChild(sig);
+  var ticks=tickRow(13,7,null,null);
+  ticks.style.position="absolute";
+  ticks.style.left="62px"; ticks.style.top="34px";
+  ink.appendChild(ticks);
+  var hr=document.createElement("div");
+  hr.style.cssText="position:absolute;left:26px;right:26px;top:66px;height:1px;background:var(--hairline);";
+  ink.appendChild(hr);
+
+  /* the only thing with power */
+  var host=document.createElement("div");
+  host.style.cssText="position:absolute;left:50%;top:120px;width:96px;height:96px;"+
+    "margin-left:-48px;overflow:visible;";
+  var g=glyph("striped","hexagon","three","frost",96);
+  g.style.display="block"; g.style.overflow="visible";
+  host.appendChild(g); ink.appendChild(host);
+
+  bed(reg,96);
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EXHIBIT 1 — THE LADDERS
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function(){
+  var host=document.getElementById("ladders");
+  var wrap=document.createElement("div");
+  wrap.style.cssText="position:relative;z-index:2;display:flex;flex-direction:column;gap:0;";
+
+  var rows=[
+    ["shape","Shape","the outer silhouette","corner count 0 · 3 · 4 · 6"],
+    ["fill","Fill","the interior","ink coverage 0 · 22.7 · 38.6 · 100 %"],
+    ["pips","Pips","nodes on the contour","cardinality 1 · 2 · 3 · 4"],
+    ["hue","Hue","the index register, below the body","rotation 0° · 45° · 90° · 135°"]
+  ];
+
+  rows.forEach(function(r,ri){
+    var row=document.createElement("div");
+    row.style.cssText="display:flex;align-items:center;gap:22px;flex-wrap:wrap;"+
+      "padding:20px 0;"+(ri?"border-top:1px solid var(--hairline);":"");
+
+    var lab=document.createElement("div");
+    lab.style.cssText="width:190px;flex:0 0 auto;display:flex;flex-direction:column;gap:3px;";
+    var l1=document.createElement("div");
+    l1.textContent=r[1].toUpperCase();
+    l1.style.cssText="font-size:11px;font-weight:500;letter-spacing:0.16em;"+
+      "font-stretch:87.5%;color:var(--stroke-primary);";
+    /* text.secondary, not stroke.secondary — and no extra opacity. The 10.5 px
+       run used to carry opacity 0.8 over a 3.26 : 1 token, landing at 2.49 : 1. */
+    var l2=document.createElement("div");
+    l2.textContent=r[2];
+    l2.style.cssText="font-size:12px;color:var(--text-secondary);line-height:1.35;";
+    var l3=document.createElement("div");
+    l3.textContent=r[3];
+    l3.style.cssText="font-family:var(--mono);font-size:11px;color:var(--text-secondary);"+
+      "line-height:1.4;margin-top:2px;";
+    lab.appendChild(l1); lab.appendChild(l2); lab.appendChild(l3);
+    row.appendChild(lab);
+
+    var lad=document.createElement("div");
+    lad.className="region";
+    lad.style.cssText="display:flex;gap:14px;align-items:flex-start;position:relative;";
+    var inkl=document.createElement("div");
+    inkl.style.cssText="display:flex;gap:14px;align-items:flex-start;";
+
+    for(var v=0; v<4; v++){
+      var cell=document.createElement("div");
+      cell.style.cssText="width:62px;height:78px;position:relative;overflow:visible;"+
+        "display:flex;flex-direction:column;align-items:center;";
+      var gh;
+      if(r[0]==="shape")      gh=glyph("hollow", SHAPES[v], "one", "amber", 56);
+      else if(r[0]==="fill")  gh=glyph(FILLS[v], "square", "one", "amber", 56);
+      else if(r[0]==="pips")  gh=glyph("hollow", "circle", PIPS[v], "amber", 56);
+      else                    gh=glyph("hollow", "circle", "one", HUES[v], 56);
+      gh.style.display="block"; gh.style.overflow="visible";
+      var gw=document.createElement("div");
+      gw.style.cssText="width:56px;height:56px;overflow:visible;";
+      gw.appendChild(gh); cell.appendChild(gw);
+      var rk=document.createElement("div");
+      rk.textContent=String(v+1);
+      rk.style.cssText="font-family:var(--mono);font-size:11px;color:var(--text-secondary);"+
+        "margin-top:14px;";
+      cell.appendChild(rk);
+      inkl.appendChild(cell);
+    }
+    lad.appendChild(inkl);
+    row.appendChild(lad);
+    wrap.appendChild(row);
+    bed(lad,56);
+  });
+
+  host.appendChild(wrap);
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EXHIBIT 1 — THE 32-GLYPH GRID, TWICE
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* Four to a row. The first four rows vary EXACTLY ONE channel and hold the
+   other three fixed, so each ladder can be checked on its own — in greyscale,
+   which is the only place the claim is testable. The previous sample walked the
+   deck at a stride of 39 and, because gcd(39,256)=1, contained no pair anywhere
+   that differed in one channel: it could not test hue, fill or shape at all. */
+var GRID_IDS=[
+  /* hue only    — striped triangle, two pips : 0° 45° 90° 135° */ 0x94,0x95,0x96,0x97,
+  /* fill only   — square, three pips, frost                    */ 0x2A,0x6A,0xAA,0xEA,
+  /* shape only  — solid, one pip, teal                         */ 0xC1,0xD1,0xE1,0xF1,
+  /* pips only   — dotted circle, rose                          */ 0x43,0x47,0x4B,0x4F,
+  /* four rows spread across the rest of the deck               */
+  0x0D,0x34,0x5B,0x82, 0xA9,0xD0,0xF7,0x1E, 0x45,0x6C,0x93,0xBA, 0x08,0x2F,0x56,0x7D
+];
+
+function buildGrid(host){
+  var reg=document.createElement("div");
+  reg.className="region";
+  reg.style.cssText="position:relative;z-index:2;";
+  var g=document.createElement("div");
+  g.style.cssText="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));"+
+    "gap:26px 10px;justify-items:center;";
+  GRID_IDS.forEach(function(id){
+    var cell=document.createElement("div");
+    cell.style.cssText="width:64px;height:74px;overflow:visible;";
+    var el=glyphById(id,64);
+    el.style.display="block"; el.style.overflow="visible";
+    cell.appendChild(el); g.appendChild(cell);
+  });
+  reg.appendChild(g);
+  host.appendChild(reg);
+  bed(reg,64);
+}
+buildGrid(document.getElementById("grid-colour"));
+buildGrid(document.getElementById("grid-grey"));
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EXHIBIT 3 — THE VERDICT PAIR
+   ═══════════════════════════════════════════════════════════════════════════ */
+function buildVerdict(host){
+  var reg=document.createElement("div");
+  reg.className="region";
+  reg.style.cssText="position:relative;z-index:2;display:flex;gap:12px;"+
+    "justify-content:center;flex-wrap:wrap;padding:34px 0 26px;";
+  [["admit"],["reject"]].forEach(function(k){
+    var S=132;
+    var cell=document.createElement("div");
+    cell.style.cssText="width:210px;height:206px;position:relative;overflow:visible;";
+    var inner=document.createElement("div");
+    inner.style.cssText="position:absolute;left:50%;top:56px;width:"+S+"px;height:"+S+"px;"+
+      "margin-left:"+(-S/2)+"px;overflow:visible;";
+    var gl=glyph("dotted","square","two", k[0]==="admit"?"teal":"rose", S);
+    gl.style.cssText="display:block;overflow:visible;position:absolute;left:0;top:0;";
+    inner.appendChild(gl);
+    var rg=verdictRing(k[0],S, k[0]==="admit"?{w:3,o:0.92}:{w:1.5,cancel:true,gap:16});
+    rg.style.cssText="display:block;overflow:visible;position:absolute;left:0;top:0;";
+    inner.appendChild(rg);
+    cell.appendChild(inner);
+    reg.appendChild(cell);
+  });
+  host.appendChild(reg);
+  bed(reg,132);
+}
+buildVerdict(document.getElementById("verdict-pair"));
+buildVerdict(document.getElementById("verdict-grey"));
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EXHIBIT 2 — THE PROBE SURFACE, LIVE
+   Regions are the GDD's, to the point:
+     20–64 instrument bar · 64–176 throat · 176–228 ribbon
+     236–508 Dial · 516–560 Bench handle · 604–667 commit bar
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function(){
+  var phone=document.getElementById("probe-phone");
+  var PAR=13;
+  var law=function(g){ return g.pips==="three" || g.pips==="four"; };  /* pips ≥ three */
+
+  var draft={fill:"striped", shape:"hexagon", pips:"two", hue:"frost"};
+  var ribbon=[];
+  var seedIds=[0x21,0x4A,0x9B,0x36,0xC7,0x5D,0xB2];
+  seedIds.forEach(function(id){
+    var g=decode(id); ribbon.push({g:g, verdict:law(g)?"admit":"reject"});
+  });
+  var probes=7, crossed=false, capUsed=0;
+
+  var root=document.createElement("div");
+  root.style.cssText="position:absolute;inset:0;z-index:2;";
+  phone.insertBefore(root, phone.firstChild);
+
+  /* ── instrument bar 20–64 ───────────────────────────────────────────── */
+  var barEl=box(0,20,375,44); root.appendChild(barEl);
+  function drawBar(){
+    barEl.textContent="";
+    var sg=modeSigil(24); place(sg,16,10); barEl.appendChild(sg);
+    var row=svgEl(300,26); place(row,71,9); barEl.appendChild(row);
+    var pitch=TICK_PITCH;
+    if(!crossed){
+      /* height, not tint: 11 pt taken · 4 pt remaining, both stroke.secondary */
+      for(var i=0;i<PAR;i++){
+        var h=i<probes?TICK_FULL:TICK_STUB;
+        mk(row,"rect",{x:i*pitch,y:2+(TICK_FULL-h),width:2,height:h,
+          fill:"var(--stroke-secondary)"});
+      }
+    }else{
+      mk(row,"rect",{x:0,y:6,width:PAR*pitch-7,height:2,fill:"var(--stroke-secondary)"});
+      var capN=8;
+      for(var j=0;j<capN;j++){
+        /* the cap empties the other way; spent stops is an ABSENCE, not a dim */
+        if(j<(capN-capUsed))
+          mk(row,"rect",{x:j*pitch,y:15,width:2,height:7,fill:"var(--stroke-secondary)"});
+      }
+    }
+    var rule=document.createElement("div");
+    rule.style.cssText="position:absolute;left:16px;right:16px;top:43px;height:1px;"+
+      "background:var(--hairline);";
+    barEl.appendChild(rule);
+  }
+
+  /* ── throat 64–176 ──────────────────────────────────────────────────── */
+  var throat=box(0,64,375,112,"region"); root.appendChild(throat);
+  var throatInk=box(0,0,375,112); throat.appendChild(throatInk);
+  var ringHost=box(0,0,375,112); ringHost.style.zIndex="4";
+  ringHost.setAttribute("data-nobed","1"); throat.appendChild(ringHost);
+  function drawThroat(){
+    throatInk.textContent="";
+    var host=document.createElement("div");
+    host.style.cssText="position:absolute;left:139.5px;top:8px;width:96px;height:96px;overflow:visible;";
+    var g=glyph(draft.fill,draft.shape,draft.pips,draft.hue,96);
+    g.style.cssText="display:block;overflow:visible;";
+    host.appendChild(g); throatInk.appendChild(host);
+    bed(throat,96);
+  }
+
+  /* ── ribbon 176–228 ─────────────────────────────────────────────────── */
+  var rib=box(0,176,375,52,"region"); root.appendChild(rib);
+  var ribInk=box(0,0,375,52); rib.appendChild(ribInk);
+  function drawRibbon(){
+    ribInk.textContent="";
+    var arcs=svgEl(375,52); place(arcs,0,0); ribInk.appendChild(arcs);
+    for(var i=0;i<ribbon.length;i++){
+      var x=16+i*50;
+      var t=box(x,4,44,44); t.style.overflow="visible";
+      var g=glyph(ribbon[i].g.fill,ribbon[i].g.shape,ribbon[i].g.pips,ribbon[i].g.hue,44);
+      g.style.cssText="display:block;overflow:visible;position:absolute;left:0;top:0;";
+      t.appendChild(g);
+      var vr=verdictRing(ribbon[i].verdict,44,
+        ribbon[i].verdict==="admit"?{r:1.30,w:1.5,o:0.85,bloom:false}:{r:1.05,w:1,gap:20});
+      vr.style.cssText="display:block;overflow:visible;position:absolute;left:0;top:0;";
+      t.appendChild(vr);
+      if(i===ribbon.length-1){
+        var gf=ghostFrame(44);
+        gf.style.cssText="display:block;position:absolute;left:0;top:0;";
+        t.appendChild(gf);
+      }
+      ribInk.appendChild(t);
+      if(i<ribbon.length-1){
+        mk(arcs,"path",{d:"M "+(x+44)+" 26 q 3 -6 6 0",fill:"none",
+          stroke:"var(--hairline)","stroke-width":1,"stroke-linecap":"round"});
+      }
+    }
+    bed(rib,44);
+  }
+
+  /* ── the Dial 236–508 ───────────────────────────────────────────────── */
+  var DIAL_ATTRS=["fill","shape","pips","hue"];
+  var VALS={fill:FILLS, shape:SHAPES, pips:PIPS, hue:HUES};
+  /* 4 rows of 60 with 8 gutters = 264 inside the spec's 272 pt region;
+     each row seats its 70 × 48 cell with 6 pt above and below */
+  var dial=box(0,236,375,272); root.appendChild(dial);
+  function drawDial(){
+    dial.textContent="";
+    DIAL_ATTRS.forEach(function(attr,ri){
+      var y=6+ri*68;
+      var hd=attrHeader(attr,45,48);
+      place(hd,16,y); dial.appendChild(hd);
+      var sep=box(61,y+6,1,36);
+      sep.style.background="var(--hairline)"; dial.appendChild(sep);
+      for(var v=0;v<4;v++){
+        (function(v){
+          var x=61+v*76;
+          var b=document.createElement("button");
+          b.className="hit"; b.type="button";
+          b.style.cssText="left:"+x+"px;top:"+y+"px;width:70px;height:48px;";
+          var on = draft[attr]===VALS[attr][v];
+          b.style.background=on?"var(--cell-lit)":"var(--cell)";
+          b.style.border="1px solid "+(on?"var(--stroke-primary)":"var(--hairline)");
+          b.style.borderRadius="2px";
+          b.setAttribute("aria-pressed",on?"true":"false");
+          b.setAttribute("aria-label",VALS[attr][v]+" "+attr);
+          var col = attr==="hue"
+            ? (on?("var(--hue-"+HUES[v]+")"):"var(--stroke-secondary)")
+            : (on?"var(--stroke-primary)":"var(--stroke-secondary)");
+          var m=valueMark(attr,v,70,48,col,{sw:on?2:1.4, iw:on?3:2, ilen:22});
+          m.style.cssText="position:absolute;left:0;top:0;";
+          b.appendChild(m);
+          b.addEventListener("click",function(){
+            draft[attr]=VALS[attr][v];
+            drawDial(); drawThroat();
+          });
+          dial.appendChild(b);
+        })(v);
+      }
+    });
+  }
+
+  /* ── Bench handle 516–560 ───────────────────────────────────────────── */
+  var handle=box(16,516,343,44); root.appendChild(handle);
+  (function(){
+    handle.style.background="var(--ground-raised)";
+    handle.style.border="1px solid var(--hairline)";
+    handle.style.borderRadius="2px";
+    var s=svgEl(343,44); place(s,0,0); handle.appendChild(s);
+    mk(s,"polyline",{points:"165.5,18 171.5,12 177.5,18",fill:"none",
+      stroke:"var(--stroke-secondary)","stroke-width":1.6,"stroke-linecap":"butt"});
+    for(var i=0;i<3;i++)
+      mk(s,"rect",{x:157,y:25+i*4,width:29,height:1,fill:"var(--hairline)"});
+  })();
+
+  /* ── commit bar 604–667 ─────────────────────────────────────────────── */
+  var commit=box(0,604,375,63); root.appendChild(commit);
+  function keyFrame(x,w,label){
+    var b=document.createElement("button");
+    b.className="hit"; b.type="button";
+    b.style.cssText="left:"+x+"px;top:6px;width:"+w+"px;height:44px;"+
+      "border:1px solid var(--hairline);border-radius:2px;background:var(--ground-raised);";
+    b.setAttribute("aria-label",label);
+    commit.appendChild(b); return b;
+  }
+  (function(){
+    var rule=box(16,0,343,1); rule.style.background="var(--hairline)"; commit.appendChild(rule);
+
+    var kProbe=keyFrame(16,105,"Probe");
+    var s1=modeSigil(30); place(s1,37,7); kProbe.appendChild(s1);
+    kProbe.addEventListener("click",function(){ fire(1); });
+
+    var kTwin=keyFrame(135,105,"Twin — re-probe the identical glyph");
+    var s2=svgEl(34,34); place(s2,35,5); kTwin.appendChild(s2);
+    mk(s2,"circle",{cx:17,cy:17,r:11,fill:"none",stroke:"var(--stroke-secondary)","stroke-width":1.6});
+    mk(s2,"circle",{cx:17,cy:17,r:7,fill:"none",stroke:"var(--stroke-secondary)","stroke-width":1.6});
+    kTwin.addEventListener("click",function(){ fire(0.7); });
+
+    var kBench=keyFrame(254,105,"Bench — declare");
+    var s3=svgEl(46,30); place(s3,29,7); kBench.appendChild(s3);
+    mk(s3,"rect",{x:2,y:4,width:42,height:1.6,fill:"var(--stroke-secondary)"});
+    mk(s3,"rect",{x:2,y:24,width:42,height:1.6,fill:"var(--stroke-secondary)"});
+    mk(s3,"circle",{cx:23,cy:15,r:5,fill:"none",stroke:"var(--stroke-secondary)","stroke-width":1.6});
+    mk(s3,"rect",{x:15,y:14.2,width:16,height:2.6,fill:"var(--stroke-secondary)"});
+    kBench.addEventListener("click",function(){
+      var t=document.getElementById("e4");
+      if(t) t.scrollIntoView({behavior: reduceMotion()?"auto":"smooth", block:"start"});
+    });
+  })();
+
+  function reduceMotion(){
+    return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  /* ── the verdict beat ───────────────────────────────────────────────── */
+  var busy=false;
+  function fire(amp){
+    if(busy) return; busy=true;
+    var g={fill:draft.fill,shape:draft.shape,pips:draft.pips,hue:draft.hue};
+    var v=law(g)?"admit":"reject";
+    ringHost.textContent="";
+    var host=document.createElement("div");
+    host.style.cssText="position:absolute;left:139.5px;top:8px;width:96px;height:96px;overflow:visible;";
+    ringHost.appendChild(host);
+
+    var rm=reduceMotion();
+    if(rm){
+      var st=verdictRing(v,96, v==="admit"?{r:1.18,w:2.4,o:0.9}:{r:1.0,w:1.5,gap:18});
+      st.style.cssText="display:block;overflow:visible;position:absolute;left:0;top:0;"+
+        "opacity:0;transition:opacity 160ms linear;";
+      host.appendChild(st);
+      requestAnimationFrame(function(){ st.style.opacity="1"; });
+      setTimeout(function(){ st.style.opacity="0"; }, 200);
+      setTimeout(commitProbe, 380);
+    } else if(v==="admit"){
+      var r0=0.37*96, ring=verdictRing("admit",96,{r:1.0,w:3,o:0.9});
+      ring.style.cssText="display:block;overflow:visible;position:absolute;left:0;top:0;"+
+        "transform-origin:50% "+(48-9.6)+"px;"+
+        "transition:transform 200ms cubic-bezier(0,0,.58,1),opacity 200ms cubic-bezier(0,0,.58,1);";
+      host.appendChild(ring);
+      requestAnimationFrame(function(){
+        ring.style.transform="scale("+(1+0.35*amp)+")"; ring.style.opacity="0";
+      });
+      throatInk.style.transition="transform 70ms cubic-bezier(0,0,.58,1)";
+      throatInk.style.transformOrigin="50% 46px";
+      throatInk.style.transform="scale("+(1+0.04*amp)+")";
+      setTimeout(function(){
+        throatInk.style.transition="transform 120ms cubic-bezier(.22,.61,.36,1)";
+        throatInk.style.transform="scale(1)";
+      },70);
+      setTimeout(commitProbe, 240);
+    } else {
+      var rk=verdictRing("reject",96,{r:1.35,w:1.5,gap:6});
+      rk.style.cssText="display:block;overflow:visible;position:absolute;left:0;top:0;"+
+        "transform-origin:50% "+(48-9.6)+"px;"+
+        "transition:transform 160ms cubic-bezier(.42,0,1,1);";
+      host.appendChild(rk);
+      requestAnimationFrame(function(){ rk.style.transform="scale("+(1/1.35)+")"; });
+      setTimeout(function(){
+        rk.style.transition="transform 90ms cubic-bezier(0,0,.58,1),opacity 90ms linear";
+        rk.style.transform="scale("+(1/1.35*1.06)+")"; rk.style.opacity="0";
+      },160);
+      /* the shudder — ∓2 pt horizontal, leading → trailing → rest. Not a bounce. */
+      var d=2*amp;
+      throatInk.animate(
+        [{transform:"translateX(0)"},{transform:"translateX("+(-d)+"px)"},
+         {transform:"translateX("+d+"px)"},{transform:"translateX(0)"}],
+        {duration:130, easing:"cubic-bezier(.42,0,.58,1)"});
+      setTimeout(commitProbe, 230);
+    }
+
+    function commitProbe(){
+      ribbon.push({g:g, verdict:v});
+      if(ribbon.length>7) ribbon.shift();
+      if(!crossed){
+        probes++;
+        if(probes>=PAR){ crossed=true; probes=PAR; }
+      } else { capUsed=Math.min(8,capUsed+1); }
+      drawRibbon(); drawBar();
+      busy=false;
+    }
+  }
+
+  drawBar(); drawThroat(); drawRibbon(); drawDial();
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EXHIBIT 4 — THE BENCH
+     20–64 bar · 64–176 throat · 176–228 ribbon
+     228–560 rails + Assay · 560–604 palette · 604–667 commit bar
+   ═══════════════════════════════════════════════════════════════════════════ */
+function sealMark(size,state){
+  /* the Seal: a machined stamp. barred = a 4 pt bar across it. */
+  var s=svgEl(size,size,(-size/2)+" "+(-size/2)+" "+size+" "+size);
+  var R=size*0.40, ready=(state==="ready");
+  var col=ready?"var(--brass)":"var(--stroke-secondary)";
+  var op=ready?1:0.35;
+  var g=mk(s,"g",{opacity:op});
+  mk(g,"circle",{cx:0,cy:0,r:R,fill:"none",stroke:col,"stroke-width":ready?3:1.5});
+  mk(g,"circle",{cx:0,cy:0,r:R*0.70,fill:"none",stroke:col,"stroke-width":1});
+  for(var i=0;i<8;i++){
+    var a=i*45;
+    mk(g,"line",{x1:(R*0.78*Math.cos(rad(a))).toFixed(2),y1:(R*0.78*Math.sin(rad(a))).toFixed(2),
+      x2:(R*0.96*Math.cos(rad(a))).toFixed(2),y2:(R*0.96*Math.sin(rad(a))).toFixed(2),
+      stroke:col,"stroke-width":1.5,"stroke-linecap":"butt"});
+  }
+  mk(g,"rect",{x:-R*0.26,y:-R*0.30,width:R*0.52,height:R*0.60,fill:"none",
+    stroke:col,"stroke-width":1.5,"stroke-linejoin":"miter"});
+  if(!ready){
+    mk(s,"line",{x1:-size*0.52,y1:0,x2:size*0.52,y2:0,stroke:"var(--cold)",
+      "stroke-width":4,"stroke-linecap":"butt"});
+  }
+  return s;
+}
+
+function assayGrid(cellPx, pred, opts){
+  opts=opts||{};
+  var n=16, side=n*cellPx;
+  var s=svgEl(side,side);
+  if(opts.grid!==false){
+    for(var k=0;k<=n;k++){
+      mk(s,"line",{x1:k*cellPx,y1:0,x2:k*cellPx,y2:side,stroke:"var(--hairline)","stroke-width":0.5});
+      mk(s,"line",{x1:0,y1:k*cellPx,x2:side,y2:k*cellPx,stroke:"var(--hairline)","stroke-width":0.5});
+    }
+  }
+  /* the four rungs are the FILL ladder, so they are derived from it rather than
+     eyeballed: a lit square of side √coverage covers exactly `coverage` of its
+     cell, so inset = (1 − √coverage)/2. That gives 0 · 0.2618 · 0.1894 · 0 of
+     the cell for {0, 22.7, 38.6, 100 %}. Hand-picked 0.36 / 0.20 gave 7.8 % and
+     36 %, which put rank 2 at a third of its stated weight. */
+  var INSET=[0,1,2,3].map(function(l){
+    var cov=[0,0.227,0.386,1][l];
+    return (1-Math.sqrt(cov))/2;
+  });
+  var lit=0;
+  for(var id=0;id<256;id++){
+    var lvl=pred(id, decode(id));
+    if(lvl===true) lvl=3; if(lvl===false) lvl=0;
+    if(!lvl) continue;
+    lit++;
+    var cx=(id%16)*cellPx, cy=Math.floor(id/16)*cellPx;
+    var inset=INSET[lvl]*cellPx;
+    mk(s,"rect",{x:cx+inset,y:cy+inset,width:cellPx-2*inset,height:cellPx-2*inset,
+      fill:opts.colour||"var(--stroke-primary)", opacity:0.92*(opts.opacity||1)});
+  }
+  s.dataset.lit=lit;
+  return s;
+}
+
+(function(){
+  var phone=document.getElementById("bench-phone");
+  var root=document.createElement("div");
+  root.style.cssText="position:absolute;inset:0;z-index:2;";
+  phone.insertBefore(root, phone.firstChild);
+
+  /* ── THE DRAFT ON THE BENCH, stated once and drawn from ────────────────────
+     Law: pips(cur) > pips(prev)  AND  shape ∈ {triangle, hexagon}.
+     §4.3: the live Assay is a SLICE conditioned on the pinned `prev`, and the
+     pin defaults to the seed glyph. So the pin has to be a real glyph on this
+     screen, and it is: the ghost-framed trailing ribbon tile, which is also the
+     glyph the throat is holding. Its pip rank is what the Bridge compares
+     against, and the Assay predicate below is DERIVED from these three values
+     rather than typed a second time — the rails and the well cannot disagree.
+     The page used to draw an `lt` wedge against a ramp on {two, three} while the
+     well hard-coded `pips == two`: two different laws side by side, and against
+     a pin with pips = one the drawn draft admitted nothing at all. ───────── */
+  var PIN_ID=0xE5;                                  /* solid · square · two · teal */
+  var PIN_PIPS=(PIN_ID>>2)&3;                       /* rank 1 = `two` */
+  var SHAPE_LIT=[false,true,false,true];            /* triangle, hexagon */
+  function draftAdmits(id){
+    var p=(id>>2)&3, s=(id>>4)&3;
+    return p>PIN_PIPS && SHAPE_LIT[s];              /* 2 pips × 2 shapes × 4 × 4 = 64 */
+  }
+  var RIBBON_IDS=[0x21,0x4A,0x9B,0x36,0xC7,0x5D,PIN_ID];
+
+  /* instrument bar */
+  var bar=box(0,20,375,44); root.appendChild(bar);
+  var sg=modeSigil(24); place(sg,16,10); bar.appendChild(sg);
+  bar.appendChild(tickRow(13,9,71,10));
+  var br=box(16,43,343,1); br.style.background="var(--hairline)"; bar.appendChild(br);
+
+  /* throat + ribbon, dimmed — the Bench is up, so the Loom holds the pin */
+  var throat=box(0,64,375,112,"region"); root.appendChild(throat);
+  var ti=box(0,0,375,112); throat.appendChild(ti);
+  var th=document.createElement("div");
+  th.style.cssText="position:absolute;left:139.5px;top:8px;width:96px;height:96px;overflow:visible;";
+  var tg=glyphById(PIN_ID,96);
+  tg.style.cssText="display:block;overflow:visible;"; th.appendChild(tg); ti.appendChild(th);
+  ti.style.opacity="0.55";
+  bed(throat,96);
+
+  var rib=box(0,176,375,52,"region"); rib.style.opacity="0.4"; root.appendChild(rib);
+  var ri2=box(0,0,375,52); rib.appendChild(ri2);
+  RIBBON_IDS.forEach(function(id,ix){
+    var g=decode(id);
+    var t=box(16+ix*50,4,44,44); t.style.overflow="visible";
+    var el=glyph(g.fill,g.shape,g.pips,g.hue,44);
+    el.style.cssText="display:block;overflow:visible;position:absolute;left:0;top:0;";
+    t.appendChild(el);
+    if(ix===RIBBON_IDS.length-1){ var gf=ghostFrame(44);
+      gf.style.cssText="display:block;position:absolute;left:0;top:0;"; t.appendChild(gf); }
+    ri2.appendChild(t);
+  });
+  bed(rib,44);
+
+  /* ── THE BENCH SHEET 228–560 ────────────────────────────────────────── */
+  var sheet=box(0,228,375,332); root.appendChild(sheet);
+  sheet.style.background="var(--ground-raised)";
+  var sr=box(0,0,375,1); sr.style.background="var(--hairline)"; sheet.appendChild(sr);
+
+  /* §4.2 gives the Bench row as `rails, 291 pt wide | THE ASSAY, 64 pt trailing
+     column` = 355, while §13.3 gives a 343 content column inside 16 pt margins.
+     Those do not fit, by 24 pt. Rather than narrow the rail to 267 and say
+     nothing, the rail keeps its canonical 291 and the Assay column runs to the
+     trailing edge at 311–375 — which is exactly how Direction B resolves it, so
+     the two Bench specimens are the same widget at the same size. The overrun is
+     the GDD's, it is stated in the caption, and it is not ours to settle. */
+  var RAILX=16, RAILW=291;
+
+  /* rail 1 — a BRIDGE: two sockets, a wedge, the trailing socket ghosted.
+     Sheet-relative y: rail 1 at 18–158, coupler 162–206, rail 2 at 210–314. */
+  (function(){
+    var y=18, h=140;
+    var rail=box(RAILX,y,RAILW,h); sheet.appendChild(rail);
+    rail.style.border="1px solid var(--stroke-primary)";
+    rail.style.borderRadius="2px";
+    rail.style.background="var(--ground-raised)";
+
+    /* leading socket — bound to pips, always `cur`, and carries no toggle */
+    var s1=box(30,38,64,64); s1.style.border="1px solid var(--stroke-primary)";
+    s1.style.borderRadius="2px"; rail.appendChild(s1);
+    var hd1=attrHeader("pips",64,64,"var(--stroke-primary)");
+    place(hd1,0,0); s1.appendChild(hd1);
+
+    /* the wedge — `gt`: the wide end physically opens toward the larger side,
+       which for pips(cur) > pips(prev) is the LEADING socket. Apex trailing. */
+    var wd=svgEl(52,64); place(wd,118,38); rail.appendChild(wd);
+    mk(wd,"polyline",{points:"14,14 40,32 14,50",fill:"none",
+      stroke:"var(--stroke-primary)","stroke-width":3,
+      "stroke-linecap":"butt","stroke-linejoin":"miter"});
+
+    /* trailing socket — ghosted: dashed frame + backward chevron. This is the
+       pin: `prev`, and the glyph it is pinned to is the ghost-framed ribbon
+       tile above, drawn from the same PIN_ID. */
+    var s2=box(194,38,64,64); rail.appendChild(s2);
+    var gf=ghostFrame(64); place(gf,0,0); s2.appendChild(gf);
+    var hd2=attrHeader("pips",64,64,"var(--stroke-secondary)");
+    place(hd2,0,0); s2.appendChild(hd2);
+  })();
+
+  /* the coupler — AND is one welded bar */
+  (function(){
+    var cp=box(RAILX+RAILW/2-22, 162, 44, 44); sheet.appendChild(cp);
+    var s=svgEl(44,44); place(s,0,0); cp.appendChild(s);
+    mk(s,"line",{x1:22,y1:-4,x2:22,y2:8,stroke:"var(--stroke-primary)","stroke-width":1.5});
+    mk(s,"line",{x1:22,y1:36,x2:22,y2:48,stroke:"var(--stroke-primary)","stroke-width":1.5});
+    mk(s,"circle",{cx:22,cy:22,r:14,fill:"var(--ground-raised)",
+      stroke:"var(--stroke-primary)","stroke-width":1});
+    mk(s,"rect",{x:8,y:20,width:28,height:4,fill:"var(--stroke-primary)"});
+  })();
+
+  /* rail 2 — a RAMP on SHAPE, {triangle, hexagon} lit. §4.2: attribute header
+     44 pt + four 56 × 44 pt cells. 44 + 5 + 4×56 + 3×5 = 288 inside the rail's
+     289 pt interior. The second attribute is what makes this a two-attribute
+     law rather than one attribute compared with itself, and it is what makes
+     the Assay's 64 reachable. */
+  (function(){
+    var y=210, h=104;
+    var rail=box(RAILX,y,RAILW,h); sheet.appendChild(rail);
+    rail.style.border="1px solid var(--stroke-primary)";
+    rail.style.borderRadius="2px";
+
+    var hd=attrHeader("shape",44,54,"var(--stroke-primary)");
+    place(hd,0,25); rail.appendChild(hd);
+    var sep=box(46,32,1,40); sep.style.background="var(--hairline)"; rail.appendChild(sep);
+
+    for(var v=0;v<4;v++){
+      var on=SHAPE_LIT[v];
+      var x=49+v*61;
+      var c=box(x,30,56,44); rail.appendChild(c);
+      c.style.border="1px solid "+(on?"var(--stroke-primary)":"var(--hairline)");
+      c.style.background=on?"var(--cell-lit)":"var(--cell)";
+      c.style.borderRadius="2px";
+      c.style.overflow="hidden";
+      /* THREE non-colour channels for "off", each measured against surface.cell:
+         mark stroke.primary → stroke.secondary (13.95 → 3.18 : 1), a cancel
+         hatch at FULL opacity, and the border dropping to a hairline.
+         opacity.cellUnlit = 0.25 is withdrawn — 25 % of stroke.secondary over
+         #100E0A resolves to 1.23 : 1 and the hatch at 55 % to 1.77 : 1, so the
+         "two non-colour channels" were two channels neither of which a low-vision
+         player could see. Nothing is dimmed here. */
+      var m=valueMark("shape",v,56,44, on?"var(--stroke-primary)":"var(--stroke-secondary)",
+        {sw:on?2:1.4});
+      m.style.cssText="position:absolute;left:0;top:0;";
+      c.appendChild(m);
+      if(!on){
+        var hx=svgEl(56,44); place(hx,0,0); c.appendChild(hx);
+        for(var k=-2;k<=4;k++)
+          mk(hx,"line",{x1:k*14,y1:44,x2:k*14+44,y2:0,
+            stroke:"var(--stroke-secondary)","stroke-width":1});
+      }
+    }
+  })();
+
+  /* the Assay — 16 × 16 at 4 pt, excluded from bloom at every size and state.
+     The predicate is draftAdmits(), the same function the rails are drawn from. */
+  (function(){
+    var ax=RAILX+RAILW+4, ay=18;                    /* 311 → 375, per §4.2's column */
+    var well=box(ax,ay,64,64); sheet.appendChild(well);
+    well.style.background="var(--ground-sunken)";
+    well.style.border="1px solid var(--hairline)";
+    var a=assayGrid(4,draftAdmits);
+    place(a,0,0); well.appendChild(a);
+    var out=document.getElementById("bench-count");
+    if(out) out.textContent=a.dataset.lit;
+
+    /* the column rule that makes the Assay a column and not a stray tile */
+    var vr=box(ax+32,ay+78,1,218); sheet.appendChild(vr);
+    vr.style.background="var(--hairline)";
+    var capMark=box(ax+26,ay+296,13,13); sheet.appendChild(capMark);
+    capMark.style.border="1px solid var(--hairline)";
+  })();
+
+  /* the palette 560–604 — four tile stamps at a full 68 × 44.
+     The boundary rule lives at the sheet's own bottom edge, so the strip below it
+     separates by a ground step AND a hairline, never by only one of the two. */
+  (function(){
+    var sr2=box(16,331,343,1); sr2.style.background="var(--hairline)"; sheet.appendChild(sr2);
+    var pal=box(0,560,375,44); root.appendChild(pal);
+    var xs=[16,107,198,289];
+    var kinds=["ramp","bridge","fork","tally"];
+    kinds.forEach(function(kind,i){
+      var st=box(xs[i],0,68,44); pal.appendChild(st);
+      st.style.border="1px solid var(--hairline)"; st.style.borderRadius="2px";
+      var s=svgEl(68,40); place(s,0,2); st.appendChild(s);
+      var c="var(--stroke-secondary)";
+      if(kind==="ramp"){
+        mk(s,"rect",{x:8,y:13,width:11,height:14,fill:"none",stroke:c,"stroke-width":1.2});
+        for(var v=0;v<4;v++)
+          mk(s,"rect",{x:22+v*10,y:13,width:8,height:14,fill:v<2?c:"none",
+            stroke:c,"stroke-width":1.2});
+      }
+      if(kind==="bridge"){
+        mk(s,"rect",{x:9,y:12,width:16,height:16,fill:"none",stroke:c,"stroke-width":1.2});
+        mk(s,"rect",{x:43,y:12,width:16,height:16,fill:"none",stroke:c,"stroke-width":1.2,
+          "stroke-dasharray":"3 3"});
+        mk(s,"polyline",{points:"37,15 30,20 37,25",fill:"none",stroke:c,"stroke-width":2,
+          "stroke-linejoin":"miter"});
+      }
+      if(kind==="fork"){
+        mk(s,"path",{d:"M 8 20 L 26 20 L 44 12 L 60 12",fill:"none",stroke:c,"stroke-width":2});
+        mk(s,"path",{d:"M 26 20 L 44 29 L 60 29",fill:"none",stroke:c,"stroke-width":1.2,
+          opacity:0.45});
+        mk(s,"rect",{x:20,y:5,width:12,height:8,fill:"none",stroke:c,"stroke-width":1});
+      }
+      if(kind==="tally"){
+        for(var q=0;q<4;q++)
+          mk(s,"rect",{x:10,y:9+q*5,width:q<3?18:12,height:2,fill:c,
+            opacity:q<3?1:0.4});
+        for(var t=0;t<5;t++)
+          mk(s,"rect",{x:36+t*6,y:14,width:4,height:12,fill:t===2?c:"none",
+            stroke:c,"stroke-width":1});
+      }
+    });
+  })();
+
+  /* the commit bar 604–667 — Dial key leading, the Seal trailing, barred */
+  (function(){
+    var cb=box(0,604,375,63); root.appendChild(cb);
+    var cr=box(16,0,343,1); cr.style.background="var(--hairline)"; cb.appendChild(cr);
+
+    var kd=box(16,6,105,44); cb.appendChild(kd);
+    kd.style.border="1px solid var(--hairline)"; kd.style.borderRadius="2px";
+    kd.style.background="var(--ground-raised)";
+    var ds=svgEl(60,30); place(ds,22,7); kd.appendChild(ds);
+    for(var r=0;r<4;r++){
+      mk(ds,"rect",{x:0,y:r*8,width:10,height:5,fill:"none",
+        stroke:"var(--stroke-secondary)","stroke-width":1});
+      for(var v=0;v<4;v++)
+        mk(ds,"rect",{x:13+v*12,y:r*8,width:10,height:5,
+          fill:(v===r)?"var(--stroke-secondary)":"none",
+          stroke:"var(--stroke-secondary)","stroke-width":1});
+    }
+
+    var ks=box(254,6,105,44); cb.appendChild(ks);
+    ks.style.border="1px solid var(--hairline)"; ks.style.borderRadius="2px";
+    ks.style.background="var(--ground-raised)";
+    var sm=sealMark(40,"barred"); place(sm,32,2); ks.appendChild(sm);
+  })();
+})();
+
+/* the Seal, barred and ready, at detail size */
+(function(){
+  var host=document.getElementById("seal-pair");
+  var wrap=document.createElement("div");
+  wrap.style.cssText="position:relative;z-index:2;display:flex;gap:34px;"+
+    "align-items:center;justify-content:center;padding:8px 0;";
+  [["barred","Not yet"],["ready","Ready"]].forEach(function(k){
+    var c=document.createElement("div");
+    c.style.cssText="display:flex;flex-direction:column;align-items:center;gap:12px;";
+    var s=sealMark(76,k[0]); c.appendChild(s);
+    var l=document.createElement("div");
+    l.textContent=k[1].toUpperCase();
+    l.style.cssText="font-size:10px;letter-spacing:0.16em;font-stretch:87.5%;font-weight:500;"+
+      "color:var(--text-secondary);";
+    c.appendChild(l); wrap.appendChild(c);
+  });
+  host.appendChild(wrap);
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EXHIBIT 5 — THE CODEX SHELF
+   Fifteen real extensions, drawn from real predicates over glyphID.
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function(){
+  var host=document.getElementById("codex");
+  var scroll=document.createElement("div");
+  scroll.className="shelf-scroll";
+  scroll.style.position="relative"; scroll.style.zIndex="2";
+  var shelf=document.createElement("div");
+  shelf.className="shelf";
+
+  var F={hollow:0,dotted:1,striped:2,solid:3};
+  var S={circle:0,triangle:1,square:2,hexagon:3};
+  var P={one:0,two:1,three:2,four:3};
+  var H={amber:0,teal:1,frost:2,rose:3};
+  function rk(g){ return {f:F[g.fill], s:S[g.shape], p:P[g.pips], h:H[g.hue]}; }
+
+  var laws=[
+    {p:function(i,g){ return rk(g).s===1; }},
+    {p:function(i,g){ return rk(g).f>=2; }},
+    {p:function(i,g){ return rk(g).p>=2; }},
+    {p:function(i,g){ return rk(g).h===0; }},
+    {p:function(i,g){ var r=rk(g); return r.f===3 && r.s===3; }, notch:true},
+    {p:function(i,g){ var r=rk(g); return r.p===r.h; }},
+    {p:function(i,g){ var r=rk(g); return (r.f+r.s)%2===0; }},
+    {p:function(i,g){ var r=rk(g); return r.s>=2 && r.p<=1; }},
+    {p:function(i,g){ var r=rk(g); return r.f<r.h; }, anomaly:true},
+    {p:function(i,g){ var r=rk(g); return r.f+r.s+r.p+r.h>=8; }},
+    {p:function(i,g){ var r=rk(g); return r.h!==2 && r.p!==0; }},
+    {p:function(i,g){ var r=rk(g); return r.s===0 || r.f===3; }},
+    /* two contextual laws, whose thumbnails project to the four-step ink ladder */
+    {p:function(i,g){ return rk(g).p; }, ctx:true},
+    {p:function(i,g){ var r=rk(g); var v=(r.f+r.h)%4; return v; }, ctx:true},
+    {p:function(i,g){ var r=rk(g); return r.p===3 && r.f>=1; }}
+  ];
+
+  laws.forEach(function(L){
+    var cell=document.createElement("div");
+    cell.style.cssText="width:60px;height:60px;position:relative;background:var(--ground-sunken);"+
+      "border:1px solid "+(L.anomaly?"var(--brass)":"var(--hairline)")+";border-radius:2px;";
+    var a=assayGrid(3.5,L.p,{grid:false});
+    a.style.position="absolute"; a.style.left="1px"; a.style.top="1px";
+    cell.appendChild(a);
+    if(L.anomaly){
+      var rim=document.createElement("div");
+      rim.style.cssText="position:absolute;left:2px;top:2px;right:2px;bottom:2px;"+
+        "border:1px solid var(--brass);opacity:0.55;";
+      cell.appendChild(rim);
+    }
+    if(L.notch){
+      var n=svgEl(60,60); n.style.position="absolute"; n.style.left="0"; n.style.top="0";
+      mk(n,"line",{x1:0,y1:9,x2:9,y2:0,stroke:"var(--cold)","stroke-width":2});
+      cell.appendChild(n);
+    }
+    shelf.appendChild(cell);
+  });
+
+  scroll.appendChild(shelf);
+  host.appendChild(scroll);
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EXHIBIT 6 — CHROME
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function(){
+  var host=document.getElementById("settings");
+  var wrap=document.createElement("div");
+  wrap.style.cssText="position:relative;z-index:2;";
+
+  function sectionHead(t){
+    var d=document.createElement("div");
+    d.textContent=t;
+    d.style.cssText="font-size:11px;font-weight:500;font-stretch:87.5%;letter-spacing:0.16em;"+
+      "color:var(--text-secondary);padding:0 16px 12px;height:20px;line-height:20px;";
+    return d;
+  }
+  function rowShell(){
+    var r=document.createElement("div");
+    r.style.cssText="position:relative;min-height:44px;background:var(--ground-raised);"+
+      "border-radius:2px;display:flex;align-items:center;justify-content:space-between;"+
+      "gap:16px;padding:8px 16px;";
+    return r;
+  }
+  function hairline(){
+    var h=document.createElement("div");
+    h.style.cssText="height:1px;background:var(--hairline);margin-left:16px;";
+    return h;
+  }
+
+  wrap.appendChild(sectionHead("DISPLAY"));
+
+  /* row 1 — a segmented control, four segments in 343 pt */
+  var r1=document.createElement("div");
+  r1.style.cssText="background:var(--ground-raised);border-radius:2px;padding:10px 16px 14px;"+
+    "display:flex;flex-direction:column;gap:10px;";
+  var l1=document.createElement("div");
+  l1.textContent="Theme";
+  l1.style.cssText="font-size:17px;color:var(--stroke-primary);line-height:1.3;";
+  r1.appendChild(l1);
+  var seg=document.createElement("div");
+  seg.style.cssText="display:grid;grid-template-columns:repeat(4,1fr);height:32px;"+
+    "border:1px solid var(--hairline);border-radius:2px;overflow:hidden;";
+  ["System","Dark","Light","High Contrast"].forEach(function(t,i){
+    var s=document.createElement("div");
+    s.textContent=t.toUpperCase();
+    s.style.cssText="display:flex;align-items:center;justify-content:center;text-align:center;"+
+      "font-size:11px;font-weight:500;font-stretch:87.5%;letter-spacing:0.04em;line-height:1.1;"+
+      "padding:0 4px;"+(i?"border-left:1px solid var(--hairline);":"")+
+      (i===1?"background:var(--cell-lit);color:var(--stroke-primary);"
+            :"color:var(--text-secondary);");
+    seg.appendChild(s);
+  });
+  r1.appendChild(seg);
+  wrap.appendChild(r1);
+  wrap.appendChild(hairline());
+
+  /* row 2 — the drawn switch. No accent. Two non-colour channels. */
+  var r2=rowShell();
+  var l2=document.createElement("div");
+  l2.style.cssText="display:flex;flex-direction:column;gap:2px;";
+  var l2a=document.createElement("div");
+  l2a.textContent="Grain";
+  l2a.style.cssText="font-size:17px;color:var(--stroke-primary);line-height:1.3;";
+  var l2b=document.createElement("div");
+  l2b.textContent="Scanline and vignette over the play surface";
+  l2b.style.cssText="font-size:13px;color:var(--text-secondary);line-height:1.35;";
+  l2.appendChild(l2a); l2.appendChild(l2b); r2.appendChild(l2);
+  var sw=svgEl(51,31);
+  sw.style.flex="0 0 auto";
+  mk(sw,"rect",{x:0.5,y:0.5,width:50,height:30,rx:2,fill:"none",
+    stroke:"var(--hairline)","stroke-width":1});
+  mk(sw,"rect",{x:22,y:2,width:27,height:27,rx:2,fill:"var(--stroke-primary)"});
+  r2.appendChild(sw);
+  wrap.appendChild(r2);
+  wrap.appendChild(hairline());
+
+  wrap.appendChild(document.createElement("div")).style.cssText="height:24px;";
+  wrap.appendChild(sectionHead("DATA"));
+
+  /* row 3 — destructive. PHOSPHOR has no red; cold already means "this breaks something". */
+  var r3=rowShell();
+  var l3=document.createElement("div");
+  l3.textContent="Reset the ladder";
+  l3.style.cssText="font-size:17px;color:var(--cold);line-height:1.3;";
+  r3.appendChild(l3);
+  var chev=svgEl(9,16); chev.style.flex="0 0 auto";
+  mk(chev,"polyline",{points:"1,1 8,8 1,15",fill:"none",stroke:"var(--stroke-secondary)",
+    "stroke-width":1.5,"stroke-linejoin":"miter"});
+  r3.appendChild(chev);
+  wrap.appendChild(r3);
+  wrap.appendChild(hairline());
+
+  host.appendChild(wrap);
+})();
+
+(function(){
+  var host=document.getElementById("codexstrip");
+  var wrap=document.createElement("div");
+  wrap.style.cssText="position:relative;z-index:2;padding:0 16px;";
+
+  var mic=document.createElement("div");
+  mic.textContent="BAND 2 · PAIR";
+  mic.style.cssText="font-size:11px;font-weight:500;font-stretch:87.5%;letter-spacing:0.16em;"+
+    "color:var(--text-secondary);";
+  wrap.appendChild(mic);
+
+  var ttl=document.createElement("div");
+  ttl.textContent="Codex page";
+  ttl.style.cssText="font-size:28px;font-weight:600;font-stretch:87.5%;letter-spacing:0.06em;"+
+    "color:var(--stroke-primary);line-height:1.15;margin:8px 0 20px;";
+  wrap.appendChild(ttl);
+
+  var rule=document.createElement("div");
+  rule.style.cssText="height:1px;background:var(--hairline);margin-bottom:16px;";
+  wrap.appendChild(rule);
+
+  /* the instrument strip */
+  var strip=document.createElement("div");
+  strip.style.cssText="display:flex;align-items:center;gap:14px;flex-wrap:wrap;";
+
+  var sg=modeSigil(24); sg.style.flex="0 0 auto"; strip.appendChild(sg);
+
+  var tickWrap=document.createElement("div");
+  tickWrap.style.cssText="display:flex;align-items:center;gap:9px;";
+  tickWrap.appendChild(tickRow(13,11,null,null));
+  var num=document.createElement("span");
+  num.textContent="11";
+  num.style.cssText="font-family:var(--mono);font-size:15px;font-variant-numeric:tabular-nums;"+
+    "color:var(--stroke-primary);";
+  tickWrap.appendChild(num);
+  strip.appendChild(tickWrap);
+
+  /* Seal marks: two struck, one not. Struck is a filled brass bar (7.2 : 1);
+     unstruck is the same bar HOLLOW in stroke.secondary (3.26 : 1) — filled
+     against hollow, and both above the graphical floor. It used to draw the
+     unstruck mark in stroke.hairline at 1.61 : 1, which is the tick row's bug
+     wearing different clothes: a hairline carrying state. */
+  var marks=svgEl(19,16); marks.style.flex="0 0 auto";
+  [true,true,false].forEach(function(struck,i){
+    if(struck) mk(marks,"rect",{x:i*7,y:2,width:3,height:12,fill:"var(--brass)"});
+    else mk(marks,"rect",{x:i*7+0.5,y:2.5,width:2,height:11,fill:"none",
+      stroke:"var(--stroke-secondary)","stroke-width":1});
+  });
+  strip.appendChild(marks);
+
+  var notch=svgEl(14,16); notch.style.flex="0 0 auto";
+  mk(notch,"polyline",{points:"0,14 7,2 14,14",fill:"none",stroke:"var(--stroke-secondary)",
+    "stroke-width":1.4,"stroke-linejoin":"miter"});
+  strip.appendChild(notch);
+
+  var date=document.createElement("span");
+  date.textContent="2026-07-27";
+  date.style.cssText="font-family:var(--mono);font-size:15px;font-variant-numeric:tabular-nums;"+
+    "color:var(--text-secondary);";
+  strip.appendChild(date);
+
+  wrap.appendChild(strip);
+
+  /* the fracture — one hairline across the plate rim */
+  var fr=document.createElement("div");
+  fr.style.cssText="height:1px;background:var(--cold);opacity:0.9;margin:18px 0 0;width:96px;"+
+    "transform:skewY(-1.6deg);";
+  wrap.appendChild(fr);
+
+  var cap=document.createElement("div");
+  cap.textContent="Found on a strike — the fracture is drawn, and re-finding it clean heals it.";
+  cap.style.cssText="font-size:13px;color:var(--text-secondary);margin-top:12px;line-height:1.5;";
+  wrap.appendChild(cap);
+
+  host.appendChild(wrap);
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EXHIBIT 7 — THE THREE THEMES
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function(){
+  var host=document.getElementById("themes");
+  var themes=[
+    {cls:"", n:"Dark", h:"#0B0A08", note:"the design"},
+    {cls:"t-light", n:"Light", h:"#F4EFE4", note:"a translation"},
+    {cls:"t-hc", n:"High Contrast", h:"#000000", note:"one colour, no loss"}
+  ];
+  themes.forEach(function(t){
+    var cell=document.createElement("div");
+    cell.className="tri-cell app "+t.cls;
+    cell.style.position="relative"; cell.style.overflow="hidden";
+
+    var grain=document.createElement("div"); grain.className="grain"; cell.appendChild(grain);
+
+    var inner=document.createElement("div");
+    inner.style.cssText="position:relative;z-index:2;display:flex;flex-direction:column;"+
+      "gap:26px;align-items:center;width:100%;";
+
+    var hc = (t.cls==="t-hc");
+    var lt = (t.cls==="t-light");
+
+    /* one glyph */
+    var reg=document.createElement("div");
+    reg.className="region";
+    reg.style.cssText="width:96px;height:112px;position:relative;";
+    var gh=document.createElement("div");
+    gh.style.cssText="position:absolute;left:0;top:0;width:96px;height:96px;overflow:visible;";
+    var gl=glyph("striped","hexagon","three","frost",96,{highContrast:hc, keyline:lt});
+    gl.style.cssText="display:block;overflow:visible;";
+    gh.appendChild(gl); reg.appendChild(gh);
+    inner.appendChild(reg);
+    bed(reg,96);
+
+    /* one verdict ring */
+    var vr=document.createElement("div");
+    vr.style.cssText="width:96px;height:80px;position:relative;";
+    var vh=document.createElement("div");
+    vh.style.cssText="position:absolute;left:0;top:14px;width:96px;height:96px;overflow:visible;";
+    var rg=verdictRing("admit",96,{r:1.22,w:hc?3.5:3,o:0.95,bloom:!hc});
+    rg.style.cssText="display:block;overflow:visible;";
+    vh.appendChild(rg); vr.appendChild(vh);
+    inner.appendChild(vr);
+
+    /* one ramp — on HUE, two lit. This is the ramp that makes the exhibit's
+       claim checkable: in Dark and Light each lit cell carries its own
+       Okabe–Ito hue, in High Contrast all four collapse to stroke.primary and
+       the rotation is the only thing left — which is the whole argument. */
+    var ramp=document.createElement("div");
+    ramp.style.cssText="display:flex;align-items:stretch;gap:0;height:44px;";
+    var hd=attrHeader("hue",40,44, hc?"var(--stroke-primary)":"var(--stroke-secondary)");
+    hd.style.flex="0 0 auto"; ramp.appendChild(hd);
+    var lit=[false,true,true,false];
+    for(var v=0;v<4;v++){
+      var c=document.createElement("div");
+      c.style.cssText="position:relative;width:44px;height:44px;border-radius:2px;"+
+        "border:1px solid "+(lit[v]?"var(--stroke-primary)":"var(--hairline)")+";"+
+        "background:"+(lit[v]?"var(--cell-lit)":"var(--cell)")+";"+
+        (v?"margin-left:3px;":"margin-left:6px;");
+      /* nothing is dimmed: unlit = stroke.secondary at full weight + a cancel
+         hatch at full weight + a hairline border. 3.18 : 1 dark, 5.11 : 1 light,
+         9.68 : 1 HC — against 1.23 : 1 for the withdrawn opacity.cellUnlit. */
+      var mcol = hc ? "var(--stroke-primary)"
+                    : (lit[v] ? "var(--hue-"+HUES[v]+")" : "var(--stroke-secondary)");
+      var m=valueMark("hue",v,44,44,mcol,
+        {sw:(lit[v]?2:1.4)+(hc?0.5:0), iw:(lit[v]?3:2)+(hc?0.5:0), ilen:hc?26:22});
+      m.style.cssText="position:absolute;left:0;top:0;";
+      c.appendChild(m);
+      if(!lit[v]){
+        var hx=svgEl(44,44); hx.style.cssText="position:absolute;left:0;top:0;";
+        for(var k=-1;k<=3;k++)
+          mk(hx,"line",{x1:k*14,y1:44,x2:k*14+44,y2:0,stroke:"var(--stroke-secondary)",
+            "stroke-width":hc?2:1});
+        c.appendChild(hx);
+      }
+      ramp.appendChild(c);
+    }
+    inner.appendChild(ramp);
+
+    var lab=document.createElement("div");
+    lab.className="tri-lab";
+    var n=document.createElement("div"); n.className="n"; n.textContent=t.n;
+    n.style.color="var(--stroke-primary)";
+    var h=document.createElement("div"); h.className="h";
+    h.textContent="ground "+t.h+" · "+t.note;
+    h.style.color="var(--text-secondary)";
+    lab.appendChild(n); lab.appendChild(h);
+    inner.appendChild(lab);
+
+    cell.appendChild(inner);
+    host.appendChild(cell);
+  });
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EXHIBIT 8 — THE TOKEN SHEET
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══ WCAG 2.1 relative luminance and contrast, computed here so the sheet
+   cannot drift from the hexes printed beside it. The page used to print canon's
+   numbers, and ten of the forty-eight cells did not match the hexes they sat
+   next to — including two in the light hue column, which is the column that was
+   already failing. The footnote confessed two of the ten. ═══════════════════ */
+function lin(c){ c/=255; return c<=0.04045 ? c/12.92 : Math.pow((c+0.055)/1.055,2.4); }
+function relY(hex){
+  var h=hex.replace("#","");
+  return 0.2126*lin(parseInt(h.substr(0,2),16))
+       + 0.7152*lin(parseInt(h.substr(2,2),16))
+       + 0.0722*lin(parseInt(h.substr(4,2),16));
+}
+function wcag(a,b){
+  var ya=relY(a), yb=relY(b), hi=Math.max(ya,yb), lo=Math.min(ya,yb);
+  return (hi+0.05)/(lo+0.05);
+}
+/* CSS filter:grayscale(1) applies the luma matrix to GAMMA-ENCODED channels —
+   which is why the greyscale panel's real collision is amber/frost, not the
+   teal/rose pair canon quotes from linear-light luminance. */
+function greyLuma(hex){
+  var h=hex.replace("#","");
+  return (0.2126*parseInt(h.substr(0,2),16)
+        + 0.7152*parseInt(h.substr(2,2),16)
+        + 0.0722*parseInt(h.substr(4,2),16))/255;
+}
+
+(function(){
+  var GROUND={dark:"#0B0A08", light:"#F4EFE4", hc:"#000000"};
+  var PRIMARY={dark:"#EFE3D0", light:"#1A1712", hc:"#FFFFFF"};
+  /* token · dark · light · hc · use · canon's published dark/light/hc */
+  var rows=[
+    ["ground","#0B0A08","#F4EFE4","#000000","the room",null,null,null],
+    ["ground.raised","#15120D","#FBF7EE","#0A0A0A","Bench, sheets, Codex plates","1.06","1.06","1.10"],
+    ["ground.sunken","#050504","#EBE4D5","#000000","Assay well, throat vignette","1.06","1.07","1.00"],
+    ["surface.cell","#100E0A","#F7F3EA","#000000","ramp cell interior, unlit","1.03","1.04","1.00"],
+    ["surface.cell.lit","#1C1811","#FDFBF6","#141414","ramp cell admitted, row pressed","1.12","1.11","1.14"],
+    ["stroke.primary","#EFE3D0","#1A1712","#FFFFFF","glyph keyline, rule-tile stroke, body text","15.6","15.6","21.0"],
+    ["stroke.secondary","#6B6153","#6E6659","#B0B0B0","chrome rules, tick marks, cancel hatch — marks only, never text ‡","3.3","4.9","9.7"],
+    ["text.secondary ‡","#887B69","#6E6659","#B0B0B0","every text run below stroke.primary",null,null,null],
+    ["stroke.hairline","#3A342B","#D6CDBC","#5A5A5A","decorative rules, Assay grid — never state-bearing","1.6","1.5","3.3"],
+    ["accent.brass","#C9922F","#8A5E14","#FFC24D","admit, the Seal, marks, streak","7.2","5.0","13.1"],
+    ["accent.brass.press","#8A6420","#5E3F0C","#C99433","brass control while the finger is down","3.7","8.4","7.8"],
+    ["accent.cold","#7FD8E0","#0E5F72","#7FE9FF","reject, strike, counterexample, barred","12.1","6.3","15.0"],
+    ["accent.cold.press","#4E9AA2","#093F4C","#4FB8CC","cold control pressed","6.1","10.0","9.1"],
+    ["hue.amber","#E69F00","#E69F00","stroke.primary","glyph hue rank 1 †","9.5","1.8","21.0"],
+    ["hue.teal","#009E73","#009E73","stroke.primary","glyph hue rank 2 †","6.4","2.7","21.0"],
+    ["hue.frost","#56B4E9","#56B4E9","stroke.primary","glyph hue rank 3 †","8.6","2.0","21.0"],
+    ["hue.rose","#CC79A7","#CC79A7","stroke.primary","glyph hue rank 4 †","6.5","2.7","21.0"]
+  ];
+  var THEMES=["dark","light","hc"];
+  var t=document.getElementById("tok-colour");
+  var thead=document.createElement("thead");
+  var hr=document.createElement("tr");
+  ["Token","Dark","measured","Light","measured","High Contrast","measured","Use"]
+  .forEach(function(h,i){
+    var th=document.createElement("th");
+    th.textContent=h;
+    if(i===2||i===4||i===6){ th.style.textAlign="right"; th.style.paddingRight="20px"; }
+    hr.appendChild(th);
+  });
+  thead.appendChild(hr); t.appendChild(thead);
+
+  var drift=[], canonCells=0;
+  /* "differs" means: rounded to canon's OWN printed precision, it is a
+     different number. 0.05 tolerances would hide four of the ten. */
+  function differs(canon, v){
+    var dp=(canon.split(".")[1]||"").length;
+    return v.toFixed(dp)!==Number(canon).toFixed(dp);
+  }
+  var tb=document.createElement("tbody");
+  rows.forEach(function(r){
+    var tr=document.createElement("tr");
+    var td0=document.createElement("td");
+    td0.className="tname"; td0.textContent=r[0]; tr.appendChild(td0);
+    THEMES.forEach(function(th,ti){
+      var raw=r[1+ti];
+      var hex = raw.charAt(0)==="#" ? raw : PRIMARY[th];
+      var td=document.createElement("td"); td.className="thex";
+      if(raw.charAt(0)==="#"){
+        var s=document.createElement("i"); s.className="sw";
+        s.style.background=raw; td.appendChild(s);
+      }
+      td.appendChild(document.createTextNode(raw));
+      tr.appendChild(td);
+
+      var td2=document.createElement("td");
+      var isGround=(r[0]==="ground");
+      if(isGround){ td2.className="trat"; td2.textContent="—"; }
+      else{
+        var v=wcag(hex,GROUND[th]);
+        var shown=v.toFixed(2);
+        var canon=r[5+ti];
+        var txt=shown;
+        if(canon!==null && canon!==undefined){
+          canonCells++;
+          if(differs(canon,v)){
+            txt=shown+"  ["+canon+"]";
+            drift.push(r[0]+" "+th+" "+shown+" vs canon "+canon);
+          }
+        }
+        td2.className="trat"+(v>=4.5?" hi":"");
+        td2.textContent=txt;
+      }
+      tr.appendChild(td2);
+    });
+    var tdu=document.createElement("td"); tdu.className="use"; tdu.textContent=r[4];
+    tr.appendChild(tdu);
+    tb.appendChild(tr);
+  });
+  t.appendChild(tb);
+
+  var note=document.getElementById("tok-note");
+  if(note){
+    note.innerHTML="<strong>Every ratio above is computed on load</strong> from the hex "+
+      "in the cell to its left, against that theme's own <span class=\"k\">ground</span>, and "+
+      "printed to two places. Where canon publishes a figure that rounds differently at its "+
+      "own precision, canon's is printed after in brackets. That is <strong>"+drift.length+
+      " of the "+canonCells+"</strong> cells canon covers — not the two the old footnote "+
+      "confessed: <span class=\"k\">"+drift.join(" · ")+"</span>. The old caption said “both "+
+      "still clear every gate the design uses, so no design consequence follows”, and that was "+
+      "true of the two it named and of nothing else: the light theme's amber and teal are "+
+      "<em>worse</em> than claimed, in a column that already fails the 3&thinsp;:&thinsp;1 "+
+      "graphical floor outright.";
+  }
+
+  function fillGrid(id,pairs){
+    var g=document.getElementById(id);
+    pairs.forEach(function(p){
+      var d=document.createElement("div");
+      var a=document.createElement("span"); a.textContent=p[0];
+      var b=document.createElement("span"); b.textContent=p[1];
+      d.appendChild(a); d.appendChild(b); g.appendChild(d);
+    });
+  }
+
+  fillGrid("tok-dim",[
+    ["space.1 … space.9","4 8 12 16 20 24 32 44 64"],
+    ["margin.outer","16"],["column.content","343"],["target.min","44 × 44"],
+    ["glyph.throat","96"],["glyph.ribbon","44"],["glyph.codexThumb","44"],
+    ["glyph.codexHero","220"],["cell.dial","70 × 48"],["cell.ramp","56 × 44"],
+    ["stamp.palette","68 × 44"],["assay.well","64 (cell 4)"],
+    ["assay.expanded","368 (cell 23)"],["bench.handle","343 × 44"],
+    ["rule.inset","16 both sides"],["radius.chrome","2"],
+    ["radius.sheet","12 (top only)"],["radius.glyph","0, always"],
+    ["bleed.glyph","0.08 · S"],["type.scaleCeiling","1.35× (AX2)"],
+    ["pitch.fill","max(5, 0.22 · R)"],
+    ["w.hairline","0.5"],["w.thin","1.0"],["w.bodySm","1.5"],
+    ["w.body","3.0"],["w.heavy","4.0"],["w.halo","3× the stroke it doubles"]
+  ]);
+
+  fillGrid("tok-op",[
+    ["opacity.halo","0.12"],["opacity.bloomBed","0.35"],["opacity.assayLit","0.92"],
+    ["opacity.cellUnlit","withdrawn — Exhibit 4"],["opacity.cellInert","0.30"],
+    ["opacity.disabled","0.35"],["opacity.ribbonDim","0.20"],
+    ["opacity.lawGhost","0.40"],["opacity.pressed","0.70"],
+    ["opacity.scrim","0.85 flat"],["opacity.railPulse","0.50 → 1.00"],
+    ["opacity.hairlinePulse","0.60 → 1.00"]
+  ]);
+
+  fillGrid("tok-dur",[
+    ["dur.tap","90"],["dur.micro","120"],["dur.ringAdmit","200"],
+    ["dur.ringReject","160"],["dur.admit","260"],["dur.reject","250"],
+    ["dur.crossfade","220"],["dur.push","280"],["dur.sheet","320"],
+    ["dur.zoom","300"],["dur.shared","340"],["dur.streak","600"],
+    ["dur.reveal","1840"],["dur.revealLost","1020"],["dur.grainReseed","125 (8 Hz)"],
+    ["dur.reduceMotion","260 / 160"],["dur.pulse","90 × 3"],["dur.drift","520"]
+  ]);
+
+  var tt=document.getElementById("tok-type");
+  /* role · size · weight · width · tracking · where · [css weight, stretch %,
+     tracking em, uppercase, mono] · specimen copy */
+  var trows=[
+    ["display","28","semibold","condensed","0.06 em","Codex page title, Profile",
+     [600,87.5,0.06,false,false],"The Ninefold Bridge"],
+    ["title","20","semibold","condensed","0.08 em","screen titles",
+     [600,87.5,0.08,false,false],"Statistics"],
+    ["section","13","medium","condensed","0.14 em, UPPER","instrument labels, Settings headers",
+     [500,87.5,0.14,true,false],"Display"],
+    ["body","17","regular","standard","0","Settings rows, Codex notes",
+     [400,100,0,false,false],"Scanline and vignette over the play surface"],
+    ["caption","13","regular","standard","0.01 em","secondary metadata",
+     [400,100,0.01,false,false],"Found on a strike — re-finding it clean heals it"],
+    ["numeral","15","regular","mono","0","every number, always",
+     [400,100,0,false,true],"11 / 13 · 0.412 · 2026-07-27"],
+    ["micro","11","medium","condensed","0.16 em, UPPER","section and column heads",
+     [500,87.5,0.16,true,false],"Band 2 · Pair"]
+  ];
+
+  /* the exhibit says the typography is load-bearing, so it is set rather than
+     described: each role rendered at its own size, weight, width and tracking */
+  var spec=document.getElementById("tok-type-spec");
+  if(spec) trows.forEach(function(r){
+    var c=r[6], row=document.createElement("div"); row.className="r";
+    var samp=document.createElement("div"); samp.className="samp";
+    samp.textContent=c[3]?r[7].toUpperCase():r[7];
+    samp.style.cssText="font-family:"+(c[4]?"var(--mono)":"var(--sans)")+";"+
+      "font-size:"+r[1]+"px;font-weight:"+c[0]+";font-stretch:"+c[1]+"%;"+
+      "letter-spacing:"+c[2]+"em;line-height:1.25;"+
+      (c[4]?"font-variant-numeric:tabular-nums;":"");
+    var meta=document.createElement("div"); meta.className="meta";
+    meta.textContent=r[0]+" · "+r[1]+" · "+r[2]+" · "+r[3]+" · "+r[4];
+    row.appendChild(samp); row.appendChild(meta); spec.appendChild(row);
+  });
+  var th2=document.createElement("thead"); var hr2=document.createElement("tr");
+  ["Role","Size","Weight","Width","Tracking","Where"].forEach(function(h){
+    var th=document.createElement("th"); th.textContent=h; hr2.appendChild(th);
+  });
+  th2.appendChild(hr2); tt.appendChild(th2);
+  var tb2=document.createElement("tbody");
+  trows.forEach(function(r){
+    var tr=document.createElement("tr");
+    r.slice(0,6).forEach(function(c,i){
+      var td=document.createElement("td");
+      td.textContent=c;
+      if(i===0){ td.className="tname"; }
+      else if(i===1||i===4){ td.className="thex"; }
+      else if(i===5){ td.className="use"; }
+      else { td.style.color="var(--pg-ink2)"; }
+      tr.appendChild(td);
+    });
+    tb2.appendChild(tr);
+  });
+  tt.appendChild(tb2);
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EXHIBIT 1 — THE CROSS-HUE FILL LADDER, MEASURED
+   Exhibit 1 asserts "fill is still an ink-density ladder" and then draws the
+   ladder with hue pinned to amber, which is the flattering case. §13.5 claims
+   coverage is "independent of which hue is showing"; that is true of coverage
+   and false of the LUMINANCE the eye actually reads. This computes the patch
+   L* of every (fill, hue) pair on the shipped ground and prints the worst
+   adjacent-rank gap taken across hues. It is the one number Direction B attacks
+   with, and it checks out.
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function(){
+  var host=document.getElementById("mx-fill");
+  if(!host) return;
+  var GROUND="#0B0A08";
+  var HUEHEX={amber:"#E69F00",teal:"#009E73",frost:"#56B4E9",rose:"#CC79A7"};
+  var COV=[["hollow",0],["dotted",0.227],["striped",0.386],["solid",1]];
+  function Lstar(y){ return y>0.008856 ? 116*Math.pow(y,1/3)-16 : 903.3*y; }
+  var gY=relY(GROUND), M={};
+  COV.forEach(function(f){
+    M[f[0]]={};
+    HUES.forEach(function(h){ M[f[0]][h]=Lstar(f[1]*relY(HUEHEX[h])+(1-f[1])*gY); });
+  });
+
+  var thead=document.createElement("thead"), hr=document.createElement("tr");
+  ["fill / hue"].concat(HUES).forEach(function(t){
+    var th=document.createElement("th"); th.textContent=t; hr.appendChild(th);
+  });
+  thead.appendChild(hr); host.appendChild(thead);
+  var tb=document.createElement("tbody");
+  COV.forEach(function(f){
+    var tr=document.createElement("tr");
+    var td0=document.createElement("td");
+    td0.textContent=f[0]+"  "+(f[1]*100).toFixed(1)+" %";
+    tr.appendChild(td0);
+    HUES.forEach(function(h){
+      var td=document.createElement("td");
+      td.textContent="L* "+M[f[0]][h].toFixed(1);
+      tr.appendChild(td);
+    });
+    tb.appendChild(tr);
+  });
+  host.appendChild(tb);
+
+  /* worst adjacent-rank gap, minimised over every ordered pair of hues */
+  var order=["hollow","dotted","striped","solid"], worst=null;
+  for(var i=0;i<3;i++){
+    for(var a=0;a<4;a++) for(var b=0;b<4;b++){
+      var d=M[order[i+1]][HUES[b]]-M[order[i]][HUES[a]];
+      if(worst===null||d<worst.d) worst={d:d,lo:order[i],hi:order[i+1],ha:HUES[a],hb:HUES[b]};
+    }
+  }
+  var pinned=[];
+  for(i=0;i<3;i++) pinned.push((M[order[i+1]].amber-M[order[i]].amber).toFixed(1));
+
+  /* ── the greyscale proof's headline number, computed against the filter the
+     panel actually uses. The page used to claim "teal 0.291 and rose 0.293, the
+     same pixel value". Neither number is right under either convention, and
+     that pair is not the collision: under grayscale(1) they are twenty steps of
+     grey apart. The real near-identical pair is amber against frost. ─────── */
+  (function(){
+    var gn=document.getElementById("grey-note");
+    if(!gn) return;
+    var L={}, R={};
+    HUES.forEach(function(h){ L[h]=greyLuma(HUEHEX[h]); R[h]=relY(HUEHEX[h]); });
+    var best=null;
+    for(var i=0;i<4;i++) for(var j=i+1;j<4;j++){
+      var d=Math.abs(L[HUES[i]]-L[HUES[j]]);
+      if(best===null||d<best.d) best={d:d,a:HUES[i],b:HUES[j]};
+    }
+    var ROT={amber:0,teal:45,frost:90,rose:135};
+    var sep=Math.abs(ROT[best.a]-ROT[best.b]);
+    gn.innerHTML=
+      "The right half is the left half with every hue destroyed. <strong>The nearest pair "+
+      "under this filter is not the one canon names.</strong> CSS "+
+      "<span class=\"k\">filter: grayscale(1)</span> applies the luma matrix to "+
+      "<em>gamma-encoded</em> channels, so what the browser paints here is <span class=\"k\">"+
+      best.a+"</span> <strong>"+L[best.a].toFixed(3)+"</strong> against <span class=\"k\">"+
+      best.b+"</span> <strong>"+L[best.b].toFixed(3)+"</strong> — "+
+      (best.d*255).toFixed(1)+" parts in 255, the same grey — separated by <strong>"+sep+
+      "° of index rotation</strong> ("+ROT[best.a]+"° against "+ROT[best.b]+
+      "°), which is still the maximum available. Canon's quoted worst case, "+
+      "<span class=\"k\">teal</span> against <span class=\"k\">rose</span>, is not a collision "+
+      "at all: their sRGB relative luminances are <span class=\"k\">"+R.teal.toFixed(3)+
+      "</span> and <span class=\"k\">"+R.rose.toFixed(3)+"</span>, not 0.291 and 0.293, and "+
+      "under this filter they render "+L.teal.toFixed(3)+" and "+L.rose.toFixed(3)+" — "+
+      (Math.abs(L.teal-L.rose)*255).toFixed(0)+" steps of grey apart, plainly two different "+
+      "values. The claim survives; the number canon attached to it does not. A monochromat "+
+      "still reads all 256, and so does a screenshot in a review.";
+  })();
+
+  var note=document.getElementById("mx-note");
+  if(note) note.innerHTML=
+    "With hue pinned to <span class=\"k\">amber</span>, as the rungs above draw it, the three "+
+    "adjacent-rank steps are <span class=\"k\">"+pinned.join(" · ")+"</span> ΔL* — clean. "+
+    "<strong>Taken across hues the worst adjacent pair is "+
+    worst.lo+"/"+worst.ha+" against "+worst.hi+"/"+worst.hb+" at "+
+    "<span class=\"k\">"+worst.d.toFixed(2)+" ΔL*</span></strong>, which is inside a patch JND "+
+    "(≈ 2.3) — the two are the same lightness and the rank order is not readable between them. "+
+    "So §13.5's “fill density is a pure ink-coverage signal, independent of which hue is "+
+    "showing” is true of coverage and false of what the eye reads on this ground. Coverage and "+
+    "texture kind still separate them, and hue is carried by the index stroke rather than by "+
+    "the patch, so nothing is undecidable — but the greyscale proof leans on this step, and on "+
+    "this ground the step is not there. Direction B's palette is built to fix exactly this and "+
+    "measures ~6.9× better on it. It is cost 8 below, and it is the strongest argument against "+
+    "PHOSPHOR that PHOSPHOR itself can make.";
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WEAKNESSES — 1–6 verbatim, 7–8 new to this page
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function(){
+  var host=document.getElementById("weaknesses");
+  var items=[
+    "<strong>Night play is the risk, not battery.</strong> On OLED the near-black ground with sparse marks is the cheapest frame we could ask for, so power is a non-issue — but bright thin strokes on black cause <strong>halation for astigmatic eyes</strong> (roughly a third of adults), and our smallest state-bearing marks are 1.5 pt strokes and 4 pt Assay cells. Worse, the whole depth system is a <strong>1.06 : 1 ground step</strong>, which is at or below the visible threshold on many panels below 30 % brightness and is destroyed by auto-dimming; add OLED near-black banding and mura and the Bench can stop reading as a separate panel entirely. Mitigation is the hairline, which is 1.6 : 1 — also marginal. This is the direction's most likely field failure.",
+    "<strong>Bright daylight inverts the whole premise.</strong> <span class=\"k\">stroke.primary</span> at 15.6 : 1 survives sunlight; nothing else does. <span class=\"k\">ground.raised</span>, <span class=\"k\">ground.sunken</span>, the hairlines and the entire grain/vignette layer disappear under glare, so the app collapses to one flat surface and the instrument fiction goes with it. The answer is the light theme — but the light theme is a <em>translation</em> of PHOSPHOR, not a design in its own right: a dead machine in a dark room, lit, is just a technical drawing, and a technical drawing is a thinner idea. A player who lives in the light theme never sees this direction at all.",
+    "<strong>“Dark + glow + scanlines” is a very well-worn look.</strong> It is adjacent to every CRT/terminal/hacker aesthetic of the last fifteen years — Duskers, Signalis, TIS-100, Pip-Boy, a thousand synthwave dashboards — and the App Store screenshot will be pattern-matched to “retro-futurist” in under a second. Our differentiators are all <em>subtractions</em>: no green, no CRT curvature, no typewriter face, no ASCII, no chromatic aberration, one accent rationed to three elements. Every one of those is cheap to lose in a single well-meaning PR, and the direction is only distinctive while all of them hold.",
+    "<strong>Bloom actively attacks the <span class=\"k\">fill</span> ladder.</strong> The halo is a 3× stroke at 12 % laid just inside the contour; at ribbon size (S = 44, W = 1.5, halo 4.5 pt) it deposits ink inside a silhouette whose inset interior is only ~12 pt across. That raises the measured coverage of <span class=\"k\">hollow</span> above 0 and compresses the 0 → 22.7 % step, which is the exact discriminator the greyscale proof rests on. Hence bloom off below S = 32 and excluded from the Assay — and it must become a <strong>shipped test</strong>: measured coverage separation of the four fills at 44 pt @2× must meet the same threshold <span class=\"k\">T</span> with bloom on as with it off.",
+    "<strong>The grain beats against <span class=\"k\">dotted</span>.</strong> The shader's scanline has a 3 px period and the dot pitch floors at 5 pt = 10 px @2×; at small sizes and at 1.35× type scaling those interfere, and because the grain reseeds at 8 Hz the interference <em>moves</em>, so a static fill can shimmer into looking like a different fill. <span class=\"k\">amt</span> must be clamped over the ribbon, or the shader restricted to the throat and the surround.",
+    "<strong>Brass and amber are 3° apart in hue.</strong> Register segregation is the entire defence, and register segregation is invisible to a player in their first ninety seconds: a brass admit ring around an amber glyph reads as one family. The luminance gap (1.36 : 1) and the ring geometry carry it, but the cost is real — one of our four hues is permanently the least legible <em>as a hue</em>, and we cannot re-light it because Okabe–Ito is verbatim per canon. If the accent were ever to move, it would move away from amber, not toward it.",
+    "<span class=\"k\">NEW — not in the direction document.</span> <strong>Nobody has measured what this direction costs per frame, and cost 1 closes the question before asking it.</strong> Cost 1 opens “on OLED the near-black ground with sparse marks is the cheapest frame we could ask for, <em>so power is a non-issue</em>”. That is a claim about panel <em>emission</em>, and it is offered where a reader will take it as a claim about <em>cost</em>. The two are not the same thing and this direction is expensive in the second sense: <span class=\"k\">dur.grainReseed = 125 ms (8 Hz)</span> means the shader has a live time term and reseeds eight times a second forever; §13.5 specifies <strong>three offscreen blur layers per frame</strong> — throat, ribbon, tail — each an explicit <span class=\"k\">drawLayer</span> with <span class=\"k\">addFilter(.blur)</span>; and every glyph is stroked twice, so the halo is a second full geometry pass per mark. Only the shader has a budget (≤ 0.4 ms/frame at 120 Hz on A15). <strong>The blur layers are budgeted nowhere and have been measured nowhere.</strong> Direction B attacks precisely here — “where the shipped spec spends three offscreen blur layers per frame, PLATE spends zero”, and “the shader has no time term at all, so Reduce Motion is free” — and both of those are true as stated. Until someone runs frame time and energy impact on the oldest supported device with the bloom bed and the 8 Hz reseed live, that attack is unanswered, and a pitch is not entitled to answer it with a sentence about OLED pixels.",
+    "<span class=\"k\">NEW — not in the direction document.</span> <strong>The fill ladder does not survive a change of hue on this ground, and Exhibit 1 was asserting that it did.</strong> The measured table in Exhibit 1 is the evidence: a <span class=\"k\">dotted</span> amber patch and a <span class=\"k\">striped</span> teal patch are <strong>0.76 ΔL*</strong> apart on <span class=\"k\">#0B0A08</span> — inside a patch JND of roughly 2.3, which is to say the same lightness. Pin the hue and the ladder is clean (34.5 · 10.0 · 23.3 ΔL*); let the hue vary, which is what the deck does, and the middle step disappears. Nothing becomes undecidable, because texture kind and the index stroke still separate the pair and every decision reads geometry rather than colour — but §13.5's “fill density is a pure ink-coverage signal, independent of which hue is showing” is true of coverage and false of luminance, and the greyscale proof rests on the step that vanishes. This is the same defect cost 4 describes bloom <em>worsening</em>; cost 4 assumed the underlying step was sound. It is not, and Okabe–Ito being verbatim per canon means PHOSPHOR cannot fix it by re-lighting. Direction B's palette is built for ink behaviour and measures about 6.9× better on this exact number, which is the single strongest argument against this direction."
+  ];
+  items.forEach(function(html,i){
+    var d=document.createElement("div"); d.className="weak-item";
+    var n=document.createElement("div"); n.className="weak-n";
+    n.textContent=String(i+1).padStart(2,"0");
+    var p=document.createElement("p");
+    p.innerHTML=html;
+    d.appendChild(n); d.appendChild(p); host.appendChild(d);
+  });
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE MEASURE RAIL — eight ticks, one per exhibit
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function(){
+  var rail=document.getElementById("rail");
+  var ids=["e1","e2","e3","e4","e5","e6","e7","e8"];
+  var ticks=ids.map(function(id){
+    var a=document.createElement("a");
+    a.className="rail-t"; a.href="#"+id;
+    a.setAttribute("aria-label","Exhibit "+id.slice(1));
+    rail.appendChild(a); return a;
+  });
+  var secs=ids.map(function(id){ return document.getElementById(id); });
+  function sync(){
+    var y=window.scrollY+window.innerHeight*0.35, cur=-1;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) cur=i; }
+    ticks.forEach(function(t,i){ t.classList.toggle("on", i===cur); });
+  }
+  var pending=false;
+  window.addEventListener("scroll",function(){
+    if(pending) return; pending=true;
+    requestAnimationFrame(function(){ sync(); pending=false; });
+  },{passive:true});
+  sync();
+})();
+
+})();
+</script>

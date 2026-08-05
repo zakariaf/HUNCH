@@ -1,0 +1,2041 @@
+<title>PLATE — a direction for HUNCH</title>
+
+<style>
+/* ============================================================
+   PLATE — direction pitch for HUNCH
+   Two inks and no third: ink, and one copper. Page chrome only.
+   ============================================================ */
+
+:root{
+  --ground:#EFE7D5; --raised:#F4EFE2; --sunken:#E8E0CD;
+  --ink:#16120C; --ink2:#5C554A; --hair:#C6BCA6; --copper:#1F6F5F;
+  --tooth:rgba(22,18,12,.028);
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  --measure:65ch;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --ground:#1B1815; --raised:#221E19; --sunken:#141210;
+    --ink:#EDE4CF; --ink2:#8C8271; --hair:#3E382F; --copper:#8FE0C8;
+    --tooth:rgba(237,228,207,.030);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#1B1815; --raised:#221E19; --sunken:#141210;
+  --ink:#EDE4CF; --ink2:#8C8271; --hair:#3E382F; --copper:#8FE0C8;
+  --tooth:rgba(237,228,207,.030);
+}
+:root[data-theme="light"]{
+  --ground:#EFE7D5; --raised:#F4EFE2; --sunken:#E8E0CD;
+  --ink:#16120C; --ink2:#5C554A; --hair:#C6BCA6; --copper:#1F6F5F;
+  --tooth:rgba(22,18,12,.028);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:var(--sans); font-size:17px; line-height:1.55;
+  -webkit-text-size-adjust:100%; overflow-x:hidden;
+  /* clip, not hidden, so the plate rail can stay sticky */
+  /* the laid wire mark from plateTooth(): 24 px period, ~1 % modulation. static, no time term. */
+  background-image:repeating-linear-gradient(90deg,var(--tooth) 0 1px,transparent 1px 24px);
+}
+
+/* ---- type roles, §13.4 verbatim + PLATE's two tracking deltas ---- */
+.r-display{font-size:28px;font-weight:600;font-stretch:85%;letter-spacing:.06em;line-height:1.14}
+.r-title{font-size:20px;font-weight:600;font-stretch:85%;letter-spacing:.08em;line-height:1.2;text-transform:uppercase}
+.r-section{font-size:13px;font-weight:500;font-stretch:85%;letter-spacing:.16em;text-transform:uppercase;line-height:1.3}
+.r-body{font-size:17px;font-weight:400;line-height:1.58}
+.r-caption{font-size:13px;font-weight:400;letter-spacing:.01em;line-height:1.5}
+.r-numeral{font-family:var(--mono);font-size:15px;font-variant-numeric:tabular-nums;letter-spacing:0}
+.r-micro{font-size:11px;font-weight:500;font-stretch:85%;letter-spacing:.18em;text-transform:uppercase;line-height:1.35}
+
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.dim{color:var(--ink2)}
+.cop{color:var(--copper)}
+h1,h2,h3,h4,p,ul,ol,figure,table{margin:0}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--copper);outline-offset:3px;border-radius:1px}
+
+/* ---- folio ---- */
+.folio{display:grid;grid-template-columns:74px minmax(0,1fr);max-width:1180px;margin:0 auto;align-items:start}
+@media (max-width:940px){ .folio{grid-template-columns:minmax(0,1fr)} .rail{display:none} }
+
+.rail{position:sticky;top:0;height:100vh;padding:28px 0 28px 14px;display:flex;flex-direction:column;gap:0}
+.rail__hd{font-size:11px;font-weight:500;font-stretch:85%;letter-spacing:.18em;text-transform:uppercase;color:var(--ink2);writing-mode:vertical-rl;margin-bottom:14px}
+.rail__list{display:flex;flex-direction:column;gap:0;list-style:none;padding:0;margin:0;flex:1}
+.rail__a{display:grid;grid-template-columns:26px 1fr;align-items:center;gap:5px;text-decoration:none;padding:5px 0;color:var(--ink2)}
+.rail__a:hover{color:var(--ink)}
+.rail__n{font-family:var(--mono);font-size:10px;letter-spacing:.04em;text-align:right}
+.rail__t{height:1px;background:var(--hair)}
+.rail__a[data-major="1"] .rail__t{height:1px;background:var(--ink2)}
+.rail__a.is-on{color:var(--ink)}
+.rail__a.is-on .rail__t{background:var(--copper);height:2px}
+
+/* ---- plate ---- */
+.col{min-width:0;padding:0 0 90px}
+.plate{position:relative;padding:56px 34px 62px;min-width:0}
+@media (max-width:640px){ .plate{padding:44px 28px 52px} }
+.plate__mark{position:absolute;inset:16px;border:1px solid var(--hair);pointer-events:none}
+.plate__mark::after{content:"";position:absolute;inset:2px;border:1px solid var(--hair);opacity:.30}
+.plate__cross{position:absolute;width:28px;height:28px;pointer-events:none}
+.plate__bar{position:absolute;right:8px;bottom:8px;width:6px;height:24px;line-height:0}
+.plate__hd{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+.plate__no{font-family:var(--mono);font-size:11px;letter-spacing:.10em;border:1px solid var(--ink2);padding:2px 6px 1px;color:var(--ink2);white-space:nowrap}
+.plate__rule{height:1px;background:var(--ink);margin:16px 0 22px;opacity:.85}
+.lede{max-width:var(--measure)}
+.lede + .lede{margin-top:14px}
+.stack{display:flex;flex-direction:column;gap:24px;min-width:0}
+.stack-s{display:flex;flex-direction:column;gap:12px;min-width:0}
+
+/* caption block — the plate's legend */
+.cap{max-width:var(--measure);border-left:1px solid var(--copper);padding-left:14px}
+.cap__k{display:block;font-size:11px;font-weight:500;font-stretch:85%;letter-spacing:.18em;text-transform:uppercase;color:var(--copper);margin-bottom:5px}
+.cap__t{font-size:13px;letter-spacing:.01em;line-height:1.55;color:var(--ink2)}
+.cap__t b{color:var(--ink);font-weight:600}
+
+@supports (overflow-x:clip){ body{overflow-x:clip} }
+
+/* ---- specimen well: does NOT follow the page theme ---- */
+.well{background:#E8E0CD;padding:22px 0;overflow-x:auto}
+.well__in{min-width:max-content;margin:0 auto;padding:0 22px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.wellbar{display:flex;justify-content:space-between;align-items:baseline;gap:24px;width:375px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#5C554A;line-height:1.4}
+.wellbar span:last-child{text-align:right}
+.screen{position:relative;width:375px;height:667px;background:#EFE7D5;flex:0 0 auto;overflow:hidden}
+.ab{position:absolute}
+
+.scrollx{overflow-x:auto;overflow-y:hidden;max-width:100%}
+
+/* ---- glyph grids ---- */
+.gyard{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:14px 8px;background:#E8E0CD;padding:20px 16px 26px}
+.gyard--gs{filter:grayscale(1)}
+.gcell{display:flex;flex-direction:column;align-items:center;gap:4px}
+.gcell__id{font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:#5C554A}
+.claimrule{display:flex;align-items:center;gap:16px;background:#E8E0CD;padding:16px}
+.claimrule__l{flex:1;height:1px;background:#16120C}
+.claimrule__t{font-size:11px;font-weight:500;font-stretch:85%;letter-spacing:.18em;text-transform:uppercase;color:#16120C;white-space:nowrap}
+
+/* ---- channel ladders ---- */
+.ladder{display:grid;grid-template-columns:minmax(96px,132px) minmax(0,1fr);gap:0 20px;align-items:center;border-top:1px solid var(--hair);padding:16px 0}
+.ladder:last-child{border-bottom:1px solid var(--hair)}
+.ladder__k .n{display:block;font-size:11px;font-weight:500;font-stretch:85%;letter-spacing:.18em;text-transform:uppercase}
+.ladder__k .d{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.03em;color:var(--ink2);margin-top:4px;line-height:1.5}
+.ladder__row{display:flex;gap:8px;flex-wrap:wrap}
+.rung{display:flex;flex-direction:column;align-items:center;gap:3px;background:#E8E0CD;padding:8px 6px 5px;min-width:74px}
+.rung__n{font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:#5C554A}
+.rung__v{font-family:var(--mono);font-size:9px;letter-spacing:.04em;color:#16120C}
+
+/* ---- verdict pair ---- */
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:2px;background:#C6BCA6}
+.pane{background:#E8E0CD;padding:24px 20px 20px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.pane__note{font-family:var(--mono);font-size:10px;line-height:1.6;letter-spacing:.03em;color:#5C554A;text-align:center;max-width:34ch}
+.pane__id{align-self:flex-start;font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:#16120C;border:1px solid #5C554A;padding:1px 6px 0}
+
+/* the answer key, withheld until the reader asks for it */
+.reveal{max-width:var(--measure);border-left:1px solid var(--hair);padding-left:14px}
+.reveal>summary{font-size:11px;font-weight:500;font-stretch:85%;letter-spacing:.18em;text-transform:uppercase;color:var(--ink2);cursor:pointer;list-style:none}
+.reveal>summary::-webkit-details-marker{display:none}
+.reveal>summary::before{content:"▸ ";color:var(--copper)}
+.reveal[open]>summary::before{content:"▾ "}
+.reveal p{font-family:var(--mono);font-size:10.5px;line-height:1.7;letter-spacing:.03em;color:var(--ink2);margin-top:9px}
+.reveal p b{color:var(--ink);font-weight:600}
+
+/* colour removed — the same nodes, one filter, nothing redrawn */
+.gs{filter:grayscale(1)}
+
+/* live specimens */
+.livetag{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;letter-spacing:.10em;text-transform:uppercase;color:var(--copper);border:1px solid var(--copper);padding:2px 8px 1px;white-space:nowrap}
+.livetag::before{content:"";width:5px;height:5px;background:var(--copper)}
+.screen [role="button"]{cursor:pointer}
+.screen [role="button"]:focus-visible{outline:2px solid #1F6F5F;outline-offset:1px}
+.assertbar{background:#E8E0CD;border-left:2px solid #16120C;padding:10px 14px;font-family:var(--mono);font-size:10.5px;line-height:1.7;letter-spacing:.02em;color:#5C554A}
+.assertbar b{color:#16120C}
+
+/* ---- codex shelf ---- */
+.shelf{display:grid;grid-template-columns:repeat(5,60px);gap:10px;justify-content:center;background:#E8E0CD;padding:22px}
+@media (max-width:520px){ .shelf{grid-template-columns:repeat(3,60px)} }
+
+/* ---- chrome specimen ---- */
+.chrome{width:375px;background:#EFE7D5;flex:0 0 auto}
+.srow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 16px;border-bottom:1px solid #C6BCA6;color:#16120C;font-family:var(--sans)}
+.srow__l{font-size:17px;line-height:1.3}
+.shdr{padding:20px 16px 6px;font-size:11px;font-weight:500;font-stretch:85%;letter-spacing:.18em;text-transform:uppercase;color:#5C554A}
+.seg{display:flex;border:1px solid #16120C}
+.seg__i{font-size:11px;font-weight:500;font-stretch:85%;letter-spacing:.14em;text-transform:uppercase;padding:5px 7px;color:#16120C;border-right:1px solid #16120C}
+.seg__i:last-child{border-right:0}
+.seg__i.is-on{background:#16120C;color:#EFE7D5}
+
+/* ---- three themes ---- */
+.themes{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:2px;background:var(--hair)}
+.thm{padding:20px 18px 18px;display:flex;flex-direction:column;gap:16px;align-items:center}
+.thm__hd{font-family:var(--mono);font-size:10px;letter-spacing:.10em;text-transform:uppercase;width:100%;display:flex;justify-content:space-between}
+.thm__row{display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:center}
+
+/* ---- tokens ---- */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-size:11px;font-weight:500;font-stretch:85%;letter-spacing:.18em;text-transform:uppercase;color:var(--ink2);padding:0 14px 8px 0;border-bottom:1px solid var(--ink);white-space:nowrap}
+.tbl td{padding:7px 14px 7px 0;border-bottom:1px solid var(--hair);vertical-align:middle;white-space:nowrap}
+.tbl .num{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:12px}
+.sw{display:inline-block;width:26px;height:14px;border:1px solid var(--ink2);vertical-align:-2px;margin-right:8px}
+.tokname{font-family:var(--mono);font-size:12px;letter-spacing:.02em}
+
+/* ---- hero press ---- */
+.mast{padding:64px 34px 30px;position:relative}
+@media (max-width:640px){ .mast{padding:44px 20px 24px} }
+.mast__eyebrow{display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink2)}
+.mast__h{margin:22px 0 0;max-width:20ch;font-size:clamp(27px,4.6vw,42px);font-weight:600;font-stretch:85%;letter-spacing:.02em;line-height:1.08;text-wrap:balance}
+.mast__sub{margin-top:20px;max-width:var(--measure)}
+.press{margin-top:34px;display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:26px;align-items:start}
+@media (max-width:760px){ .press{grid-template-columns:minmax(0,1fr)} }
+.stage{position:relative;width:100%;max-width:340px;height:220px;background:#E8E0CD;overflow:hidden}
+.key{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;background:transparent;color:var(--ink);border:1px solid var(--ink);padding:9px 14px;cursor:pointer;line-height:1}
+.key:hover{background:var(--ink);color:var(--ground)}
+.key[aria-disabled="true"]{color:var(--ink2);border-color:var(--hair);cursor:default}
+.key[aria-disabled="true"]:hover{background:transparent;color:var(--ink2)}
+.keyrow{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:16px}
+
+/* ---- costs ---- */
+.costs{position:relative;background:var(--sunken);padding:30px 30px 34px}
+.costs__list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;counter-reset:c}
+.costs__li{display:grid;grid-template-columns:30px minmax(0,1fr);gap:12px;max-width:calc(var(--measure) + 42px)}
+.costs__n{font-family:var(--mono);font-size:12px;color:var(--copper);padding-top:4px}
+.costs__b{font-size:15px;line-height:1.6}
+.costs__b b{font-weight:600}
+
+.foot{padding:34px;max-width:var(--measure)}
+.defect{background:var(--sunken);padding:16px 18px;max-width:var(--measure);font-size:13px;line-height:1.6;color:var(--ink2);border-left:1px solid var(--ink2)}
+.defect b{color:var(--ink);font-weight:600}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+}
+</style>
+
+<div class="folio">
+  <nav class="rail" aria-label="Plates"><span class="rail__hd">Plate portfolio</span><ul class="rail__list" id="rail"></ul></nav>
+
+  <div class="col">
+
+    <header class="mast">
+      <div class="mast__eyebrow">
+        <span>HUNCH &nbsp;/&nbsp; art direction</span><span>Direction B</span><span class="cop">PLATE</span>
+      </div>
+      <h1 class="mast__h">The Loom is not glowing at you. You are drawing it.</h1>
+      <p class="mast__sub r-body">Direction&nbsp;A renders an artefact that lights up when you feed it. PLATE draws the other conclusion from the same premise: the machine is older than you and indifferent, so the only available response is to observe it carefully and write it down &mdash; which is exactly what a probe is. The surface is a plate in a field notebook. Being right is felt as <b>pressure</b>, never as light.</p>
+
+      <div class="press">
+        <div>
+          <div class="stage" id="stage" role="img" aria-label="A two-plate press: an ink plate and a copper plate landing in register between four printer's crosses."></div>
+          <div class="keyrow">
+            <button class="key" id="pull" type="button">Pull the impression</button>
+            <span class="mono" style="font-size:10px;letter-spacing:.08em;color:var(--ink2)" id="beat">beat 0 &middot; t 0 ms</span>
+          </div>
+        </div>
+        <div class="stack-s">
+          <div class="cap">
+            <span class="cap__k">What to watch</span>
+            <p class="cap__t">Your declaration is the <b>ink plate</b>. The hidden law is the <b>copper plate</b>, and it prints 8&ndash;24&nbsp;pt out of register &mdash; the size of the miss <i>is</i> how wrong you were. At beat&nbsp;4 the platen closes: the four crosses close their 2&nbsp;pt break, the platemark debosses, every stroke gains 0.5&nbsp;pt for 40&nbsp;ms. <b>Nothing on this stage gets brighter at any point.</b> The screen becomes heavier, not lighter.</p>
+          </div>
+          <p class="defect">This is the whole bet, and it is worth stating as a risk on the first screen rather than the last: registration only pays off for a player who noticed the crosses were broken for the past twelve minutes. A bloom needs no prior. See <b>Cost&nbsp;4</b>.</p>
+        </div>
+      </div>
+    </header>
+
+    <section class="plate" id="p1" aria-labelledby="p1h">
+      <div class="plate__hd">
+        <span class="plate__no">PL.&nbsp;I</span>
+        <h2 class="r-title" id="p1h">The glyph system</h2>
+        <span class="mono dim" style="font-size:11px;letter-spacing:.06em">4 &times; 4 &times; 4 &times; 4 &nbsp;=&nbsp; 256, forever</span>
+      </div>
+      <div class="plate__rule"></div>
+      <div class="stack">
+        <p class="lede r-body">Four attributes, each occupying a register of the drawing that no other attribute may enter: the interior, the silhouette, the contour, and the index stroke below the body. Rows run in canonical order &mdash; <span class="mono">fill &rarr; shape &rarr; pips &rarr; hue</span> &mdash; because that order is fixed everywhere in the game, from VoiceOver to serialisation, and a pitch that reorders it teaches the wrong habit on page one.</p>
+        <div id="ladders"></div>
+        <div class="cap">
+          <span class="cap__k">Judge this</span>
+          <p class="cap__t">Whether the four channels are separable at a glance, and whether the rank order inside each one is obvious without being told. Rank is not decoration here: six of the eight law families compare ranks, so a player who cannot see that <span class="mono">square</span> outranks <span class="mono">triangle</span> cannot play band 4 upward.</p>
+        </div>
+
+        <div class="stack-s">
+          <h3 class="r-section">Thirty-two of the deck, at 64&nbsp;pt</h3>
+          <div id="yard-colour" class="gyard"></div>
+          <div class="claimrule"><span class="claimrule__l"></span><span class="claimrule__t">All four channels survive with colour removed</span><span class="claimrule__l"></span></div>
+          <div id="yard-grey" class="gyard gyard--gs"></div>
+        </div>
+        <div class="cap">
+          <span class="cap__k">The panel that decides it</span>
+          <p class="cap__t">The same thirty-two marks, same generator, same geometry &mdash; the lower block only has <span class="mono">grayscale(1)</span> laid over it. Nothing was redrawn and nothing was compensated. <b>If you can still read four channels in the lower block, colour is a convenience in this game rather than a dependency</b>, and every accessibility question after this one gets cheaper. The sample is <span class="mono">(i&nbsp;&times;&nbsp;39)&nbsp;mod&nbsp;256</span>, and it is deliberately the <b>same thirty-two ids the other direction's greyscale panel uses</b>, so that what you are comparing is two renderings and not two samples.</p>
+        </div>
+
+        <div class="stack-s">
+          <h3 class="r-section">The controlled pairs, colour removed</h3>
+          <div id="ladders-grey" class="gs"></div>
+        </div>
+        <div class="cap">
+          <span class="cap__k">Check the hue row specifically</span>
+          <p class="cap__t">A stride-32 sample contains no pair of glyphs differing in <i>one</i> channel, so the block above cannot actually be used to test a single-channel claim &mdash; these four ladders can, because each one holds three channels fixed and walks the fourth. Look at the bottom row. <span class="mono">amber</span> and <span class="mono">teal</span> land on greys of <b>42.0</b> and <b>39.8</b> out of 255 &mdash; 1.05&nbsp;&Delta;L* apart, comfortably inside a patch just-noticeable difference of roughly 2.3, so for reading purposes they are the same grey. They are told apart by 0&deg; against 45&deg;, and by nothing else. (What makes them near-identical is that <span class="mono">grayscale(1)</span> is a luminance matrix applied in gamma-encoded sRGB, not the fact that their WCAG ratios are both about 11.25&nbsp;:&nbsp;1 &mdash; equal contrast ratios against a shared ground would not on their own make two inks the same grey.)</p>
+        </div>
+        <p class="defect"><b>Found while building this renderer.</b> &sect;13.5 gives the body centre as <span class="mono">+0.10&middot;S</span> and the index at <span class="mono">&minus;0.43&middot;S</span> in a y-up reading, but specifies the triangle apex at &minus;90&deg; and the N pip at &minus;90&deg; in a y-down reading. Taken literally in either single convention the glyph draws index-above-body or triangle apex-down. Resolved here as screen space, y down, body <span class="mono">&minus;0.10&middot;S</span>, index <span class="mono">+0.43&middot;S</span>. Second: the index centre plus half-length reaches <span class="mono">0.5665&middot;S</span>, so <span class="mono">frost</span> bleeds 6.65&nbsp;% of S past the bottom of its box &mdash; 2.9&nbsp;pt at S&nbsp;=&nbsp;44. Either the tile reserves a 1&nbsp;:&nbsp;1.134 box or the index register moves to <span class="mono">0.36&middot;S</span>. Both defects affect either direction.</p>
+      </div>
+    </section>
+
+    <section class="plate" id="p2" aria-labelledby="p2h">
+      <div class="plate__hd">
+        <span class="plate__no">PL.&nbsp;II</span>
+        <h2 class="r-title" id="p2h">The PROBE surface</h2>
+        <span class="mono dim" style="font-size:11px;letter-spacing:.06em">375 &times; 667 pt &middot; 1:1</span>
+        <span class="livetag">Live</span>
+      </div>
+      <div class="plate__rule"></div>
+      <div class="stack">
+        <p class="lede r-body">Every region sits at the y-coordinate the layout solve already fixed. The phone is reproduced at true scale and is not enlarged, because the only useful question about a 44&nbsp;pt key is how big 44&nbsp;pt actually is in your hand. <b>This one works.</b> Tap the Dial to build a glyph, then tap the leading key to feed it to the Loom &mdash; the hidden law really is <span class="mono">pips(cur)&nbsp;&gt;&nbsp;pips(prev) AND shape&nbsp;&isin;&nbsp;{triangle,&nbsp;hexagon}</span>, the verdict is computed and not staged, the ribbon remembers, and the tally crosses par at twenty-three.</p>
+        <div class="well" id="well-probe"></div>
+        <div class="cap">
+          <span class="cap__k">Judge this</span>
+          <p class="cap__t">First, the verdict beat, which is the thing this direction has to win on: probe a few times and watch what happens at the throat. <b>Nothing brightens. Ever.</b> Admit is a closed copper ring that expands; reject is the same ring contracting and coming apart into four arcs under a doubled cancel. Second, reach: the Dial's cells are 70&nbsp;&times;&nbsp;48&nbsp;pt and everything you touch sits below y&nbsp;240, inside the right-thumb arc. Third, what is absent: <b>there is not one numeral or letterform on this screen.</b> The probe tally is a graduated printer's scale &mdash; 0.5&nbsp;pt minor ticks at 6&nbsp;pt pitch, a major tick every fifth &mdash; with <span class="cop">par</span> marked by a copper caret and the cap by a doubled ink tick. Fourth, the Dial: each cell is a picture of its own attribute, which is why the same widget is re-used on the Bench without a second lesson.</p>
+        </div>
+        <div class="cap">
+          <span class="cap__k">Watch the sixth tile in the ribbon</span>
+          <p class="cap__t">It is a <b>twin</b> &mdash; the same glyph as the fifth, probed twice &mdash; and it came back <i>rejected</i> where the fifth was admitted. Nothing about the glyph changed; <span class="mono">prev</span> moved. That is the whole of contextuality, stated by the transcript rather than by a tutorial, and it is why the Bridge's ghost toggle needs no explanation when it appears on the Bench two plates later. Every verdict in that ribbon is computed from the law, not typed in, and a shipped assertion re-derives all seven at load.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="plate" id="p3" aria-labelledby="p3h">
+      <div class="plate__hd">
+        <span class="plate__no">PL.&nbsp;III</span>
+        <h2 class="r-title" id="p3h">The verdict, without luminance</h2>
+        <span class="mono dim" style="font-size:11px;letter-spacing:.06em">admit &middot; reject</span>
+      </div>
+      <div class="plate__rule"></div>
+      <div class="stack">
+        <p class="lede r-body">This is where the two directions separate hardest. A dark ground can make a verdict out of brightness. Paper cannot: brightening an already-bright surface is invisible. So the verdict is spent on six achromatic channels at once &mdash; radius, closure, dash, weight, cancel, and whether the copper plate takes at all.</p>
+        <div class="pair" id="pair"></div>
+        <div class="cap">
+          <span class="cap__k">Judge this &mdash; before you open the key</span>
+          <p class="cap__t">Neither mark is labelled, and <b>the two glyphs are identical</b>: same fill, same shape, same pips, same hue, drawn by one call with one argument list. Only the verdict mark differs, so whatever you perceive is attributable to the verdict and to nothing else. Decide from the drawing alone which one the Loom accepted, <i>then</i> open the key below.</p>
+        </div>
+        <div id="pair-key"></div>
+        <div class="stack-s">
+          <h3 class="r-section">The same pair with colour removed</h3>
+          <div class="pair gs" id="pair-grey"></div>
+        </div>
+        <div class="cap">
+          <span class="cap__k">Judge this</span>
+          <p class="cap__t">The verdict has to survive here too, and this is where a direction that spends brightness on it loses. Two deliberate departures from the comparison spec, both arguable and both yours to overrule: <b>PLATE's admit does not bloom.</b> Where Direction&nbsp;A puts 6&nbsp;pt of outward glow, this puts 0.33&nbsp;pt of hard-edged ink spread and an 8&deg; overlap where the arc crosses its own start &mdash; a closed ring that visibly closed. And <b>PLATE's reject holds its weight at 3&nbsp;pt</b> rather than collapsing to a 1.5&nbsp;pt hairline, because on paper a thinner line reads as a weaker signal, not a colder one; the ring is taken apart instead. Presence against absence of the copper plate is additionally a <b>19.8&times;</b> raw luminance difference between the two rings &mdash; <b>WCAG 3.11&nbsp;:&nbsp;1</b> &mdash; against 1.78&times; / WCAG 1.68&nbsp;:&nbsp;1 for &sect;13.7.2's brass-versus-cold ring pair. <i>Note the two units.</i> A raw <span class="mono">Y</span> ratio is written &times; on this page and a WCAG contrast ratio is written&nbsp;:&nbsp;1, and they are never interchangeable: 19.8&times; and 3.11&nbsp;:&nbsp;1 are the same measurement of the same two inks.</p>
+        </div>
+        <div class="stack-s">
+          <h3 class="r-section">How the same verdict survives at 44&nbsp;pt in the ribbon</h3>
+          <div class="pair" id="pair-tiles"></div>
+        </div>
+        <div class="cap">
+          <span class="cap__k">What changed here, and the risk that is left</span>
+          <p class="cap__t">The rejected tile used to be a pure <b>blind emboss</b> &mdash; a <span class="mono">stroke.hairline</span> ring and a 0.5&nbsp;pt highlight, an impression with no ink in it at all. It measured <b>1.43&nbsp;:&nbsp;1</b> on the <span class="mono">ground.sunken</span> the tiles are actually drawn over, and the token sheet three plates down says <span class="mono">stroke.hairline</span> is <b>never state-bearing</b>. The sheet won: the ring is now <span class="mono">stroke.primary</span> at <b>14.19&nbsp;:&nbsp;1</b>, still dashed 4&nbsp;/&nbsp;3, and the emboss is kept as a third, additive cue rather than the whole signal. The achromatic argument is untouched &mdash; solid against dashed, copper against ink, tick present against tick absent, three channels before the emboss is counted. <b>The risk that remains</b> is Cost&nbsp;7's: at 44&nbsp;pt the admit and reject rings share a radius, so the two are told apart by dash pattern and ink rather than by size, and dash patterns are the first thing a low-DPI panel eats. That is the detail to put in front of a usability test first.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="plate" id="p4" aria-labelledby="p4h">
+      <div class="plate__hd">
+        <span class="plate__no">PL.&nbsp;IV</span>
+        <h2 class="r-title" id="p4h">The Bench</h2>
+        <span class="mono dim" style="font-size:11px;letter-spacing:.06em">two rails &middot; one coupler &middot; no text</span>
+        <span class="livetag">Live</span>
+      </div>
+      <div class="plate__rule"></div>
+      <div class="stack">
+        <p class="lede r-body">The declaration surface, holding the canonical band-5 law: <span class="mono">pips(cur) &gt; pips(prev) AND shape &isin; {triangle, hexagon}</span>. A Bridge on the leading rail with its trailing socket ghosted, a Ramp on the second, a welded bar between them for <span class="mono">AND</span>, and the live extension in the trailing column. <b>Press the Seal.</b> This is the money shot on the actual play surface at 1:1, not a diagram of it &mdash; see below.</p>
+        <div class="well" id="well-bench"></div>
+        <div class="cap">
+          <span class="cap__k">Press the Seal, then watch four things</span>
+          <p class="cap__t">One: the two rule-tiles leave their rails and gather into a centred stack &mdash; <b>the ink plate</b> &mdash; arriving 8&nbsp;pt out of register, with no overshoot, because a press does not bounce. Two: the hidden law prints <b>behind</b> it in <span class="cop">copper</span> at 55&nbsp;%, off register, and <i>the size of the miss is how wrong you were</i>. Three, at beat&nbsp;4: the copper slides to zero, the four registration crosses close their 2&nbsp;pt break, the platemark debosses, and every stroke on screen gains 0.5&nbsp;pt for 40&nbsp;ms. Four, and this is the whole bet: <b>check that nothing got brighter.</b> The screen became heavier. If that reads as an event to you, PLATE works; if it reads as &ldquo;things moved slightly&rdquo;, Cost&nbsp;6 is real and you should take it seriously.</p>
+        </div>
+        <div class="cap">
+          <span class="cap__k">Judge this</span>
+          <p class="cap__t">Whether a law is legible as a <i>drawing</i>. Four specific things: the <b>wedge</b> opens toward the larger side, and since the leading socket is always <span class="mono">cur</span>, an opening that faces leading is what <span class="mono">&gt;</span> looks like &mdash; it is derived from the comparator token rather than typed, and a shipped assertion cross-checks it against the Assay's lit count, because mirrored it silently means <span class="mono">&lt;</span> and lights 32 cells instead of 64. The <b>ghost socket</b> &mdash; dashed frame and backward chevron &mdash; is the entire contextual grammar in one toggle, and it was introduced diegetically in the ribbon ten probes earlier. The <b>unlit Ramp cells</b> are re-inked to <span class="mono">stroke.secondary</span> and struck with a diagonal cancel hatch, rather than dropped to 30&nbsp;% opacity: on paper a 30&nbsp;% tint of a 15.15&nbsp;:&nbsp;1 ink measures 1.78&nbsp;:&nbsp;1, which is one sub-threshold channel where the spec asks for two. And the <b>Assay</b> at 64&nbsp;pt is 64 of 256 cells lit, stippled as 1.6&nbsp;pt dots on a 4&nbsp;pt grid &mdash; literally the same drawing, at one shared dot diameter, that becomes the Codex thumbnail on the next plate.</p>
+        </div>
+        <div class="cap">
+          <span class="cap__k">A conflict in the source, resolved rather than overflowed</span>
+          <p class="cap__t">&sect;4.2 specifies &ldquo;rails, 291&nbsp;pt wide&nbsp;|&nbsp;THE ASSAY, 64&nbsp;pt trailing column&rdquo;, and &sect;13.3 fixes a 16&nbsp;pt outer margin and a 343&nbsp;pt content column. 291&nbsp;+&nbsp;64&nbsp;=&nbsp;355, so those two sentences cannot both be true. Resolved here toward &sect;13.3, because the margin is the harder constraint and the alternative put the Assay's trailing edge at x&nbsp;375 &mdash; flush with the device edge, under the curved corner, which is the one place a state-bearing element must never sit. The rails take <b>273</b>, the house 6&nbsp;pt gutter follows, the Assay keeps its canonical <b>64</b>, and the row closes at x&nbsp;359. The Ramp's four 56&nbsp;&times;&nbsp;44&nbsp;pt cells are held exactly; what gives is the inter-cell gutter, which &sect;4.2 never specified. <b>This needs a decision, not a patch</b> &mdash; it is flagged here rather than absorbed silently.</p>
+        </div>
+        <div class="stack-s">
+          <h3 class="r-section">The Seal says &ldquo;not yet&rdquo; without words</h3>
+          <div class="pair" id="pair-seal"></div>
+        </div>
+        <div class="cap">
+          <span class="cap__k">Judge this</span>
+          <p class="cap__t">A 4&nbsp;pt machined bar lies across the Seal while any rail is inert, any socket unbound, or the draft admits everything or nothing. Pressing it pulses the offending rail and does nothing else: no error text, no error state, no modal. The machine simply is not ready. In PLATE the bar is <b>ink and texture, not colour</b> &mdash; which is the direction's tightest constraint, since <span class="mono">reject</span>, <span class="mono">strike</span>, <span class="mono">barred</span> and <span class="mono">counterexample</span> must all be told apart by shape in one register. See <b>Cost&nbsp;5</b>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="plate" id="p5" aria-labelledby="p5h">
+      <div class="plate__hd">
+        <span class="plate__no">PL.&nbsp;V</span>
+        <h2 class="r-title" id="p5h">The Codex shelf</h2>
+        <span class="mono dim" style="font-size:11px;letter-spacing:.06em">band 5 &middot; 15 of 6,934</span>
+      </div>
+      <div class="plate__rule"></div>
+      <div class="stack">
+        <p class="lede r-body">A page is a law, identified by its extension, and its thumbnail is that extension drawn: the 16&nbsp;&times;&nbsp;16 deck in <span class="mono">glyphID</span> order, admitted cells as 1.6&nbsp;pt ink dots on a 3.5&nbsp;pt grid, rejected cells as bare paper. Every constellation below is computed from a real predicate, not sampled noise &mdash; which is why they have structure rather than texture. The dot diameter is <b>one shared constant</b> across the app, so the Assay on the previous plate and these thumbnails are the same drawing at two pitches rather than two drawings that resemble each other.</p>
+        <div class="shelf" id="shelf"></div>
+        <div class="cap">
+          <span class="cap__k">Judge this</span>
+          <p class="cap__t">Whether the wall reads. Two thumbnails cannot collide, because the extension <i>is</i> the identity, and canonical-key adjacency puts near-neighbours in extension space side by side, so a filling shelf develops texture you can navigate by. <b>This is PLATE's strongest single argument:</b> the constellation metaphor is literal on paper and merely poetic on glass. Cell&nbsp;7 carries a <b>fracture</b> &mdash; a ragged foul-bite notch on the trailing-top corner, seeded from the plate number so a page's damage is stable forever. Cell&nbsp;11 carries the <b>doubled anomaly rim</b>. Both are achromatic, and both survive at 44&nbsp;pt.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="plate" id="p6" aria-labelledby="p6h">
+      <div class="plate__hd">
+        <span class="plate__no">PL.&nbsp;VI</span>
+        <h2 class="r-title" id="p6h">Where text actually lives</h2>
+        <span class="mono dim" style="font-size:11px;letter-spacing:.06em">chrome only</span>
+      </div>
+      <div class="plate__rule"></div>
+      <div class="stack">
+        <p class="lede r-body">The play surface has no letterforms at all, so the entire typographic system has to carry Settings, the Codex chrome and the statistics screen &mdash; and nothing else. Two deltas from the shipped spec: <span class="mono">section</span> and <span class="mono">micro</span> gain 0.02&nbsp;em of tracking, because letterspacing reads as engraving. <span class="mono">numeral</span> is untouched, because monospaced digits are not negotiable.</p>
+        <div class="well" id="well-chrome"></div>
+        <div class="cap">
+          <span class="cap__k">Judge this</span>
+          <p class="cap__t">Whether an instrument panel can be built out of a system face and still have a voice. Look at the destructive row: PLATE has no second accent to spend on danger, so a destructive action is set in ink over a <b>foul bite</b> &mdash; a ragged, torn rule. It is a texture, not a hue, and it costs nothing from the colour budget. Look also at the Codex instrument strip: seventeen probes against a par of twenty-three, drawn as a scale <i>and</i> written as a monospaced numeral, because this is the one place in the app where a number is allowed to be a number.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="plate" id="p7" aria-labelledby="p7h">
+      <div class="plate__hd">
+        <span class="plate__no">PL.&nbsp;VII</span>
+        <h2 class="r-title" id="p7h">Three themes</h2>
+        <span class="mono dim" style="font-size:11px;letter-spacing:.06em">paper &middot; board &middot; increase contrast</span>
+      </div>
+      <div class="plate__rule"></div>
+      <div class="stack">
+        <p class="lede r-body">The same three objects &mdash; one glyph, one verdict ring, one ramp &mdash; in all three themes. High Contrast is <b>white, not black</b>: iOS <i>Increase Contrast</i> raises contrast, it does not invert polarity, and a light-first direction whose high-contrast theme flipped to black would ship a third artefact to the users least able to absorb a surprise.</p>
+        <div class="themes" id="themes"></div>
+        <div class="cap">
+          <span class="cap__k">Judge this</span>
+          <p class="cap__t">High Contrast implements <b>all five</b> of &sect;13.11's deltas here, not the two that are easy: all four hues collapse to <span class="mono">stroke.primary</span>; the index stroke goes <span class="mono">0.273&middot;S &rarr; 0.409&middot;S</span> (12&nbsp;pt to 18&nbsp;pt at a ribbon tile); <b>every stroke weight steps +0.5&nbsp;pt</b>; the unlit ramp cell's ink steps up; and its <b>diagonal cancel hatch doubles 1.0&nbsp;&rarr;&nbsp;2.0&nbsp;pt</b>. Compare the third pane's ramp against the first two &mdash; the hatch is visibly heavier, which is the delta that is easiest to claim and hardest to notice missing. The mark loses a channel's redundant copy and keeps the channel. Note the honest cost visible here: the dark theme is <i>chalk on prepared board</i>, a different object with a different register, and it is the weaker palette on the numbers that hold &mdash; ink-against-hue band separation 1.82&times; where light's is 4.09&times;. See <b>Cost&nbsp;5</b>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="plate" id="p8" aria-labelledby="p8h">
+      <div class="plate__hd">
+        <span class="plate__no">PL.&nbsp;VIII</span>
+        <h2 class="r-title" id="p8h">The token sheet</h2>
+        <span class="mono dim" style="font-size:11px;letter-spacing:.06em">no literal hex in view code</span>
+      </div>
+      <div class="plate__rule"></div>
+      <div class="stack">
+        <p class="lede r-body">Contrast is WCAG&nbsp;2.1 relative luminance against that theme's <span class="mono">ground</span>. The four hues are Okabe&ndash;Ito scaled in <i>linear</i> RGB by a per-hue factor <span class="mono">k</span>: linear scaling multiplies <span class="mono">Y</span> exactly and leaves CIE <span class="mono">(x,&nbsp;y)</span> unchanged, so every hue keeps its chromaticity and its position on every dichromat confusion line. Only lightness moves.</p>
+        <div class="scrollx"><table class="tbl" id="t-colour"></table></div>
+        <div class="cap">
+          <span class="cap__k">The number this direction is bought on</span>
+          <p class="cap__t">The shipped spec claims the fill ladder <span class="mono">0 &rarr; 22.7 &rarr; 38.6 &rarr; 100&nbsp;%</span> holds its rank order at every size. It does not hold it across hues. On the shipping dark ground a <b>striped teal</b> patch is only <b>0.8&nbsp;&Delta;L*</b> lighter than a <b>dotted amber</b> patch &mdash; L* 38.0 against 37.3 &mdash; which is well inside a patch just-noticeable difference of roughly 2.3. The rank order technically survives and is nonetheless unreadable: a <i>higher</i> fill rank in teal and a <i>lower</i> one in amber produce the same patch. PLATE's light palette carries that same worst-case margin at <b>5.5&nbsp;&Delta;L*</b>, a 6.9&times; improvement, because it is built the way ink behaves rather than the way a screen does.</p>
+        </div>
+        <p class="defect"><b>Corrected here.</b> Earlier drafts of this plate named the wrong two patches &mdash; &ldquo;a dotted teal patch is 0.8&nbsp;&Delta;L* lighter than a striped amber patch&rdquo;. Recomputed, dotted teal is L* 29.6 and striped amber L* 47.3, so that reading is wrong by 17.7&nbsp;&Delta;L* and in the opposite direction; the 0.8 belongs to striped teal against dotted amber. The table's twelve margins were recomputed with it: eleven reproduce, and the shipping-light row moves from 4.1&nbsp;/&nbsp;1.3&nbsp;/&nbsp;10.8 to <b>4.5&nbsp;/&nbsp;1.7&nbsp;/&nbsp;12.9</b>.</p>
+        <div class="scrollx"><table class="tbl" id="t-ladder"></table></div>
+        <div class="scrollx"><table class="tbl" id="t-hue"></table></div>
+        <div class="stack-s">
+          <h3 class="r-section">Register segregation, as three luminance bands</h3>
+          <div class="scrollx"><table class="tbl" id="t-band"></table></div>
+        </div>
+        <div class="cap">
+          <span class="cap__k">Why bands and not pairs</span>
+          <p class="cap__t">The shipped spec checks register segregation pairwise and gets 1.36 and 1.41. PLATE makes it structural and checkable in one assertion: every ink belongs to exactly one band, bands never overlap, and a shipped test asserts each token's <span class="mono">Y</span> lands in its declared band. Minimum inter-band separation, <b>as raw <span class="mono">Y</span> ratios and written &times; rather than&nbsp;:&nbsp;1</b>: hue against copper <b>1.35&times;</b> light and 1.48&times; dark; ink against hue <b>4.09&times;</b> light but only <b>1.82&times;</b> dark. These are luminance-band separations for a segregation rule, not legibility figures &mdash; the corresponding WCAG contrasts are 1.23&nbsp;:&nbsp;1 and 1.43&nbsp;:&nbsp;1, which is fine, because two inks in different registers are never asked to be legible <i>against each other</i>. The dark theme's 1.82&times; is the weakest number in this direction and it is the arithmetic behind Cost&nbsp;5.</p>
+        </div>
+        <div class="stack-s">
+          <h3 class="r-section">Dimension, stroke, radius, opacity</h3>
+          <div class="scrollx"><table class="tbl" id="t-dim"></table></div>
+        </div>
+        <div class="stack-s">
+          <h3 class="r-section">Duration and easing &mdash; no springs on the play surface</h3>
+          <div class="scrollx"><table class="tbl" id="t-motion"></table></div>
+        </div>
+        <div class="cap">
+          <span class="cap__k">What this buys at runtime</span>
+          <p class="cap__t">The shader has no time term at all, so Reduce Motion is free and there is nothing to freeze. Ink squash replaces bloom, and squash is two draws into one layer with hard edges &mdash; <b>no blur filter, no offscreen pass, ever.</b> Where the shipped spec spends three offscreen blur layers per frame on the throat, the ribbon and the tail, PLATE spends zero, and the Assay's bloom exclusion stops being a special case.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="plate" id="p9" aria-labelledby="p9h">
+      <div class="plate__hd">
+        <span class="plate__no">PL.&nbsp;IX</span>
+        <h2 class="r-title" id="p9h">What it costs</h2>
+        <span class="mono dim" style="font-size:11px;letter-spacing:.06em">verbatim, unedited</span>
+      </div>
+      <div class="plate__rule"></div>
+      <div class="stack">
+        <p class="lede r-body">Reproduced without softening from the direction document. A pitch that hides its costs is worthless for a decision, and item&nbsp;1 is a disqualifier that no amount of the rest can answer.</p>
+        <div class="costs" id="costs"><svg class="ab" id="bite" aria-hidden="true"></svg><ol class="costs__list" id="costs-list"></ol></div>
+      </div>
+    </section>
+
+    <footer class="foot stack-s">
+      <div class="plate__rule"></div>
+      <div id="asserts"></div>
+      <p class="r-caption dim">Those eight checks run at load, in this page, against the same code that draws the specimens above &mdash; they are not a screenshot of a test run elsewhere. They exist because the Bench states one law in three media at once (a wedge, a predicate and a sentence) and there is no reason those three should stay in agreement on their own. If any line reads &times;, the plate above it is lying and the banner says so rather than the page quietly rendering the wrong drawing.</p>
+      <p class="r-caption dim">Every glyph, ramp, ring, constellation, tick scale and tile on this page is generated at load by one function, <span class="mono">glyph(fill, shape, pips, hue, size)</span> and the geometry helpers around it, driven by the direction's own numbers. There is no hand-drawn path data and no image asset. System faces only, which is honest: the app ships no font bytes.</p>
+      <p class="r-caption dim"><b>What is held fixed so the two directions can be compared at all.</b> Everything on this page is <b>band&nbsp;5</b>, which &sect;5.7 fixes at <span class="mono">par&nbsp;23</span> and <span class="mono">cap&nbsp;37</span>: the instrument bar is a 37-graduation scale with the copper caret at 23, six taken in PROBE and seventeen on the Codex strip. The law is one law, <span class="mono">pips(cur)&nbsp;&gt;&nbsp;pips(prev) AND shape&nbsp;&isin;&nbsp;{triangle,&nbsp;hexagon}</span>. The greyscale panel samples <span class="mono">(i&nbsp;&times;&nbsp;39)&nbsp;mod&nbsp;256</span>. Those three &mdash; <b>one band, one law, one sample</b> &mdash; have to be identical on both pitches or the client is reading a difference in the exhibit as a difference in the direction. Where the other direction differs on any of them, it is that page that should move, because these are the shipped constants.</p>
+      <p class="r-caption dim">This page obeys the direction it is pitching &mdash; two inks and no third. There is no red, no green-for-good, no semantic colour anywhere on it. Damage is a texture. Page chrome follows your light or dark preference; <b>the specimens do not</b>, because the committed world is the thing being judged.</p>
+    </footer>
+
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- themes ----------
+   The four hue.* below are NOT Okabe-Ito verbatim. §2 and §13.2 of the shipped spec
+   say "Okabe-Ito verbatim in both themes, per canon — no re-lighting", and PLATE
+   overrules that sentence deliberately: each hue is scaled in LINEAR RGB by a per-hue
+   factor k, which multiplies Y exactly and leaves CIE (x, y) unchanged (measured drift
+   ≤ 0.003 in both coordinates), so every hue keeps its Okabe-Ito chromaticity and its
+   position on every dichromat confusion line. That is still a re-lighting by the
+   spec's own definition, so it is priced as Cost 2, not presented as compatible.
+
+   o.low is 0.30 (High Contrast 0.45) and is used for the ribbon at reveal beat 1.
+   It is NOT used for an unlit ramp cell — see ramp(): 30 % of a 15.15 : 1 ink is
+   1.78 : 1 on paper, under the 3 : 1 graphical floor, so an unlit cell is re-inked
+   rather than made transparent. The +0.15 HC step is §13.11's 25 % -> 40 % ported
+   to PLATE's heavier base. */
+var T_LIGHT={id:"light",label:"PLATE LIGHT",ground:"#EFE7D5",raised:"#F4EFE2",sunken:"#E8E0CD",
+  ink:"#16120C",ink2:"#5C554A",hair:"#C6BCA6",copper:"#1F6F5F",squash:true,hc:false,low:.30,
+  hue:{amber:"#3F2800",teal:"#003424",frost:"#285B77",rose:"#693B54"}};
+var T_DARK={id:"dark",label:"PLATE DARK",ground:"#1B1815",raised:"#221E19",sunken:"#141210",
+  ink:"#EDE4CF",ink2:"#8C8271",hair:"#3E382F",copper:"#8FE0C8",squash:true,hc:false,low:.30,
+  hue:{amber:"#E9A100",teal:"#00C792",frost:"#4DA3D3",rose:"#D67FAF"}};
+var T_HC={id:"hc",label:"HIGH CONTRAST",ground:"#FFFFFF",raised:"#FFFFFF",sunken:"#EDEDED",
+  ink:"#000000",ink2:"#333333",hair:"#767676",copper:"#00403A",squash:false,hc:true,low:.45,
+  hue:{amber:"#000000",teal:"#000000",frost:"#000000",rose:"#000000"}};
+
+var FILLS=["hollow","dotted","striped","solid"],
+    SHAPES=["circle","triangle","square","hexagon"],
+    PIPS=["one","two","three","four"],
+    HUES=["amber","teal","frost","rose"],
+    VERTS={circle:null,triangle:[-90,30,150],square:[-45,45,135,225],hexagon:[-90,-30,30,90,150,210]},
+    IDXA={amber:0,teal:45,frost:90,rose:135};
+
+/* ---------- element factories ---------- */
+var NS="http://www.w3.org/2000/svg";
+function E(n,a){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);return e;}
+function SVG(w,h,vb){return E("svg",{width:w,height:h,viewBox:vb||("0 0 "+w+" "+h),
+  "shape-rendering":"geometricPrecision",focusable:"false","aria-hidden":"true"});}
+function H(t,c,txt){var e=document.createElement(t);if(c)e.className=c;if(txt!=null)e.textContent=txt;return e;}
+function put(p,x,y,w,h,c){var d=H("div","ab"+(c?" "+c:""));d.style.left=x+"px";d.style.top=y+"px";
+  if(w!=null)d.style.width=w+"px";if(h!=null)d.style.height=h+"px";p.appendChild(d);return d;}
+function rng(seed){var a=seed>>>0;return function(){a=(a+0x6D2B79F5)>>>0;var t=Math.imul(a^(a>>>15),1|a);
+  t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
+
+/* ---------- fill patterns (shared by glyphs and ramp swatches) ---------- */
+var _uid=0;
+function fillPaint(defs,fill,ink,pitch){
+  if(fill==="hollow")return "none";
+  if(fill==="solid")return ink;
+  var id="pp"+(++_uid),pat=E("pattern",{id:id,patternUnits:"userSpaceOnUse"});
+  if(fill==="dotted"){                       /* hex packing, r = 0.25 pitch -> 22.7 % */
+    var hgt=pitch*Math.sqrt(3);
+    pat.setAttribute("width",pitch);pat.setAttribute("height",hgt);
+    [[0,0],[pitch,0],[0,hgt],[pitch,hgt],[pitch/2,hgt/2]].forEach(function(p){
+      pat.appendChild(E("circle",{cx:p[0],cy:p[1],r:.25*pitch,fill:ink}));});
+  }else{                                     /* +45 deg lines, 0.386 x pitch -> 38.6 % */
+    pat.setAttribute("width",pitch);pat.setAttribute("height",pitch);
+    pat.setAttribute("patternTransform","rotate(45)");
+    pat.appendChild(E("rect",{width:.386*pitch,height:pitch,fill:ink}));
+  }
+  defs.appendChild(pat);return "url(#"+id+")";
+}
+
+/* ============================================================
+   glyph(fill, shape, pips, hue, size)  —  the only glyph source
+   Screen space, y down. Body centre -0.10 S, index +0.43 S.
+   ============================================================ */
+function glyph(fill,shape,pips,hue,size,theme,bg){
+  var th=theme||T_LIGHT,S=size,ground=bg||th.ground;
+  var R=.37*S, cy=-.10*S, iy=.43*S;
+  /* §13.11: under High Contrast ALL stroke weights step +0.5 pt. */
+  var hcw=th.hc?.5:0;
+  var w=(S>=48?3:1.5)+hcw, iw=3+hcw, ink=th.hc?th.ink:th.hue[hue];
+  var verts=VERTS[shape];
+  function P(deg,r){var a=deg*Math.PI/180;return [r*Math.cos(a),cy+r*Math.sin(a)];}
+  function body(s){
+    return verts ? E("polygon",{points:verts.map(function(a){return P(a,R*s).join(",");}).join(" ")})
+                 : E("circle",{cx:0,cy:cy,r:R*s});
+  }
+  var svg=SVG(S,S,(-S/2)+" "+(-S/2)+" "+S+" "+S);
+  svg.setAttribute("overflow","visible");
+  svg.style.overflow="visible";
+  var defs=E("defs",{});svg.appendChild(defs);
+
+  function draw(node,weight){              /* ink squash: two draws, one layer, never a blur */
+    if(th.squash){
+      var g=node.cloneNode(false);
+      g.setAttribute("stroke-width",weight*1.22);
+      g.setAttribute("opacity",.08);
+      g.setAttribute("stroke-linejoin","round");
+      svg.appendChild(g);
+    }
+    svg.appendChild(node);
+  }
+
+  /* FILL — interior texture, inset 1.5x body weight, pitch-pinned */
+  if(fill!=="hollow"){
+    var apo=verts?R*Math.cos(Math.PI/verts.length):R;
+    var inset=(apo-1.5*w)/apo, pitch=Math.max(5,.22*R);
+    var f=body(inset);
+    f.setAttribute("fill",fillPaint(defs,fill,ink,pitch));
+    svg.appendChild(f);
+  }
+
+  /* SHAPE — outer silhouette, miter joins, zero corner radius, always */
+  var b=body(1);
+  b.setAttribute("fill","none");b.setAttribute("stroke",ink);
+  b.setAttribute("stroke-width",w);b.setAttribute("stroke-linejoin","miter");
+  b.setAttribute("stroke-miterlimit","10");
+  draw(b,w);
+
+  /* PIPS — filled discs where the compass ray meets the silhouette, N -> E -> S -> W */
+  var n=PIPS.indexOf(pips)+1, nodeR=Math.max(3,.11*R), i,j;
+  for(i=0;i<n;i++){
+    var ang=[-90,0,90,180][i]*Math.PI/180, dx=Math.cos(ang), dy=Math.sin(ang), t=R;
+    if(verts){
+      t=Infinity;
+      for(j=0;j<verts.length;j++){
+        var A=P(verts[j],R), B=P(verts[(j+1)%verts.length],R);
+        var ex=B[0]-A[0], ey=B[1]-A[1], den=dx*ey-dy*ex;
+        if(Math.abs(den)<1e-9)continue;
+        var s=(A[0]*ey-(A[1]-cy)*ex)/den, u=(A[0]*dy-(A[1]-cy)*dx)/den;
+        if(s>0&&u>=-1e-9&&u<=1+1e-9)t=Math.min(t,s);
+      }
+    }
+    svg.appendChild(E("circle",{cx:dx*t,cy:cy+dy*t,r:nodeR,fill:ink,
+      stroke:ground,"stroke-width":2,"paint-order":"stroke"}));
+  }
+
+  /* HUE — the index stroke. Colour is the redundant copy; the angle is the channel. */
+  var L=(th.hc?.409:.273)*S/2, ia=IDXA[hue]*Math.PI/180;
+  draw(E("line",{x1:-L*Math.cos(ia),y1:iy-L*Math.sin(ia),x2:L*Math.cos(ia),y2:iy+L*Math.sin(ia),
+    stroke:ink,"stroke-width":iw,"stroke-linecap":"butt"}),iw);
+  return svg;
+}
+function glyphById(id,size,theme,bg){
+  return glyph(FILLS[id>>6],SHAPES[(id>>4)&3],PIPS[(id>>2)&3],HUES[id&3],size,theme,bg);
+}
+
+/* ---------- shared chrome primitives ---------- */
+function platemark(root,x,y,w,h,th){          /* four concentric strokes, no gradients */
+  root.appendChild(E("rect",{x:x,y:y,width:w,height:h,fill:"none",stroke:th.hair,"stroke-width":.75}));
+  [[1,.55],[2,.30],[3,.14]].forEach(function(p){
+    root.appendChild(E("rect",{x:x+p[0],y:y+p[0],width:w-2*p[0],height:h-2*p[0],
+      fill:"none",stroke:th.hair,"stroke-width":.5,opacity:p[1]}));
+  });
+}
+function crossSVG(th,gap,colour){
+  var g=gap==null?3:gap, s=SVG(28,28), c=14, a=12, o=g/2, k=colour||th.hair;
+  [[c-o-a,c,c-o,c],[c+o,c,c+o+a,c],[c,c-o-a,c,c-o],[c,c+o,c,c+o+a]].forEach(function(l){
+    s.appendChild(E("line",{x1:l[0],y1:l[1],x2:l[2],y2:l[3],stroke:k,"stroke-width":.5}));
+  });
+  return s;
+}
+function colourBar(th){                       /* 6 x 24, two patches: ink and copper */
+  var s=SVG(6,24);
+  s.appendChild(E("rect",{x:0,y:0,width:6,height:12,fill:th.ink}));
+  s.appendChild(E("rect",{x:0,y:12,width:6,height:12,fill:th.copper}));
+  s.appendChild(E("rect",{x:0,y:0,width:6,height:24,fill:"none",stroke:th.hair,"stroke-width":.5}));
+  return s;
+}
+/* ragged stochastic hairline with a torn edge — damage as texture, never a hue */
+function foulPath(x0,y0,x1,y1,amp,seed){
+  var r=rng(seed),n=Math.max(6,Math.round(Math.hypot(x1-x0,y1-y0)/5)),d="M "+x0+" "+y0,i;
+  for(i=1;i<=n;i++){
+    var t=i/n, px=x0+(x1-x0)*t, py=y0+(y1-y0)*t;
+    var nx=-(y1-y0), ny=(x1-x0), len=Math.hypot(nx,ny)||1;
+    var k=(r()-.5)*2*amp*(i===n?0:1);
+    d+=" L "+(px+nx/len*k).toFixed(2)+" "+(py+ny/len*k).toFixed(2);
+  }
+  return d;
+}
+/* ============================================================
+   The ramp — a picture of its own attribute. Four silhouettes,
+   four fill swatches, four pip counts, four index strokes.
+   ============================================================ */
+function attrMark(root,defs,attr,vi,cx,cy,scale,ink,th){
+  var s=scale, hcw=th.hc?.5:0, bw=1.5*s+hcw;      /* §13.11: +0.5 pt on every stroke in HC */
+  if(attr==="fill"){
+    var w=18*s,h=13*s,pitch=Math.max(5,.22*(9*s));
+    var r=E("rect",{x:cx-w/2,y:cy-h/2,width:w,height:h,
+      fill:fillPaint(defs,FILLS[vi],ink,pitch),stroke:ink,"stroke-width":bw});
+    root.appendChild(r);
+  }else if(attr==="shape"){
+    var R=10*s,v=VERTS[SHAPES[vi]],n;
+    if(v){n=E("polygon",{points:v.map(function(a){var t=a*Math.PI/180;
+      return (cx+R*Math.cos(t)).toFixed(2)+","+(cy+R*Math.sin(t)).toFixed(2);}).join(" ")});}
+    else{n=E("circle",{cx:cx,cy:cy,r:R});}
+    n.setAttribute("fill","none");n.setAttribute("stroke",ink);
+    n.setAttribute("stroke-width",bw);n.setAttribute("stroke-linejoin","miter");
+    root.appendChild(n);
+  }else if(attr==="pips"){
+    var R2=10*s;
+    root.appendChild(E("circle",{cx:cx,cy:cy,r:R2,fill:"none",stroke:ink,"stroke-width":bw}));
+    for(var i=0;i<=vi;i++){
+      var a2=[-90,0,90,180][i]*Math.PI/180;
+      root.appendChild(E("circle",{cx:cx+R2*Math.cos(a2),cy:cy+R2*Math.sin(a2),
+        r:Math.max(2,2.6*s),fill:ink}));
+    }
+  }else{
+    var L=(th.hc?19.5:13)*s, a3=IDXA[HUES[vi]]*Math.PI/180;
+    root.appendChild(E("line",{x1:cx-L*Math.cos(a3),y1:cy-L*Math.sin(a3),
+      x2:cx+L*Math.cos(a3),y2:cy+L*Math.sin(a3),stroke:ink,"stroke-width":3*s+hcw,
+      "stroke-linecap":"butt"}));
+  }
+}
+var ATTR_LABEL={fill:"Fill",shape:"Shape",pips:"Pips",hue:"Hue"};
+var VALS={fill:FILLS,shape:SHAPES,pips:PIPS,hue:HUES};
+
+/* one ramp. mode "single" (the Dial) or "multi" (the Bench).
+   Lit and unlit are told apart by three channels and NONE of them is opacity:
+     ground  — the lit cell is debossed to ground.sunken, the unlit cell is bare paper
+     frame   — platemark (four strokes) against a single 1 pt hairline outline
+     ink     — stroke.primary (15.15 : 1) against stroke.secondary (5.98 : 1)
+   plus, on a Bench Ramp where unlit means *not admitted*, the diagonal cancel hatch.
+   The group-opacity this used to carry put the mark at 1.78 : 1 and its own border at
+   1.13 : 1 on paper — one sub-threshold channel where the spec asks for two. */
+function ramp(attr,state,cw,ch,hw,th,opts){
+  opts=opts||{};
+  var gut=opts.gutter==null?6:opts.gutter, W=hw+4*cw+3*gut, Hh=ch, i;
+  var s=SVG(W,Hh);var defs=E("defs",{});s.appendChild(defs);
+  var ink=th.ink;
+  if(opts.onPick){
+    s.removeAttribute("aria-hidden");
+    s.setAttribute("role","group");s.setAttribute("aria-label",ATTR_LABEL[attr]||attr);
+  }
+  /* attribute header — the attribute drawn small, no emblem to learn */
+  attrMark(s,defs,attr,attr==="hue"?0:3,hw/2,Hh/2,.62,ink,th);
+  s.appendChild(E("line",{x1:hw-.5,y1:6,x2:hw-.5,y2:Hh-6,stroke:th.hair,"stroke-width":.5}));
+  for(i=0;i<4;i++){
+    var x=hw+i*(cw+gut), lit=(state.indexOf(i)>=0), cellInk=lit?th.ink:th.ink2;
+    var g=E("g",{});
+    if(lit&&opts.deboss!==false){
+      g.appendChild(E("rect",{x:x+.5,y:.5,width:cw-1,height:Hh-1,fill:th.sunken}));
+      platemark(g,x+.5,.5,cw-1,Hh-1,th);
+    }else{
+      g.appendChild(E("rect",{x:x+.5,y:.5,width:cw-1,height:Hh-1,fill:"none",
+        stroke:lit?th.ink:th.hair,"stroke-width":1}));
+    }
+    attrMark(g,defs,attr,i,x+cw/2,Hh/2,opts.scale||1,cellInk,th);
+    if(!lit&&opts.hatch){       /* cancel hatch: 1.0 pt, stepping to 2.0 pt under HC (§13.11) */
+      var cid="ch"+(++_uid),cp=E("clipPath",{id:cid});
+      cp.appendChild(E("rect",{x:x+1,y:1,width:cw-2,height:Hh-2}));defs.appendChild(cp);
+      var hg=E("g",{"clip-path":"url(#"+cid+")"});
+      for(var k=-Hh;k<cw+Hh;k+=6){
+        hg.appendChild(E("line",{x1:x+k,y1:Hh,x2:x+k+Hh,y2:0,stroke:cellInk,
+          "stroke-width":th.hc?2:1}));
+      }
+      g.appendChild(hg);
+    }
+    if(opts.onPick){                            /* the Dial is a control, not a picture */
+      g.appendChild(E("rect",{x:x,y:0,width:cw,height:Hh,fill:"transparent"}));
+      g.setAttribute("role","button");g.setAttribute("tabindex","0");
+      g.setAttribute("aria-label",(VALS[attr]||[])[i]||String(i));
+      g.setAttribute("aria-pressed",lit?"true":"false");
+      (function(v,node){
+        function go(){opts.onPick(v);}
+        node.addEventListener("click",go);
+        node.addEventListener("keydown",function(ev){
+          if(ev.key===" "||ev.key==="Enter"||ev.key==="Spacebar"){ev.preventDefault();go();}
+        });
+      })(i,g);
+    }
+    s.appendChild(g);
+  }
+  return s;
+}
+
+/* ---------- verdict geometry ----------
+   An <svg> root clips to its viewport unless told otherwise, and the admit ring is
+   drawn at 1.35 R, so any host box sized to the glyph alone shears the top off the
+   one mark PL. III exists to argue for. Every host that carries a ring calls this. */
+function bleed(s){s.setAttribute("overflow","visible");s.style.overflow="visible";return s;}
+function ringAdmit(root,cx,cy,R,th,weight){
+  var w=weight||3, r=1.35*R;
+  /* ink squash: the same arc at x1.22 and alpha .08, hard-edged. no blur, ever. */
+  if(th.squash)root.appendChild(E("circle",{cx:cx,cy:cy,r:r,fill:"none",stroke:th.copper,
+    "stroke-width":w*1.22,opacity:.08}));
+  root.appendChild(E("circle",{cx:cx,cy:cy,r:r,fill:"none",stroke:th.copper,"stroke-width":w}));
+  /* the 8 deg overlap where the compass arc crosses its own start */
+  var a0=-8*Math.PI/180, a1=6*Math.PI/180;
+  root.appendChild(E("path",{d:"M "+(cx+r*Math.cos(a0))+" "+(cy+r*Math.sin(a0))+
+    " A "+r+" "+r+" 0 0 1 "+(cx+r*Math.cos(a1))+" "+(cy+r*Math.sin(a1)),
+    fill:"none",stroke:th.copper,"stroke-width":w,transform:"translate(0,-"+(w*.9)+")"}));
+}
+function ringReject(root,cx,cy,R,th,weight){
+  var w=weight||3, r=R, i, gap=3, seg=(2*Math.PI)/4, gapA=gap/r;
+  for(i=0;i<4;i++){
+    var a0=i*seg+gapA/2+Math.PI/4, a1=(i+1)*seg-gapA/2+Math.PI/4;
+    root.appendChild(E("path",{d:"M "+(cx+r*Math.cos(a0)).toFixed(2)+" "+(cy+r*Math.sin(a0)).toFixed(2)+
+      " A "+r+" "+r+" 0 0 1 "+(cx+r*Math.cos(a1)).toFixed(2)+" "+(cy+r*Math.sin(a1)).toFixed(2),
+      fill:"none",stroke:th.ink,"stroke-width":w,"stroke-dasharray":"4 3"}));
+  }
+  /* doubled cancel, 5 pt apart, at -60 deg, across 1.35 R */
+  var ca=-60*Math.PI/180, ex=Math.cos(ca)*1.35*R, ey=Math.sin(ca)*1.35*R;
+  var nx=-Math.sin(ca)*2.5, ny=Math.cos(ca)*2.5;
+  [[-1,1],[1,-1]].forEach(function(sgn,idx){
+    var ox=nx*(idx?1:-1), oy=ny*(idx?1:-1);
+    root.appendChild(E("line",{x1:cx-ex+ox,y1:cy-ey+oy,x2:cx+ex+ox,y2:cy+ey+oy,
+      stroke:th.ink,"stroke-width":3,"stroke-linecap":"butt"}));
+  });
+}
+/* ribbon tile: 44 pt, glyph + verdict.
+     admit  — the copper plate takes: verdigris ring + a 6 pt tick at the leading foot.
+     reject — the copper plate does not print: a DASHED stroke.primary ring (14.19 : 1
+              on the sunken it is drawn over) with the blind emboss kept as a third,
+              additive cue. It used to be carried by stroke.hairline alone, which is
+              1.43 : 1 on that ground and which this direction's own token sheet
+              declares "never state-bearing"; the sheet won that argument.
+     seed   — no verdict at all: the first tile in a transcript, and the Assay pin.
+   The achromatic channels survive the change intact: solid-vs-dashed, copper-vs-ink,
+   and tick-present-vs-absent are three, before the emboss is counted.
+
+   opts.prev draws the dashed frame + backward chevron ON TOP of a finished tile. It
+   marks which probe the next one will be measured against; it does not replace that
+   probe's own verdict. */
+function ribbonTile(id,verdict,th,opts){
+  opts=opts||{};
+  var S=44,s=SVG(S,S+8);
+  var wrap=E("g",{transform:"translate(0,4)"});s.appendChild(wrap);
+  /* The ring rides the glyph BODY centre, not the box centre. A glyph's body sits at
+     -0.10 S inside its own box, so a box-centred ring reads 4.2 pt low on every tile.
+     Same convention as the throat (8 + 48 - 0.10 x 96) and verdictPane. */
+  var cx=S/2, cy=S/2-1-.10*32, r=19;
+  if(verdict==="admit"){
+    if(th.squash)wrap.appendChild(E("circle",{cx:cx,cy:cy,r:r,fill:"none",stroke:th.copper,
+      "stroke-width":1.22,opacity:.08}));
+    wrap.appendChild(E("circle",{cx:cx,cy:cy,r:r,fill:"none",stroke:th.copper,"stroke-width":1}));
+    wrap.appendChild(E("line",{x1:4,y1:S-4,x2:10,y2:S-4,stroke:th.copper,"stroke-width":2}));
+  }else if(verdict==="reject"){
+    /* blind emboss, now additive: a 0.5 pt raised highlight offset (0.5, 0.5) ... */
+    wrap.appendChild(E("circle",{cx:cx+.5,cy:cy+.5,r:r,fill:"none",stroke:th.raised,"stroke-width":.5}));
+    /* ... under the ring that actually carries the state */
+    wrap.appendChild(E("circle",{cx:cx,cy:cy,r:r,fill:"none",stroke:th.ink,"stroke-width":1,
+      "stroke-dasharray":"4 3"}));
+  }
+  /* twin — canon's doubled ring, drawn INSIDE r so it cannot clip the tile box */
+  if(opts.twin&&verdict!=="seed"){
+    var tw=E("circle",{cx:cx,cy:cy,r:r-3.5,fill:"none","stroke-width":.5,
+      stroke:verdict==="admit"?th.copper:th.ink});
+    if(verdict!=="admit")tw.setAttribute("stroke-dasharray","4 3");
+    wrap.appendChild(tw);
+  }
+  var g=glyphById(id,32,th,opts.bg);
+  g.setAttribute("x",(S-32)/2);g.setAttribute("y",(S-32)/2-1);
+  if(opts.prev)g.setAttribute("opacity",".82");
+  wrap.appendChild(g);
+  if(opts.prev){
+    /* the dashed frame + backward chevron that mark prev — introduced here in the
+       ribbon, re-used verbatim on the Bridge's trailing socket ten probes later */
+    wrap.appendChild(E("rect",{x:1,y:1,width:S-2,height:S-2,fill:"none",stroke:th.ink,
+      "stroke-width":1,"stroke-dasharray":"3 3"}));
+    wrap.appendChild(E("path",{d:"M 12 6 L 6 11 L 12 16",
+      fill:"none",stroke:th.ink,"stroke-width":2,"stroke-linejoin":"miter"}));
+  }
+  return s;
+}
+
+/* ---------- the Assay / Codex constellation ----------
+   ONE dot diameter for every constellation in the app, so the Assay at 4 pt pitch and
+   the Codex thumbnail at 3.5 pt pitch are literally the same drawing at two scales —
+   which is the whole claim PL. IV and PL. V make about them. Previously the Assay was
+   hand-tuned to 2.8 pt and the thumbnail to 1.6 pt, so the claim was false by 1.75x. */
+var DOT_D=1.6;
+function constellation(pred,pitch,th,opts){
+  opts=opts||{};
+  var dotR=DOT_D/2, side=16*pitch, s=SVG(side,side), i, x, y;
+  if(opts.grid){
+    for(i=0;i<=16;i++){
+      s.appendChild(E("line",{x1:i*pitch,y1:0,x2:i*pitch,y2:side,stroke:th.hair,"stroke-width":.5}));
+      s.appendChild(E("line",{x1:0,y1:i*pitch,x2:side,y2:i*pitch,stroke:th.hair,"stroke-width":.5}));
+    }
+  }
+  for(i=0;i<256;i++){
+    if(!pred(i))continue;
+    x=(i%16)*pitch+pitch/2; y=Math.floor(i/16)*pitch+pitch/2;
+    s.appendChild(E("circle",{cx:x,cy:y,r:dotR,fill:th.ink}));
+  }
+  return s;
+}
+function tickScale(taken,par,cap,th){
+  var pitch=6,w=cap*pitch,h=20,s=SVG(w,h),i;
+  for(i=1;i<=cap;i++){
+    var maj=(i%5===0), x=(i-.5)*pitch, len=maj?8:4, on=(i<=taken);
+    s.appendChild(E("line",{x1:x,y1:12,x2:x,y2:12-len,stroke:on?th.ink:th.hair,
+      "stroke-width":maj?1:.5,opacity:on?1:1}));
+  }
+  s.appendChild(E("path",{d:"M "+((par-.5)*pitch-3)+" 20 L "+((par-.5)*pitch)+" 14 L "+((par-.5)*pitch+3)+" 20",
+    fill:"none",stroke:th.copper,"stroke-width":1}));
+  var cx=(cap-.5)*pitch;
+  s.appendChild(E("line",{x1:cx-2,y1:12,x2:cx-2,y2:2,stroke:th.ink,"stroke-width":1}));
+  s.appendChild(E("line",{x1:cx+2,y1:12,x2:cx+2,y2:2,stroke:th.ink,"stroke-width":1}));
+  return s;
+}
+function modeSigil(mode,th){                  /* inside its own 20 x 20 platemark */
+  var s=SVG(20,20);platemark(s,.5,.5,19,19,th);
+  var g=E("g",{stroke:th.ink,"stroke-width":1.5,fill:"none","stroke-linecap":"butt"});
+  if(mode==="probe"){g.appendChild(E("line",{x1:10,y1:4,x2:10,y2:12}));
+    g.appendChild(E("path",{d:"M 7 9 L 10 12.5 L 13 9"}));
+    g.appendChild(E("line",{x1:5,y1:15.5,x2:15,y2:15.5}));}
+  else if(mode==="drift"){g.appendChild(E("line",{x1:5,y1:7,x2:11,y2:7}));
+    g.appendChild(E("line",{x1:9,y1:13,x2:15,y2:13}));
+    g.appendChild(E("line",{x1:11,y1:7,x2:9,y2:13}));}
+  s.appendChild(g);return s;
+}
+/* ============================================================
+   PL. II — the PROBE surface. 375 x 667, the GDD's own y bands.
+   ============================================================ */
+var TH=T_LIGHT;
+var LIVE={fill:"striped",shape:"hexagon",pips:"three",hue:"teal"};
+
+/* ============================================================
+   The canonical band-5 law, declared ONCE.
+   The Bridge wedge, the Assay predicate, the Assay's lit count, the live PROBE
+   verdict, the transcript below and the well caption all read from here — so the
+   drawing cannot silently disagree with the sentence again. assertions() checks it.
+   ============================================================ */
+var LAW={
+  cmp:"gt",                 /* pips(cur) > pips(prev) */
+  shapes:[1,3],             /* triangle, hexagon */
+  pin:151,                  /* the prev the Assay slice is conditioned on: pips = two */
+  text:"pips(cur) > pips(prev) AND shape ∈ {triangle, hexagon}"
+};
+LAW.rel=function(a,b){
+  return LAW.cmp==="gt"?a>b:LAW.cmp==="gte"?a>=b:LAW.cmp==="lt"?a<b:a<=b;
+};
+LAW.admits=function(cur,prev){
+  return LAW.rel((cur>>2)&3,(prev>>2)&3)&&LAW.shapes.indexOf((cur>>4)&3)>=0;
+};
+LAW.slice=function(prev){return function(id){return LAW.admits(id,prev);};};
+/* §4.2: the wedge's wide end physically opens toward the LARGER side. The leading
+   socket is always cur, so for gt the opening faces leading; for lt it faces trailing. */
+LAW.wedge=function(cx,cy){
+  var lead=(LAW.cmp==="gt"||LAW.cmp==="gte")?-1:1;   /* -1 = opening toward leading */
+  return "M "+(cx+lead*9)+" "+(cy-13)+" L "+(cx-lead*9)+" "+cy+" L "+(cx+lead*9)+" "+(cy+13);
+};
+
+/* The transcript is a real one: every verdict is what LAW.admits() returns for that
+   glyph given the glyph immediately before it — asserted at boot, not asserted by eye.
+   Tile 1 is the seed and carries no verdict. Tile 6 is a twin of tile 5 that lands the
+   OTHER way, because prev has moved: that is what "contextual" means, shown instead of
+   said. Tile 7 is the newest probe, so it is also `prev`, and it carries both. */
+var RIBBON=[
+  {id:16,  v:"seed"},                    /* hollow triangle,  one,   amber */
+  {id:85,  v:"admit"},                   /* dotted triangle,  two,   teal  */
+  {id:170, v:"reject"},                  /* striped square,   three, frost */
+  {id:243, v:"reject"},                  /* solid hexagon,    one,   rose  */
+  {id:52,  v:"admit"},                   /* hollow hexagon,   two,   amber */
+  {id:52,  v:"reject", twin:true},       /* the same glyph — now prev is itself */
+  {id:221, v:"admit",  prev:true}        /* solid triangle,   four,  teal  */
+];
+
+function draftId(d){
+  return FILLS.indexOf(d.fill)*64+SHAPES.indexOf(d.shape)*16+
+         PIPS.indexOf(d.pips)*4+HUES.indexOf(d.hue);
+}
+function clearNode(n){while(n.firstChild)n.removeChild(n.firstChild);}
+function actionable(node,label,fn){
+  node.setAttribute("role","button");node.setAttribute("tabindex","0");
+  node.setAttribute("aria-label",label);
+  node.addEventListener("click",fn);
+  node.addEventListener("keydown",function(ev){
+    if(ev.key===" "||ev.key==="Enter"||ev.key==="Spacebar"){ev.preventDefault();fn();}
+  });
+}
+
+/* This specimen is LIVE: the Dial composes, the PROBE and twin keys feed the Loom, the
+   Loom answers with the real band-5 law, and the tally advances past par. It is the
+   same 375 x 667 surface at 1:1 — a still of a play surface cannot be compared with a
+   working one, and the verdict beat is the thing this direction has to be judged on. */
+function buildProbe(){
+  var sc=H("div","screen"),th=TH;
+  sc.style.background=th.ground;
+  var draft={fill:LIVE.fill,shape:LIVE.shape,pips:LIVE.pips,hue:LIVE.hue};
+  var tape=RIBBON.map(function(t){return {id:t.id,v:t.v,twin:t.twin};});
+  var taken=6, busy=false, PAR=23, CAP=37, timers=[];
+
+  /* --- instrument bar, y 20-64 : mode sigil + graduated scale. no numerals. --- */
+  var bar=put(sc,16,32,343,20);
+  bar.appendChild(modeSigil("probe",th));
+  bar.firstChild.style.cssText="position:absolute;left:0;top:0";
+  var sw=put(sc,46,32,null,null);
+  var brule=put(sc,16,63,343,1);brule.style.background=th.hair;
+
+  /* --- the throat, y 64-176 : 96 pt live glyph, centred --- */
+  var thr=put(sc,0,64,375,112);
+  var gw=put(thr,375/2-48,8,96,96);
+  var ring=put(thr,0,0,375,112);
+
+  /* --- the ribbon, y 176-228 : 7 tiles at 44 pt + link arcs --- */
+  var rib=put(sc,0,176,375,52);
+  var rrule=put(sc,16,231,343,1);rrule.style.background=th.hair;
+
+  /* --- the Dial, y 236-508 : 4 ramps, header 45 + 4 x 70 + 3 x 6 = 343 --- */
+  var rows={};
+  ["fill","shape","pips","hue"].forEach(function(attr,r){
+    rows[attr]=put(sc,16,240+r*68+6,343,48);
+  });
+
+  var step=44+5.83;
+  function paintTally(){
+    clearNode(sw);sw.appendChild(tickScale(Math.min(taken,CAP),PAR,CAP,th));
+  }
+  function paintThroat(){
+    clearNode(gw);gw.appendChild(glyph(draft.fill,draft.shape,draft.pips,draft.hue,96,th));
+  }
+  /* the verdict ring rides the body centre, not the box centre: 8 + 48 - 0.10 x 96.
+     bleed() because 1.35 R reaches 3 pt above this band and an <svg> clips by default. */
+  function paintRing(kind){
+    clearNode(ring);
+    var rs=bleed(SVG(375,112));ring.appendChild(rs);
+    if(kind==="admit")ringAdmit(rs,187.5,46.4,.37*96,th,3);
+    else if(kind==="reject")ringReject(rs,187.5,46.4,.37*96,th,3);
+  }
+  function paintRibbon(){
+    clearNode(rib);
+    var arcs=SVG(375,52);rib.appendChild(arcs);
+    arcs.style.cssText="position:absolute;left:0;top:0";
+    var i,x0,x1,my;
+    for(i=0;i<tape.length-1;i++){
+      x0=16+i*step+40; x1=16+(i+1)*step+4; my=(x0+x1)/2;
+      arcs.appendChild(E("path",{d:"M "+x0+" 46 Q "+my+" 52 "+x1+" 46",
+        fill:"none",stroke:th.hair,"stroke-width":.5}));
+    }
+    for(i=0;i<tape.length;i++){
+      var t=tape[i],w=put(rib,16+i*step,1,44,52);
+      w.appendChild(ribbonTile(t.id,t.v,th,{twin:t.twin,prev:i===tape.length-1}));
+    }
+  }
+  function paintDial(){
+    ["fill","shape","pips","hue"].forEach(function(attr){
+      clearNode(rows[attr]);
+      rows[attr].appendChild(ramp(attr,[VALS[attr].indexOf(draft[attr])],70,48,45,th,
+        {scale:1.15,onPick:function(v){
+          if(busy)return;
+          draft[attr]=VALS[attr][v];
+          paintThroat();paintDial();paintKey();
+        }}));
+    });
+  }
+  /* one probe: the Loom answers, the ribbon remembers, the tally advances. 250 ms,
+     non-blocking, and nothing anywhere on the screen gets brighter. */
+  function fire(twin){
+    if(busy||taken>=CAP)return;
+    busy=true;
+    var prev=tape[tape.length-1].id;
+    var id=twin?prev:draftId(draft);
+    var v=LAW.admits(id,prev)?"admit":"reject";
+    taken++;
+    paintRing(v);paintTally();
+    timers.push(setTimeout(function(){
+      tape.push({id:id,v:v,twin:!!twin});
+      while(tape.length>7)tape.shift();
+      paintRibbon();busy=false;
+    },250));
+  }
+
+  /* --- the Bench handle, y 516-560 : a second sheet laid over the first --- */
+  var bh=put(sc,0,516,375,44);
+  var hs=SVG(375,44);bh.appendChild(hs);
+  hs.appendChild(E("path",{d:"M 0 44 L 0 8 Q 0 0 8 0 L 367 0 Q 375 0 375 8 L 375 44 Z",
+    fill:th.raised}));
+  hs.appendChild(E("path",{d:"M 0 8 Q 0 .5 8 .5 L 367 .5 Q 374.5 .5 374.5 8",
+    fill:"none",stroke:th.hair,"stroke-width":1}));
+  hs.appendChild(E("rect",{x:0,y:1.5,width:375,height:3,fill:th.sunken}));
+  hs.appendChild(E("rect",{x:165,y:14,width:45,height:3,fill:th.ink2}));
+  hs.appendChild(E("path",{d:"M 181 30 L 187.5 24 L 194 30",fill:"none",stroke:th.ink2,"stroke-width":1.5}));
+
+  /* --- commit bar, y 604-667 : PROBE (leading) . twin (centre) . Bench (trailing) --- */
+  var cb=put(sc,0,604,375,63);
+  var cs=SVG(375,63);cb.appendChild(cs);
+  cs.removeAttribute("aria-hidden");
+  cs.appendChild(E("line",{x1:16,y1:.5,x2:359,y2:.5,stroke:th.hair,"stroke-width":.5}));
+  function key(x,w){
+    var g=E("g",{});
+    g.appendChild(E("rect",{x:x,y:10,width:w,height:44,fill:th.sunken}));
+    platemark(g,x,10,w,44,th);
+    cs.appendChild(g);return g;
+  }
+  var k1=key(16,112), kg=null;
+  function paintKey(){
+    if(kg)kg.remove();
+    kg=glyph(draft.fill,draft.shape,draft.pips,draft.hue,30,th,th.sunken);
+    kg.setAttribute("x",16+30);kg.setAttribute("y",17);
+    k1.insertBefore(kg,k1.children[k1.children.length-1]||null);
+  }
+  k1.appendChild(E("path",{d:"M 92 26 L 92 40 M 87 35 L 92 40.5 L 97 35",
+    fill:"none",stroke:th.ink,"stroke-width":2}));
+  k1.appendChild(E("rect",{x:16,y:10,width:112,height:44,fill:"transparent"}));
+  actionable(k1,"Probe",function(){fire(false);});
+  var k2=key(157,60);
+  k2.appendChild(E("circle",{cx:187.5-5,cy:32,r:9,fill:"none",stroke:th.ink,"stroke-width":2}));
+  k2.appendChild(E("circle",{cx:187.5+5,cy:32,r:9,fill:"none",stroke:th.ink,"stroke-width":2}));
+  k2.appendChild(E("rect",{x:157,y:10,width:60,height:44,fill:"transparent"}));
+  actionable(k2,"Twin",function(){fire(true);});
+  var k3=key(247,112);
+  k3.appendChild(E("path",{d:"M 275 42 L 275 24 Q 275 20 279 20 L 331 20 Q 335 20 335 24 L 335 42",
+    fill:"none",stroke:th.ink,"stroke-width":2}));
+  k3.appendChild(E("line",{x1:275,y1:27,x2:335,y2:27,stroke:th.ink,"stroke-width":1}));
+  k3.appendChild(E("path",{d:"M 297 38 L 305 31 L 313 38",fill:"none",stroke:th.ink,"stroke-width":2}));
+
+  paintTally();paintThroat();paintRing(tape[tape.length-1].v);
+  paintRibbon();paintDial();paintKey();
+  return sc;
+}
+
+/* ============================================================
+   PL. IV — the Bench.
+   ============================================================ */
+function benchTileFrame(g,x,y,w,h,th){
+  g.appendChild(E("rect",{x:x,y:y,width:w,height:h,fill:th.raised}));
+  g.appendChild(E("rect",{x:x+.5,y:y+.5,width:w-1,height:h-1,fill:"none",stroke:th.ink,"stroke-width":1,rx:1}));
+}
+function bridgeTile(w,h,th){
+  var s=SVG(w,h),defs=E("defs",{});s.appendChild(defs);
+  benchTileFrame(s,0,0,w,h,th);
+  var sw=104,sh=72,wd=44,y=(h-sh)/2,x0=(w-(2*sw+wd))/2;
+  /* leading socket — always cur, no toggle */
+  s.appendChild(E("rect",{x:x0,y:y,width:sw,height:sh,fill:th.sunken}));
+  platemark(s,x0,y,sw,sh,th);
+  attrMark(s,defs,"pips",3,x0+sw/2,y+sh/2,1.35,th.ink,th);
+  /* the wedge. §4.2: the wide end physically opens toward the LARGER side, and the
+     leading socket is always cur — so for `gt` the opening faces LEADING. Derived from
+     LAW.cmp rather than typed, and cross-checked against the Assay's lit count in
+     assertions(): drawn the other way round this reads pips(cur) < pips(prev) and the
+     Assay would light 32 cells, not 64. */
+  var wx=x0+sw+wd/2, wy=h/2;
+  s.appendChild(E("path",{d:LAW.wedge(wx,wy),
+    fill:"none",stroke:th.ink,"stroke-width":3,"stroke-linejoin":"miter"}));
+  /* trailing socket — ghosted: dashed frame + backward chevron */
+  var x1=x0+sw+wd;
+  s.appendChild(E("rect",{x:x1+.5,y:y+.5,width:sw-1,height:sh-1,fill:"none",stroke:th.ink,
+    "stroke-width":1,"stroke-dasharray":"3 3"}));
+  attrMark(s,defs,"pips",3,x1+sw/2,y+sh/2,1.35,th.ink,th);
+  s.appendChild(E("path",{d:"M "+(x1+16)+" "+(y+12)+" L "+(x1+9)+" "+(y+18)+" L "+(x1+16)+" "+(y+24),
+    fill:"none",stroke:th.ink,"stroke-width":2,"stroke-linejoin":"miter"}));
+  return s;
+}
+/* §4.2's Ramp is "attribute header 44 pt + four 56 x 44 pt cells". Held exactly; the
+   inter-cell gutter (which §4.2 never specifies) goes to 0 so the strip is 44 + 4x56 =
+   268 pt and closes inside the reflowed 273 pt rail — see buildBench. Touching cells
+   read as one graduated strip, which is what a printed ramp is anyway. */
+var RAMP_W=44+4*56;
+function rampTile(w,h,th){
+  var s=SVG(w,h);benchTileFrame(s,0,0,w,h,th);
+  var r=ramp("shape",LAW.shapes,56,44,44,th,{hatch:true,scale:1,gutter:0});
+  r.setAttribute("x",(w-RAMP_W)/2);r.setAttribute("y",(h-44)/2);
+  s.appendChild(r);return s;
+}
+function coupler(size,th){                    /* AND = a solid welded bar */
+  var s=SVG(size,size);
+  s.appendChild(E("circle",{cx:size/2,cy:size/2,r:size/2-1,fill:th.raised,stroke:th.ink,"stroke-width":1}));
+  s.appendChild(E("line",{x1:5,y1:size/2,x2:size-5,y2:size/2,stroke:th.ink,"stroke-width":4,"stroke-linecap":"butt"}));
+  s.appendChild(E("circle",{cx:size/2-6,cy:size/2,r:1.6,fill:th.raised}));
+  s.appendChild(E("circle",{cx:size/2+6,cy:size/2,r:1.6,fill:th.raised}));
+  return s;
+}
+function seal(size,barred,th){
+  var s=SVG(size,size+2),c=size/2,i;
+  s.appendChild(E("circle",{cx:c,cy:c,r:c-2,fill:th.sunken}));
+  s.appendChild(E("circle",{cx:c,cy:c,r:c-2,fill:"none",stroke:th.ink,"stroke-width":1}));
+  s.appendChild(E("circle",{cx:c,cy:c,r:c-5,fill:"none",stroke:th.hair,"stroke-width":.5}));
+  for(i=0;i<12;i++){
+    var a=i*30*Math.PI/180;
+    s.appendChild(E("line",{x1:c+(c-5)*Math.cos(a),y1:c+(c-5)*Math.sin(a),
+      x2:c+(c-8)*Math.cos(a),y2:c+(c-8)*Math.sin(a),stroke:th.hair,"stroke-width":.5}));
+  }
+  if(!barred){
+    if(th.squash)s.appendChild(E("circle",{cx:c,cy:c,r:c*.34,fill:"none",stroke:th.copper,
+      "stroke-width":3*1.22,opacity:.08}));
+    s.appendChild(E("circle",{cx:c,cy:c,r:c*.34,fill:th.copper}));
+  }else{
+    s.appendChild(E("circle",{cx:c,cy:c,r:c*.34,fill:"none",stroke:th.ink2,"stroke-width":1.5}));
+    s.appendChild(E("rect",{x:-2,y:c-2,width:size+4,height:4,fill:th.ink}));
+    s.appendChild(E("path",{d:foulPath(-2,c-2.5,size+2,c-2.5,.9,7),fill:"none",
+      stroke:th.ink,"stroke-width":.5}));
+  }
+  return s;
+}
+function paletteStamp(kind,w,h,th){
+  var s=SVG(w,h),defs=E("defs",{});s.appendChild(defs);
+  s.appendChild(E("rect",{x:.5,y:.5,width:w-1,height:h-1,fill:th.raised,stroke:th.ink,"stroke-width":1,rx:1}));
+  var g=E("g",{stroke:th.ink,fill:"none","stroke-width":1.5}),i;
+  if(kind==="ramp"){
+    for(i=0;i<4;i++)g.appendChild(E("rect",{x:16+i*11,y:14,width:9,height:16}));
+    g.appendChild(E("line",{x1:10,y1:14,x2:10,y2:30}));
+  }else if(kind==="bridge"){
+    g.appendChild(E("rect",{x:9,y:13,width:18,height:18}));
+    g.appendChild(E("rect",{x:41,y:13,width:18,height:18,"stroke-dasharray":"3 3"}));
+    g.appendChild(E("path",{d:"M 37 16 L 31 22 L 37 28"}));
+  }else if(kind==="fork"){
+    g.appendChild(E("path",{d:"M 9 22 L 26 22 L 40 13 L 59 13"}));
+    g.appendChild(E("path",{d:"M 26 22 L 40 31 L 59 31",opacity:.4}));
+    g.appendChild(E("rect",{x:30,y:4,width:8,height:6}));
+  }else{
+    for(i=0;i<4;i++)g.appendChild(E("line",{x1:12,y1:11+i*5,x2:34,y2:11+i*5}));
+    for(i=0;i<5;i++)g.appendChild(E("rect",{x:40+i*5,y:16,width:4,height:12}));
+  }
+  s.appendChild(g);return s;
+}
+/* the copper plate: the same tiles, wireframed, no grounds — the hidden law printing
+   behind the player's. Only the inks change, so it is provably the same drawing. */
+function copperPlate(th){
+  var t={},k;for(k in th)t[k]=th[k];
+  t.ink=th.copper;t.ink2=th.copper;t.hair=th.copper;
+  t.raised="none";t.sunken="none";t.squash=false;
+  return t;
+}
+
+/* §4.2 gives "rails, 291 pt wide | THE ASSAY, 64 pt trailing column", but 291 + 64 =
+   355 and §13.3 fixes the content column at 343 pt with a 16 pt outer margin. Those two
+   sentences cannot both hold. Resolved explicitly rather than by overflowing: the rails
+   take 273, the house 6 pt gutter follows, and the Assay keeps its canonical 64 —
+   273 + 6 + 64 = 343, closing at x 359. The Assay used to start at x 311 and end at
+   375, i.e. flush with the device edge and under the curved corner, which is the one
+   place a state-bearing element must never be. */
+var RAIL_W=273, ASSAY_X=16+RAIL_W+6;
+function buildBench(){
+  var sc=H("div","screen"),th=TH;sc.style.background=th.ground;
+  var bar=put(sc,16,32,343,20);bar.appendChild(modeSigil("probe",th));
+  bar.firstChild.style.cssText="position:absolute;left:0;top:0";
+  var sw=put(sc,46,32,null,null);sw.appendChild(tickScale(9,23,37,th));
+  var brule=put(sc,16,63,343,1);brule.style.background=th.hair;
+  var thr=put(sc,375/2-48,72,96,96);
+  thr.appendChild(glyph("solid","triangle","four","teal",96,th));
+  var rib=put(sc,0,176,375,52),step=44+5.83,i;
+  for(i=0;i<RIBBON.length;i++){
+    var t=RIBBON[i],w=put(rib,16+i*step,1,44,52);
+    w.appendChild(ribbonTile(t.id,t.v,th,{twin:t.twin,prev:i===RIBBON.length-1}));
+  }
+
+  /* the Bench is a second sheet laid over the first: 8 pt top corners, drawn, not blurred */
+  var sh=put(sc,0,228,375,332);
+  var ss=SVG(375,332);sh.appendChild(ss);
+  ss.appendChild(E("path",{d:"M 0 332 L 0 8 Q 0 0 8 0 L 367 0 Q 375 0 375 8 L 375 332 Z",fill:th.raised}));
+  ss.appendChild(E("rect",{x:0,y:1.5,width:375,height:3,fill:th.sunken}));
+  ss.appendChild(E("path",{d:"M 0 8 Q 0 .5 8 .5 L 367 .5 Q 374.5 .5 374.5 8",fill:"none",
+    stroke:th.hair,"stroke-width":1}));
+
+  /* The sheet's platemark rides ON the existing 16 pt margin line, so it costs zero
+     content width (§4) — x 16..359 in screen terms, exactly the content column. The
+     four registration crosses sit at its corners and are state-bearing all round: each
+     cross's VERTICAL arm sits 2 pt out of true, and they close only at the impression.
+     Their outer arms reach into the 16 pt margin, which is what a trim mark is for. */
+  var deb=E("rect",{x:16,y:8,width:343,height:312,fill:th.raised});ss.appendChild(deb);
+  var pmk=E("g",{});ss.appendChild(pmk);platemark(pmk,16,8,343,312,th);
+  pmk.style.opacity="0.4";
+  var crosses=[];
+  [[16,8],[359,8],[16,320],[359,320]].forEach(function(c){
+    var g=E("g",{transform:"translate("+c[0]+","+c[1]+")"});
+    [[-13.5,0,-1.5,0],[1.5,0,13.5,0]].forEach(function(l){
+      g.appendChild(E("line",{x1:l[0],y1:l[1],x2:l[2],y2:l[3],stroke:th.hair,"stroke-width":.5}));});
+    var v=E("g",{});
+    [[0,-13.5,0,-1.5],[0,1.5,0,13.5]].forEach(function(l){
+      v.appendChild(E("line",{x1:l[0],y1:l[1],x2:l[2],y2:l[3],stroke:th.hair,"stroke-width":.5}));});
+    g.appendChild(v);ss.appendChild(g);crosses.push(v);
+  });
+
+  /* the copper plate, parked at the stack position, unprinted */
+  var lawL=put(sc,16,288,RAIL_W,228);
+  var ls=SVG(RAIL_W,228);lawL.appendChild(ls);
+  var TC=copperPlate(th);
+  var cbr=bridgeTile(RAIL_W,112,TC);cbr.setAttribute("y",0);ls.appendChild(cbr);
+  var crp=rampTile(RAIL_W,112,TC);crp.setAttribute("y",116);ls.appendChild(crp);
+  lawL.style.opacity="0";
+
+  var rail1=put(sc,16,244,RAIL_W,112);rail1.appendChild(bridgeTile(RAIL_W,112,th));
+  var cwd=put(sc,16+RAIL_W/2-14,364,28,28);cwd.appendChild(coupler(28,th));
+  var cl=put(sc,16+RAIL_W/2-0.5,356,1,8);cl.style.background=th.hair;
+  var cl2=put(sc,16+RAIL_W/2-0.5,392,1,8);cl2.style.background=th.hair;
+  var rail2=put(sc,16,400,RAIL_W,112);rail2.appendChild(rampTile(RAIL_W,112,th));
+
+  /* the Assay: 16 x 16 at 4 pt, 64 of 256 lit — the LAW's own slice, pinned to LAW.pin */
+  var aw=put(sc,ASSAY_X,244,64,64);
+  var awrap=SVG(64,64);aw.appendChild(awrap);
+  awrap.appendChild(E("rect",{x:0,y:0,width:64,height:64,fill:th.sunken}));
+  var cst=constellation(LAW.slice(LAW.pin),4,th,{grid:true});
+  cst.setAttribute("x",0);cst.setAttribute("y",0);
+  awrap.appendChild(cst);
+  platemark(awrap,.5,.5,63,63,th);
+  /* the pin: which prev glyph the Assay slice above is conditioned on. It is a pin, not
+     a probe, so it is the one tile in the app that legitimately carries no verdict. */
+  var pin=put(sc,ASSAY_X+10,316,44,52);
+  pin.appendChild(ribbonTile(LAW.pin,"seed",th,{prev:true,bg:th.raised}));
+
+  /* palette, y 560-604 : four tile stamps at 68 x 44 */
+  var pal=[];
+  ["ramp","bridge","fork","tally"].forEach(function(k,j){
+    var d=put(sc,16+j*(68+16),560,68,44);
+    d.appendChild(paletteStamp(k,68,44,th));pal.push(d);
+  });
+  /* commit bar, y 604-667 : Dial (leading) . the Seal (trailing) */
+  var cb=put(sc,0,604,375,63);var cs=SVG(375,63);cb.appendChild(cs);
+  cs.appendChild(E("line",{x1:16,y1:.5,x2:359,y2:.5,stroke:th.hair,"stroke-width":.5}));
+  var dg=E("g",{});dg.appendChild(E("rect",{x:16,y:10,width:112,height:44,fill:th.sunken}));
+  platemark(dg,16,10,112,44,th);
+  for(i=0;i<4;i++){
+    dg.appendChild(E("line",{x1:40,y1:19+i*9,x2:104,y2:19+i*9,stroke:th.ink,"stroke-width":1.5}));
+    dg.appendChild(E("circle",{cx:40+i*20+12,cy:19+i*9,r:2.4,fill:th.ink}));
+  }
+  cs.appendChild(dg);
+  var sl=put(sc,359-48,608,48,50);sl.appendChild(seal(48,false,th));
+
+  /* ============================================================
+     THE IMPRESSION, on the real surface, at 1:1 — §7 beats 1-5 and 8.
+     Press the Seal. Nothing gets brighter at any point: the screen gets heavier.
+     ============================================================ */
+  var fade=[cwd,cl,cl2,aw,pin].concat(pal), timers=[], busy=false;
+  var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)");
+  rail1.style.transition="transform 260ms cubic-bezier(.20,0,0,1)";
+  rail2.style.transition="transform 260ms cubic-bezier(.20,0,0,1)";
+  lawL.style.transition="transform 320ms cubic-bezier(.40,0,.15,1), opacity 320ms linear";
+  pmk.style.transition="opacity 40ms cubic-bezier(.20,0,0,1)";
+  fade.forEach(function(n){n.style.transition="opacity 140ms cubic-bezier(.40,0,.15,1)";});
+  crosses.forEach(function(g){g.style.transition="transform 40ms cubic-bezier(.20,0,0,1)";});
+  function openCrosses(open){
+    crosses.forEach(function(g,i){g.style.transform="translateY("+(open?(i<2?-2:2):0)+"px)";});
+  }
+  function weigh(d){
+    [rail1,rail2,lawL].forEach(function(host){
+      [].forEach.call(host.querySelectorAll("*"),function(n){
+        var w=parseFloat(n.getAttribute("stroke-width")||0);
+        if(w)n.setAttribute("stroke-width",Math.max(.25,w+d));
+      });
+    });
+  }
+  function rest(){
+    rail1.style.transform="translate(0px,0px)";rail2.style.transform="translate(0px,0px)";
+    lawL.style.opacity="0";lawL.style.transform="translate(0px,0px)";
+    fade.forEach(function(n){n.style.opacity="1";});
+    pmk.style.opacity="0.4";deb.setAttribute("fill",th.raised);
+    openCrosses(true);
+  }
+  function settled(){
+    rail1.style.transform="translate(0px,44px)";rail2.style.transform="translate(0px,4px)";
+    lawL.style.opacity="0.55";lawL.style.transform="translate(0px,0px)";
+    fade.forEach(function(n){n.style.opacity="0";});
+    pmk.style.opacity="1";deb.setAttribute("fill",th.sunken);
+    openCrosses(false);
+  }
+  function pull(){
+    if(busy)return;
+    timers.forEach(clearTimeout);timers=[];
+    if(RM&&RM.matches){settled();busy=false;return;}
+    busy=true;rest();
+    /* beat 1 — unlit Bench chrome goes to zero */
+    timers.push(setTimeout(function(){fade.forEach(function(n){n.style.opacity="0";});},90));
+    /* beat 2 — the rule-tiles gather into a centred stack, 8 pt out of register */
+    timers.push(setTimeout(function(){
+      rail1.style.transform="translate(8px,52px)";rail2.style.transform="translate(8px,12px)";
+    },230));
+    /* beat 3 — the hidden law prints BEHIND in copper, off register. The miss is evidence. */
+    timers.push(setTimeout(function(){
+      lawL.style.opacity="0.55";lawL.style.transform="translate(18px,12px)";
+    },490));
+    /* beat 4 — THE IMPRESSION. Copper to zero; crosses close; the platemark debosses;
+       every stroke gains 0.5 pt for 40 ms. Zero luminance increase anywhere. */
+    timers.push(setTimeout(function(){
+      lawL.style.transform="translate(0px,0px)";
+      rail1.style.transform="translate(0px,44px)";rail2.style.transform="translate(0px,4px)";
+    },810));
+    timers.push(setTimeout(function(){
+      openCrosses(false);pmk.style.opacity="1";deb.setAttribute("fill",th.sunken);weigh(.5);
+    },930));
+    timers.push(setTimeout(function(){weigh(-.5);},970));
+    timers.push(setTimeout(function(){busy=false;},1180));
+  }
+  var sealHit=H("div");sealHit.style.cssText="position:absolute;inset:0";sl.appendChild(sealHit);
+  actionable(sl,"Seal — declare this law",pull);
+  sl.style.cursor="pointer";
+  rest();
+  return sc;
+}
+/* ============================================================
+   Page furniture: platemark, registration crosses, colour bar
+   ============================================================ */
+function pageTheme(){
+  var cs=getComputedStyle(document.documentElement);
+  return {ground:cs.getPropertyValue("--ground").trim(),raised:cs.getPropertyValue("--raised").trim(),
+    sunken:cs.getPropertyValue("--sunken").trim(),ink:cs.getPropertyValue("--ink").trim(),
+    ink2:cs.getPropertyValue("--ink2").trim(),hair:cs.getPropertyValue("--hair").trim(),
+    copper:cs.getPropertyValue("--copper").trim(),squash:true,hc:false,low:.30,hue:T_LIGHT.hue};
+}
+function dressPlates(){
+  var pt=pageTheme();
+  [].forEach.call(document.querySelectorAll(".plate"),function(pl){
+    var old=pl.querySelector(".plate__mark");if(old)old.remove();
+    var m=H("div","plate__mark");
+    [["left","top"],["right","top"],["left","bottom"],["right","bottom"]].forEach(function(c){
+      var w=H("div","plate__cross");
+      w.style[c[0]]="-14px";w.style[c[1]]="-14px";
+      w.appendChild(crossSVG(pt,3));m.appendChild(w);
+    });
+    var bar=H("div","plate__bar");bar.appendChild(colourBar(pt));m.appendChild(bar);
+    pl.insertBefore(m,pl.firstChild);
+  });
+}
+
+/* ---------- PL. I — channel ladders + the 32 / 32 panel ---------- */
+var LADDERS=[
+  {a:"fill",n:"Fill",d:"interior\n0 / 22.7 / 38.6 / 100 %",v:FILLS,
+   base:{shape:"square",pips:"one",hue:"amber"}},
+  {a:"shape",n:"Shape",d:"silhouette\n0 / 3 / 4 / 6 corners",v:SHAPES,
+   base:{fill:"hollow",pips:"one",hue:"amber"}},
+  {a:"pips",n:"Pips",d:"contour nodes\nN → E → S → W",v:PIPS,
+   base:{fill:"hollow",shape:"circle",hue:"amber"}},
+  {a:"hue",n:"Hue",d:"index stroke\n0° / 45° / 90° / 135°",v:HUES,
+   base:{fill:"hollow",shape:"circle",pips:"one"}}
+];
+function buildLadders(hostId){
+  var host=document.getElementById(hostId);
+  if(!host)return;
+  LADDERS.forEach(function(L){
+    var row=H("div","ladder"), k=H("div","ladder__k");
+    var n=H("span","n",L.n);k.appendChild(n);
+    var d=H("span","d");L.d.split("\n").forEach(function(line,i){
+      if(i)d.appendChild(document.createElement("br"));
+      d.appendChild(document.createTextNode(line));});
+    k.appendChild(d);row.appendChild(k);
+    var rr=H("div","ladder__row");
+    L.v.forEach(function(val,i){
+      var c=H("div","rung");
+      var g={fill:L.base.fill,shape:L.base.shape,pips:L.base.pips,hue:L.base.hue};
+      g[L.a]=val;
+      c.appendChild(H("span","rung__n","rank "+(i+1)));
+      var box=H("div");box.style.cssText="height:66px;display:flex;align-items:center;justify-content:center";
+      box.appendChild(glyph(g.fill,g.shape,g.pips,g.hue,52,T_LIGHT,T_LIGHT.sunken));
+      c.appendChild(box);
+      c.appendChild(H("span","rung__v",val));
+      rr.appendChild(c);
+    });
+    row.appendChild(rr);host.appendChild(row);
+  });
+}
+/* The sample is pinned, not chosen, and it is the SAME thirty-two ids the other
+   direction's greyscale panel uses — the two pages must differ in how they render a
+   glyph, not in which glyphs they render, or the client is comparing a rendering
+   difference with a sampling difference and cannot tell them apart.
+
+   The first four rows are CONTROLLED VARIATION: one channel moves, the other three are
+   pinned, so each row isolates exactly one channel. Row 1 is the decisive one — it is
+   the worst case §13.5.1 names. teal (L .291) and rose (L .293) are the same pixel
+   value in greyscale, so 0x95 and 0x97 differ in NOTHING a greyscale reader can see
+   except the index stroke at 45° against 135°. If that pair fuses, the direction fails.
+   A stride sample cannot test this: it covers each channel value evenly on the margin
+   and still contains zero teal/rose pairs matched on the other three channels. */
+var YARD=[
+  /* hue only    — striped triangle, two pips : 0° 45° 90° 135° */ 0x94,0x95,0x96,0x97,
+  /* fill only   — square, three pips, frost                    */ 0x2A,0x6A,0xAA,0xEA,
+  /* shape only  — solid, one pip, teal                         */ 0xC1,0xD1,0xE1,0xF1,
+  /* pips only   — dotted circle, rose                          */ 0x43,0x47,0x4B,0x4F,
+  /* four rows spread across the rest of the deck               */
+  0x0D,0x34,0x5B,0x82, 0xA9,0xD0,0xF7,0x1E, 0x45,0x6C,0x93,0xBA, 0x08,0x2F,0x56,0x7D
+];
+function buildYard(el){
+  YARD.forEach(function(id){
+    var c=H("div","gcell");
+    var b=H("div");b.style.cssText="height:80px;display:flex;align-items:center;justify-content:center";
+    b.appendChild(glyphById(id,64,T_LIGHT,T_LIGHT.sunken));
+    c.appendChild(b);
+    c.appendChild(H("span","gcell__id",String(id).padStart(3,"0")));
+    el.appendChild(c);
+  });
+}
+
+/* ---------- PL. III — the verdict pair ----------
+   ONE glyph in both panes — same fill, same shape, same pips, same hue — so the only
+   difference between them is the verdict mark, which is the only thing the exhibit is
+   for. (Varying the glyph too, as this used to, means nothing the reader perceives can
+   be attributed to the verdict.) PLATE can hold it completely fixed because its verdict
+   is not carried in the glyph at all: it is the copper plate taking, or not. */
+var PAIR_GLYPH=["dotted","square","two","teal"];
+function verdictPane(kind,label){
+  var p=H("div","pane"),th=T_LIGHT,S=132,R=.37*S,box=230;
+  var id=H("span","pane__id",label);p.appendChild(id);
+  var s=bleed(SVG(box,box));
+  var g=glyph(PAIR_GLYPH[0],PAIR_GLYPH[1],PAIR_GLYPH[2],PAIR_GLYPH[3],S,th,th.sunken);
+  g.setAttribute("x",(box-S)/2);g.setAttribute("y",(box-S)/2);
+  var cx=box/2, cy=box/2-.10*S;
+  if(kind==="admit")ringAdmit(s,cx,cy,R,th,3); else ringReject(s,cx,cy,R,th,3);
+  s.appendChild(g);
+  p.appendChild(s);
+  return p;
+}
+function tilePane(kind,label){
+  var p=H("div","pane"),th=T_LIGHT;
+  var id=H("span","pane__id",label);p.appendChild(id);
+  var wrap=H("div");wrap.style.cssText="transform:scale(2.4);transform-origin:center;margin:26px 0";
+  wrap.appendChild(ribbonTile(draftId({fill:PAIR_GLYPH[0],shape:PAIR_GLYPH[1],
+    pips:PAIR_GLYPH[2],hue:PAIR_GLYPH[3]}),kind,th,{bg:th.sunken}));
+  p.appendChild(wrap);
+  return p;
+}
+/* the two readings, withheld until asked for — the caption above asks the reader to
+   decide from the drawing alone, and printing the answer under each pane makes that
+   instruction impossible to follow. */
+function verdictKey(){
+  var d=document.createElement("details");d.className="reveal";
+  var sm=document.createElement("summary");sm.textContent="Reveal the two readings";
+  d.appendChild(sm);
+  [["A","radius R → 1.35 R · closed, with a visible 8° overlap where the arc crosses its own start · solid · weight 3 → 1 · a 6 pt tick at the tile's leading foot · printed in accent.verdigris — the copper plate takes. This is admit."],
+   ["B","radius 1.35 R → R · four arcs separating 3 pt · dashed 4 / 3 for its whole life · weight 3 → 3 · a doubled cancel at −60°, outside 1.35 R where no index stroke reaches · drawn in stroke.primary — the copper plate does not print. This is reject."]
+  ].forEach(function(r){
+    var p=H("p");var b=document.createElement("b");b.textContent=r[0]+" — ";
+    p.appendChild(b);p.appendChild(document.createTextNode(r[1]));d.appendChild(p);
+  });
+  return d;
+}
+function sealPane(barred){
+  var p=H("div","pane");
+  var w=H("div");w.style.cssText="padding:12px 0";
+  w.appendChild(seal(96,barred,T_LIGHT));p.appendChild(w);
+  var n=H("p","pane__note");
+  n.textContent=barred
+    ? "Barred. A 4 pt machined bar with a torn foul-bite edge. Pressing it pulses the offending rail; the copper centre is not inked."
+    : "Ready. The copper takes: the centre prints in accent.verdigris, with 0.33 pt of ink spread and no halo.";
+  p.appendChild(n);return p;
+}
+
+/* ---------- PL. V — the Codex shelf, from real predicates ---------- */
+function F(i){return i>>6;} function S_(i){return (i>>4)&3;}
+function P_(i){return (i>>2)&3;} function Hu(i){return i&3;}
+var LAWS=[
+  {k:"0117",p:function(i){return S_(i)===1||S_(i)===3;}},
+  {k:"0134",p:function(i){return P_(i)>=2;}},
+  {k:"0203",p:function(i){return F(i)===3;}},
+  {k:"0288",p:function(i){return Hu(i)===0||Hu(i)===3;}},
+  {k:"0341",p:function(i){return P_(i)>S_(i);}},
+  {k:"0407",p:function(i){return F(i)<=P_(i);}},
+  {k:"0421",p:function(i){return (S_(i)===0||S_(i)===2)!==(P_(i)<=1);}},
+  {k:"0466",p:function(i){return F(i)===0||Hu(i)===2;},fracture:true},
+  {k:"0512",p:function(i){return P_(i)===S_(i);}},
+  {k:"0577",p:function(i){return F(i)!==S_(i);}},
+  {k:"0630",p:function(i){return S_(i)===3&&F(i)>=2;}},
+  {k:"0688",p:function(i){return ((P_(i)+F(i))%2)===0;},anomaly:true},
+  {k:"0714",p:function(i){var c=0;if(F(i)>=2)c++;if(S_(i)>=2)c++;if(P_(i)>=2)c++;return c===2||c===3;}},
+  {k:"0791",p:function(i){return Hu(i)<P_(i);}},
+  {k:"0845",p:function(i){return F(i)===S_(i)&&P_(i)===Hu(i);}}
+];
+function shelfCell(law){
+  var th=T_LIGHT, box=60, s=SVG(box,box);
+  s.appendChild(E("rect",{x:0,y:0,width:box,height:box,fill:th.raised}));
+  var c=constellation(law.p,3.5,th,{});
+  c.setAttribute("x",2);c.setAttribute("y",2);s.appendChild(c);
+  s.appendChild(E("rect",{x:.5,y:.5,width:box-1,height:box-1,fill:"none",stroke:th.hair,"stroke-width":.5}));
+  if(law.anomaly)s.appendChild(E("rect",{x:2.5,y:2.5,width:box-5,height:box-5,fill:"none",
+    stroke:th.ink,"stroke-width":.5}));
+  if(law.fracture){                 /* foul bite: a 12 pt ragged notch, trailing-top corner */
+    var r=rng(parseInt(law.k,10)),pts=[[box,0]],i;
+    for(i=0;i<=6;i++){var t=i/6;pts.push([box-12*t+(r()-.5)*2.4, 12*t+(r()-.5)*2.4]);}
+    s.appendChild(E("polygon",{points:pts.map(function(p){return p[0].toFixed(1)+","+p[1].toFixed(1);}).join(" "),
+      fill:th.ground}));
+    s.appendChild(E("path",{d:"M "+(box-12)+" 0 "+pts.slice(1).map(function(p){
+      return "L "+p[0].toFixed(1)+" "+p[1].toFixed(1);}).join(" "),fill:"none",stroke:th.ink,"stroke-width":.75}));
+  }
+  var wrap=H("div");wrap.style.cssText="display:flex;flex-direction:column;gap:4px;align-items:center";
+  wrap.appendChild(s);
+  var lab=H("span");lab.className="mono";
+  lab.style.cssText="font-size:9px;letter-spacing:.06em;color:#5C554A";
+  lab.textContent="PL. "+law.k;wrap.appendChild(lab);
+  return wrap;
+}
+/* ---------- PL. VI — chrome: where letterforms live ---------- */
+function buildChrome(){
+  var th=T_LIGHT, box=H("div","chrome");
+  box.appendChild(H("div","shdr","Display"));
+
+  var r1=H("div","srow"); r1.appendChild(H("div","srow__l","Theme"));
+  var seg=H("div","seg");
+  ["System","Dark","Light","High Contrast"].forEach(function(t,i){
+    var it=H("div","seg__i"+(i===0?" is-on":""),t);seg.appendChild(it);});
+  r1.appendChild(seg);box.appendChild(r1);
+
+  var r2=H("div","srow"); r2.appendChild(H("div","srow__l","Grain"));
+  var tg=SVG(51,31);
+  tg.appendChild(E("rect",{x:.5,y:.5,width:50,height:30,rx:2,fill:th.ink}));
+  tg.appendChild(E("rect",{x:23,y:3,width:25,height:25,rx:1,fill:th.ground}));
+  tg.appendChild(E("line",{x1:29,y1:8,x2:29,y2:23,stroke:th.ink,"stroke-width":1}));
+  tg.appendChild(E("line",{x1:35,y1:8,x2:35,y2:23,stroke:th.ink,"stroke-width":1}));
+  tg.appendChild(E("line",{x1:41,y1:8,x2:41,y2:23,stroke:th.ink,"stroke-width":1}));
+  r2.appendChild(tg);box.appendChild(r2);
+
+  box.appendChild(H("div","shdr","Data"));
+  var r3=H("div","srow");r3.style.position="relative";
+  var l3=H("div","srow__l","Reset the ladder");
+  r3.appendChild(l3);
+  var ch=SVG(9,15);
+  ch.appendChild(E("path",{d:"M 1.5 1.5 L 7.5 7.5 L 1.5 13.5",fill:"none",stroke:th.ink2,"stroke-width":1.5}));
+  r3.appendChild(ch);
+  var bite=SVG(343,7);bite.style.cssText="position:absolute;left:16px;bottom:6px";
+  bite.appendChild(E("path",{d:foulPath(0,3.5,343,3.5,2.6,91),fill:"none",stroke:th.ink,"stroke-width":1}));
+  bite.appendChild(E("path",{d:foulPath(0,5,343,5,1.8,17),fill:"none",stroke:th.ink,"stroke-width":.5}));
+  r3.appendChild(bite);box.appendChild(r3);
+
+  /* the Codex page instrument strip — the one place a number is allowed to be a number */
+  box.appendChild(H("div","shdr","Codex page · instrument strip"));
+  var strip=H("div");
+  strip.style.cssText="padding:14px 16px 20px;display:flex;flex-direction:column;gap:12px";
+  var top=H("div");top.style.cssText="display:flex;align-items:center;gap:10px";
+  top.appendChild(modeSigil("probe",th));
+  var tsw=H("div");tsw.appendChild(tickScale(17,23,37,th));top.appendChild(tsw);
+  var num=H("span");num.className="mono";
+  num.style.cssText="font-size:15px;color:#16120C;font-variant-numeric:tabular-nums";
+  num.textContent="17 / 23";top.appendChild(num);
+  strip.appendChild(top);
+  var bot=H("div");bot.style.cssText="display:flex;align-items:center;gap:14px";
+  var marks=SVG(46,14);
+  [0,1,2].forEach(function(i){
+    marks.appendChild(i<2?E("circle",{cx:7+i*16,cy:7,r:5,fill:th.copper})
+      :E("circle",{cx:7+i*16,cy:7,r:5,fill:"none",stroke:th.hair,"stroke-width":1}));});
+  bot.appendChild(marks);
+  var notch=SVG(38,14);
+  for(var i=0;i<5;i++)notch.appendChild(E("line",{x1:3+i*7,y1:2,x2:3+i*7,y2:12,stroke:th.ink,"stroke-width":1.5}));
+  bot.appendChild(notch);
+  var anom=SVG(18,18);
+  anom.appendChild(E("circle",{cx:9,cy:9,r:7.5,fill:"none",stroke:th.ink,"stroke-width":1}));
+  anom.appendChild(E("circle",{cx:9,cy:9,r:5,fill:"none",stroke:th.ink,"stroke-width":1}));
+  bot.appendChild(anom);
+  var dt=H("span");dt.className="mono";
+  dt.style.cssText="font-size:15px;color:#5C554A;margin-left:auto;font-variant-numeric:tabular-nums";
+  dt.textContent="12 MAR 2026";bot.appendChild(dt);
+  strip.appendChild(bot);
+  box.appendChild(strip);
+
+  /* the roles themselves, named */
+  var spec=H("div");spec.style.cssText="padding:6px 16px 22px;display:flex;flex-direction:column;gap:9px";
+  [["display","28 / semibold / condensed / .06 em","Codex page title"],
+   ["title","20 / semibold / condensed / .08 em","Screen titles"],
+   ["section","13 / medium / condensed / .16 em","Instrument labels"],
+   ["body","17 / regular / standard / 0","Settings rows"],
+   ["numeral","15 / SF Mono / tabular","0123456789 · every number"],
+   ["micro","11 / medium / condensed / .18 em","Section heads"]].forEach(function(r){
+    var line=H("div");line.style.cssText="display:flex;align-items:baseline;gap:10px;justify-content:space-between";
+    var samp=H("span",null,r[2]);
+    samp.style.color="#16120C";
+    if(r[0]==="display")samp.style.cssText="color:#16120C;font-size:28px;font-weight:600;font-stretch:85%;letter-spacing:.06em";
+    if(r[0]==="title")samp.style.cssText="color:#16120C;font-size:20px;font-weight:600;font-stretch:85%;letter-spacing:.08em;text-transform:uppercase";
+    if(r[0]==="section")samp.style.cssText="color:#16120C;font-size:13px;font-weight:500;font-stretch:85%;letter-spacing:.16em;text-transform:uppercase";
+    if(r[0]==="body")samp.style.cssText="color:#16120C;font-size:17px";
+    if(r[0]==="numeral")samp.style.cssText="color:#16120C;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:15px;font-variant-numeric:tabular-nums";
+    if(r[0]==="micro")samp.style.cssText="color:#16120C;font-size:11px;font-weight:500;font-stretch:85%;letter-spacing:.18em;text-transform:uppercase";
+    var meta=H("span",null,r[0]+" · "+r[1]);
+    meta.className="mono";meta.style.cssText="font-size:9px;letter-spacing:.05em;color:#5C554A;white-space:nowrap";
+    line.appendChild(samp);line.appendChild(meta);spec.appendChild(line);
+  });
+  box.appendChild(spec);
+  return box;
+}
+
+/* ---------- PL. VII — the three themes ---------- */
+function themePane(th,cls,note){
+  var p=H("div","thm "+cls);
+  p.style.background=th.ground;p.style.color=th.ink;
+  var hd=H("div","thm__hd");
+  var a=H("span",null,th.label);var b=H("span",null,th.ground);
+  hd.appendChild(a);hd.appendChild(b);p.appendChild(hd);
+  var row=H("div","thm__row");
+  row.appendChild(glyph("striped","hexagon","three","teal",76,th));
+  var rw=bleed(SVG(96,96));
+  ringAdmit(rw,48,48-.10*68,.37*68,th,3);
+  var g2=glyph("dotted","triangle","two","frost",68,th);
+  g2.setAttribute("x",14);g2.setAttribute("y",14);rw.appendChild(g2);
+  row.appendChild(rw);
+  p.appendChild(row);
+  /* hatch:true so the HC pane shows every one of §13.11's deltas, not two of them:
+     hue -> stroke.primary, index 0.273 -> 0.409 S, every stroke +0.5 pt, the unlit
+     cell's ink step, and the cancel hatch doubling 1.0 -> 2.0 pt. */
+  var rp=ramp("hue",[1],56,44,44,th,{scale:1,hatch:true});p.appendChild(rp);
+  var n=H("p");n.className="mono";
+  n.style.cssText="font-size:10px;line-height:1.6;letter-spacing:.03em;color:"+th.ink2+";text-align:center";
+  n.textContent=note;p.appendChild(n);
+  return p;
+}
+
+/* ---------- PL. VIII — the token sheet ---------- */
+function table(el,head,rows){
+  var t=document.getElementById(el);
+  var thead=document.createElement("thead"),tbody=document.createElement("tbody");
+  var tr=document.createElement("tr");
+  head.forEach(function(h){var th=document.createElement("th");th.textContent=h;tr.appendChild(th);});
+  thead.appendChild(tr);t.appendChild(thead);t.appendChild(tbody);
+  rows.forEach(function(r){
+    var row=document.createElement("tr");
+    r.forEach(function(c){
+      var td=document.createElement("td");
+      if(c&&c.sw){
+        var s=H("span","sw");s.style.background=c.sw;td.appendChild(s);
+        var lab=H("span","num",c.t);td.appendChild(lab);
+      }else if(c&&c.num!=null){td.className="num";td.textContent=c.num;}
+      else if(c&&c.tok!=null){var k=H("span","tokname",c.tok);td.appendChild(k);}
+      else td.textContent=c;
+      row.appendChild(td);
+    });
+    tbody.appendChild(row);
+  });
+}
+var COLOUR_ROWS=[
+ ["ground","the sheet",{sw:"#EFE7D5",t:"#EFE7D5"},{num:"—"},{sw:"#1B1815",t:"#1B1815"},{num:"—"},{sw:"#FFFFFF",t:"#FFFFFF"},{num:"—"}],
+ ["ground.raised","Bench sheet, Codex rows",{sw:"#F4EFE2",t:"#F4EFE2"},{num:"1.07"},{sw:"#221E19",t:"#221E19"},{num:"1.07"},{sw:"#FFFFFF",t:"#FFFFFF"},{num:"1.00"}],
+ ["ground.sunken","inside a platemark, Assay well",{sw:"#E8E0CD",t:"#E8E0CD"},{num:"1.07"},{sw:"#141210",t:"#141210"},{num:"1.06"},{sw:"#EDEDED",t:"#EDEDED"},{num:"1.17"}],
+ ["stroke.primary","glyph keyline, rule-tiles, body text",{sw:"#16120C",t:"#16120C"},{num:"15.15"},{sw:"#EDE4CF",t:"#EDE4CF"},{num:"13.97"},{sw:"#000000",t:"#000000"},{num:"21.0"}],
+ ["stroke.secondary","graduated scales, tick marks, labels",{sw:"#5C554A",t:"#5C554A"},{num:"5.98"},{sw:"#8C8271",t:"#8C8271"},{num:"4.67"},{sw:"#333333",t:"#333333"},{num:"12.63"}],
+ ["stroke.hairline","platemark, registration, Assay grid, cell borders — never state-bearing, enforced",{sw:"#C6BCA6",t:"#C6BCA6"},{num:"1.53"},{sw:"#3E382F",t:"#3E382F"},{num:"1.52"},{sw:"#767676",t:"#767676"},{num:"4.54"}],
+ ["accent.verdigris","the copper plate: admit, Seal, marks, registration",{sw:"#1F6F5F",t:"#1F6F5F"},{num:"4.88"},{sw:"#8FE0C8",t:"#8FE0C8"},{num:"11.50"},{sw:"#00403A",t:"#00403A"},{num:"11.70"}],
+ ["hue.amber","rank 1 · index 0°",{sw:"#3F2800",t:"#3F2800"},{num:"11.26"},{sw:"#E9A100",t:"#E9A100"},{num:"8.05"},{sw:"#000000",t:"stroke.primary"},{num:"21.0"}],
+ ["hue.teal","rank 2 · index 45°",{sw:"#003424",t:"#003424"},{num:"11.25"},{sw:"#00C792",t:"#00C792"},{num:"8.07"},{sw:"#000000",t:"stroke.primary"},{num:"21.0"}],
+ ["hue.frost","rank 3 · index 90°",{sw:"#285B77",t:"#285B77"},{num:"5.98"},{sw:"#4DA3D3",t:"#4DA3D3"},{num:"6.31"},{sw:"#000000",t:"stroke.primary"},{num:"21.0"}],
+ ["hue.rose","rank 4 · index 135°",{sw:"#693B54",t:"#693B54"},{num:"7.25"},{sw:"#D67FAF",t:"#D67FAF"},{num:"6.32"},{sw:"#000000",t:"stroke.primary"},{num:"21.0"}]
+];
+/* |ΔL*|, not ΔL*: on a light ground a patch DARKENS as coverage rises, so three of
+   these four rows are decreases. Magnitudes are what make the rows comparable.
+   Each cell is the worst cross-hue margin between two adjacent fill ranks — min over
+   all 16 hue pairs of |L*(rank n+1, hue b) − L*(rank n, hue a)| — computed as optical
+   mixing on that ground, which is what a halftone actually does.
+   The shipping-light row was previously printed as 4.1 / 1.3 / 10.8; recomputed. */
+var LADDER_ROWS=[
+ ["Shipping dark #0B0A08, raw Okabe–Ito",{num:"26.8"},{num:"0.8"},{num:"10.4"}],
+ ["Shipping light #F4EFE4, raw Okabe–Ito",{num:"4.5"},{num:"1.7"},{num:"12.9"}],
+ ["PLATE light #EFE7D5",{num:"7.8"},{num:"5.5"},{num:"39.8"}],
+ ["PLATE dark #1B1815",{num:"25.7"},{num:"4.3"},{num:"15.3"}]
+];
+var HUE_ROWS=[
+ ["amber","#E69F00",{num:".416"},{sw:"#3F2800",t:"#3F2800"},{num:".062"},{num:".0257"},{num:"11.26 : 1"},{sw:"#E9A100",t:"#E9A100"},{num:"8.05 : 1"}],
+ ["teal","#009E73",{num:".257"},{sw:"#003424",t:"#003424"},{num:".100"},{num:".0258"},{num:"11.25 : 1"},{sw:"#00C792",t:"#00C792"},{num:"8.07 : 1"}],
+ ["frost","#56B4E9",{num:".405"},{sw:"#285B77",t:"#285B77"},{num:".229"},{num:".0927"},{num:"5.98 : 1"},{sw:"#4DA3D3",t:"#4DA3D3"},{num:"6.31 : 1"}],
+ ["rose","#CC79A7",{num:".293"},{sw:"#693B54",t:"#693B54"},{num:".231"},{num:".0677"},{num:"7.25 : 1"},{sw:"#D67FAF",t:"#D67FAF"},{num:"6.32 : 1"}]
+];
+var BAND_ROWS=[
+ ["ink",{num:"≤ .010"},{num:"≥ .700"},"stroke.primary, foul bite","— serves chrome and glyph keyline both"],
+ ["hue",{num:".026 – .093"},{num:".325 – .429"},"the four hue.*","chrome, rule-tile frame, tick mark, the Seal"],
+ ["copper",{num:".110 – .140"},{num:"≥ .560"},"accent.verdigris","glyph body, ramp cell, index stroke"]
+];
+var DIM_ROWS=[
+ [{tok:"w.hairline / w.thin"},{num:"0.5 / 1.0 pt"},"platemark, registration marks, Assay grid, empty-rail outline / ramp cell borders, rule-tile frames"],
+ [{tok:"w.bodySm / w.body"},{num:"1.5 / 3.0 pt"},"glyph body below S = 48 / glyph body at S ≥ 48, index stroke (always), wedge, coupler"],
+ [{tok:"w.heavy / w.squash"},{num:"4.0 pt / ×1.22"},"cancel band across a barred Seal, the AND welded bar / the ink-spread copy beneath every stroked mark"],
+ [{tok:"r.glyph / r.chrome"},{num:"0 / 1 pt"},"glyph silhouette — miter, zero radius, always / ramp cells, rule-tiles, buttons: a printed rule is nearly sharp and 2 pt reads as software"],
+ [{tok:"r.plate / r.sheet"},{num:"2 / 8 pt"},"platemark rectangles / Bench sheet top corners"],
+ [{tok:"o.full / o.mid"},{num:"1.00 / 0.55"},"any state-bearing ink / copper plate before registration, and the ribbon at reveal beat 1"],
+ [{tok:"o.low"},{num:"0.30"},"the ribbon at reveal beat 1 (High Contrast 0.45). NOT the unlit ramp cell: 30 % of a 15.15 : 1 ink measures 1.78 : 1 on paper and its own hairline border 1.13 : 1, so an unlit cell is re-inked stroke.secondary (5.98 : 1) and struck with the cancel hatch instead of being made transparent"],
+ [{tok:"o.faint / o.squash / o.tooth"},{num:"0.14 / 0.08 / 0.022"},"innermost platemark bevel / the ink-spread copy, which is the entire bloom budget / paper-tooth amplitude"]
+];
+var MOTION_ROWS=[
+ [{tok:"e.press"},{num:"cubic-bezier(0.20, 0, 0, 1)"},"into contact — accelerate, dead stop. The house curve."],
+ [{tok:"e.lift"},{num:"cubic-bezier(0.30, 0, 0.20, 1)"},"out of contact"],
+ [{tok:"e.draw / e.settle"},{num:"linear / (0.40, 0, 0.15, 1)"},"a pen draws at constant speed — frame stroking, registration sweep / fades and crossfades"],
+ [{tok:"e.sheet"},{num:"spring(0.32, 0.86)"},"Bench drag only — a press does not bounce"],
+ [{tok:"d.tick / d.beat"},{num:"90 / 140 ms"},"key travel and cross closure / chrome fade"],
+ [{tok:"d.step / d.move"},{num:"180 / 240 ms"},"per-beat inner move / tile gather and thumbnail dock"],
+ [{tok:"d.verdict"},{num:"250 ms"},"admit and reject, both non-blocking"],
+ [{tok:"d.reveal"},{num:"1840 / 1020 ms"},"correct / lost — same skeleton as the shipped spec, so audio and haptics port byte-for-byte"],
+ [{tok:"d.crossfade / d.rm"},{num:"220 / 260 ms"},"screen transitions / every Reduce Motion substitution"]
+];
+var COSTS=[
+ ["It contradicts the brief.","Dark-first is a stated instruction and PLATE overrules it. If the brief is load-bearing for reasons outside this document, PLATE is disqualified on sentence one and nothing above matters."],
+ ["It requires §2 and §13.2 to drop the word “verbatim”, and that is an amendment, not a reading.","Both sections say “Okabe–Ito verbatim in both themes, per canon — no re-lighting.” PLATE re-lights all four hues and the token sheet above prints the re-lit values under the shipped names. The method is defensible — scaling in linear RGB multiplies Y exactly and leaves CIE (x, y) unchanged, measured drift ≤ 0.003 in both coordinates, so every hue keeps its Okabe–Ito chromaticity and its place on every dichromat confusion line — but it is still a re-lighting by the spec's own definition, so it needs a signed amendment before a single pixel ships. It also makes the two directions' greyscale panels non-comparable on hue: PLATE's amber and teal are 11.26 and 11.25 : 1 because they were re-lit to be, and the other direction's are 8.8 and 5.8 : 1 because they were not. Read the greyscale panel for the four channels, not for the two numbers."],
+ ["The dichromat separation figure is not reproducible, and it has been withdrawn.","Earlier drafts bought this direction partly on “min dichromat ΔE 13.7 against raw Okabe–Ito's 10.9, +26 %”. Recomputed here with Viénot–Brettel–Mollon 1999 and both ΔE76 and ΔE2000, neither the values nor reliably the ranking come back: ΔE76 gives raw Okabe–Ito 13.9 against PLATE light 12.4, and ΔE2000 gives 8.2 against 9.1. The number moves with the simulation and the metric, so it is not a number to decide on and it is gone. What survives is measured and does not move: worst-case hue contrast on this ground goes 1.83 → 5.98 : 1, and the fill ladder's worst cross-hue margin goes 0.8 → 5.5 ΔL*."],
+ ["Night play is genuinely worse, and OLED battery is worse.","A near-full-field #EFE7D5 at 3 a.m. is unpleasant, and on OLED a bright field costs roughly 3–5× the panel power of a dark one. The dark theme exists and is decent; it does not fix the default."],
+ ["Two artefacts, one game.","Paper does not invert into paper, so PLATE's dark theme is chalk on prepared board — a different object with a different emotional register. PLATE ships two art directions, doubles the review surface and the snapshot matrix, and will drift. Direction A's dark and light are one artefact at two exposures. PLATE's dark theme is also the measurably weaker palette on the numbers that do hold: its ink-against-hue band separation is 1.82× where light's is 4.09×, and its worst fill-ladder margin is 4.3 ΔL* against light's 5.5."],
+ ["The money shot is quieter, and it must be learned.","Registration only pays off for a player who noticed the crosses were broken for the last twelve minutes; a bloom needs no prior. A first-round player may read beat 4 as “things moved slightly”, which is the worst possible outcome for the emotional peak of the loop."],
+ ["One accent makes geometry do more work than it may survive.","reject, strike, barred and counterexample all resolve to ink-plus-texture and must be told apart by shape alone — four wordless states in one register, where A has two registers to spend. This is the likeliest place PLATE fails usability testing."],
+ ["Green accent, dark inks, and an argument that never ends.","accent.verdigris beside hue.teal is a green-on-green adjacency, provably safe here (1.35 : 1 luminance, disjoint registers, geometry-encoded verdict) and flagged in every accessibility review forever. Relatedly hue.amber at #3F2800 does not look amber: the enum name and the pigment part company, and every new author trips over it once."],
+ ["Hairlines are more fragile on paper.","A 0.5 pt stroke.hairline at 1.53 : 1 on a light ground is one device pixel of pale grey; the same token on a dark ground reads as a bright line. PLATE's chrome degrades faster at small sizes and on poor panels."]
+];
+
+/* ---------- the press: beats 2, 3 and 4, at their real timings ---------- */
+var BEATS=[[0,"beat 0 · seal depresses 2 pt"],[230,"beat 2 · ink plate gathers, 8 pt out of register"],
+  [490,"beat 3 · copper prints behind, 18 pt off — the miss is evidence"],
+  [810,"beat 4 · THE IMPRESSION — crosses close, platemark debosses"],
+  [990,"settled · zero luminance increase anywhere"]];
+function buildPress(){
+  var th=pageTheme(), stage=document.getElementById("stage"), btn=document.getElementById("pull"),
+      beat=document.getElementById("beat"), W=340, Hh=220;
+  var s=SVG(W,Hh);s.style.cssText="position:absolute;inset:0";stage.appendChild(s);
+  var deb=E("rect",{x:26,y:26,width:W-52,height:Hh-52,fill:"#E8E0CD"});s.appendChild(deb);
+  var pm=E("g",{});s.appendChild(pm);platemark(pm,26,26,W-52,Hh-52,T_LIGHT);
+  pm.style.transition="opacity 40ms cubic-bezier(.20,0,0,1)";pm.style.opacity="0.35";
+  var crosses=[];
+  [[26,26],[W-26,26],[26,Hh-26],[W-26,Hh-26]].forEach(function(c){
+    /* a printer's cross whose VERTICAL arm alone sits out of true — 12 pt arms, 3 pt gap */
+    var g=E("g",{transform:"translate("+c[0]+","+c[1]+")"});
+    [[-13.5,0,-1.5,0],[1.5,0,13.5,0]].forEach(function(l){
+      g.appendChild(E("line",{x1:l[0],y1:l[1],x2:l[2],y2:l[3],stroke:T_LIGHT.ink2,"stroke-width":.5}));
+    });
+    var v=E("g",{});
+    [[0,-13.5,0,-1.5],[0,1.5,0,13.5]].forEach(function(l){
+      v.appendChild(E("line",{x1:l[0],y1:l[1],x2:l[2],y2:l[3],stroke:T_LIGHT.ink2,"stroke-width":.5}));
+    });
+    g.appendChild(v);s.appendChild(g);crosses.push(v);
+  });
+  function plateStack(colour,op){
+    var g=E("g",{opacity:op});
+    g.appendChild(E("rect",{x:0,y:0,width:150,height:34,fill:"none",stroke:colour,"stroke-width":2}));
+    g.appendChild(E("rect",{x:0,y:44,width:150,height:34,fill:"none",stroke:colour,"stroke-width":2}));
+    g.appendChild(E("line",{x1:75,y1:34,x2:75,y2:44,stroke:colour,"stroke-width":1}));
+    g.appendChild(E("circle",{cx:75,cy:39,r:7,fill:"none",stroke:colour,"stroke-width":1}));
+    [10,32,54,76,98,120].forEach(function(x,i){
+      g.appendChild(E("line",{x1:x,y1:10,x2:x,y2:24,stroke:colour,"stroke-width":i%2?1:2}));
+      g.appendChild(E("circle",{cx:x+6,cy:61,r:i<3?4:2.5,fill:i<3?colour:"none",stroke:colour,"stroke-width":1}));
+    });
+    return g;
+  }
+  var copper=plateStack(T_LIGHT.copper,.55), ink=plateStack(T_LIGHT.ink,1);
+  s.appendChild(copper);s.appendChild(ink);
+  var cx0=(W-150)/2, cy0=(Hh-78)/2;
+  copper.style.transition="transform 320ms cubic-bezier(.40,0,.15,1), opacity 320ms linear";
+  ink.style.transition="transform 260ms cubic-bezier(.20,0,0,1), opacity 140ms linear";
+  crosses.forEach(function(g){g.style.transition="transform 40ms cubic-bezier(.20,0,0,1)";});
+
+  var RM=window.matchMedia("(prefers-reduced-motion: reduce)");
+  function setCross(open){
+    crosses.forEach(function(g,i){
+      var d=open?(i<2?-2:2):0;
+      g.style.transform="translateY("+d+"px)";
+    });
+  }
+  function place(g,x,y,op){g.style.transform="translate("+x+"px,"+y+"px)";if(op!=null)g.style.opacity=op;}
+  function reset(){
+    place(ink,cx0+8,cy0+46,0);place(copper,cx0+18,cy0+12,0);
+    setCross(true);pm.style.opacity="0.35";deb.setAttribute("fill","#EFE7D5");
+    beat.textContent=BEATS[0][1];
+  }
+  function settle(){
+    place(ink,cx0,cy0,1);place(copper,cx0,cy0,.55);setCross(false);
+    pm.style.opacity="1";deb.setAttribute("fill","#E8E0CD");
+    beat.textContent=BEATS[4][1];
+  }
+  var timers=[];
+  function run(){
+    timers.forEach(clearTimeout);timers=[];
+    if(RM.matches){settle();return;}
+    reset();
+    btn.setAttribute("aria-disabled","true");
+    timers.push(setTimeout(function(){place(ink,cx0+8,cy0+46,1);},60));
+    /* beat 2 — the rule-tiles gather into a centred stack, arriving 8 pt out of register */
+    timers.push(setTimeout(function(){place(ink,cx0+8,cy0+8,1);beat.textContent=BEATS[1][1];},230));
+    timers.push(setTimeout(function(){place(copper,cx0+18,cy0+12,.55);beat.textContent=BEATS[2][1];},490));
+    timers.push(setTimeout(function(){place(copper,cx0,cy0,.55);place(ink,cx0,cy0,1);},810));
+    timers.push(setTimeout(function(){
+      beat.textContent=BEATS[3][1];setCross(false);pm.style.opacity="1";
+      deb.setAttribute("fill","#E8E0CD");
+      [ink,copper].forEach(function(g){
+        [].forEach.call(g.querySelectorAll("*"),function(n){
+          var w=parseFloat(n.getAttribute("stroke-width")||0);
+          if(w)n.setAttribute("stroke-width",w+0.5);
+        });
+      });
+    },930));
+    timers.push(setTimeout(function(){
+      [ink,copper].forEach(function(g){
+        [].forEach.call(g.querySelectorAll("*"),function(n){
+          var w=parseFloat(n.getAttribute("stroke-width")||0);
+          if(w)n.setAttribute("stroke-width",Math.max(1,w-0.5));
+        });
+      });
+    },970));
+    timers.push(setTimeout(function(){settle();btn.removeAttribute("aria-disabled");},1180));
+  }
+  btn.addEventListener("click",run);
+  if(RM.matches)settle(); else {reset();setTimeout(run,700);}
+}
+/* ============================================================
+   SHIPPED ASSERTIONS
+   Everything the Bench says in three media — a drawing (the wedge), a predicate (the
+   Assay), and a sentence (the well caption) — has to be the same law. These run at
+   load. They report; they never throw, because a blank page is a worse failure than a
+   wrong one, and a visible red-handed banner is more useful than a console line.
+   ============================================================ */
+function assertions(){
+  var out=[],ok=true;
+  function chk(name,pass,detail){out.push({name:name,pass:!!pass,detail:detail});if(!pass)ok=false;}
+
+  /* 1. the wedge is drawn the way the comparator token reads */
+  var d=LAW.wedge(100,50), n=(d.match(/-?[\d.]+/g)||[]).map(Number);
+  var armX=n[0], apexX=n[2], openingLeads=armX<apexX;
+  var tokenSaysLeadingLarger=(LAW.cmp==="gt"||LAW.cmp==="gte");
+  chk("wedge opening matches the comparator token",
+      openingLeads===tokenSaysLeadingLarger,
+      "cmp "+LAW.cmp+" · opening faces "+(openingLeads?"leading (cur)":"trailing (prev)"));
+
+  /* 2. the Assay's lit count is what the caption claims, from the same predicate */
+  var lit=0,i;for(i=0;i<256;i++)if(LAW.slice(LAW.pin)(i))lit++;
+  chk("Assay lights 64 of 256 for the pinned prev",lit===64,
+      "pin "+LAW.pin+" (pips="+PIPS[(LAW.pin>>2)&3]+") · "+lit+" of 256");
+
+  /* 3. drawn the other way round, the same slice would light 32 — the trap this catches */
+  var flip={cmp:LAW.cmp==="gt"?"lt":"gt",shapes:LAW.shapes},f=0;
+  for(i=0;i<256;i++){
+    var r=flip.cmp==="gt"?((i>>2)&3)>((LAW.pin>>2)&3):((i>>2)&3)<((LAW.pin>>2)&3);
+    if(r&&flip.shapes.indexOf((i>>4)&3)>=0)f++;
+  }
+  chk("the mirrored wedge would light a different count",f!==lit,
+      "mirrored reads "+f+" of 256, so the two are not silently interchangeable");
+
+  /* 4. every verdict in the transcript is what the law returns, given the tile before it */
+  var bad=[];
+  for(i=1;i<RIBBON.length;i++){
+    var want=LAW.admits(RIBBON[i].id,RIBBON[i-1].id)?"admit":"reject";
+    if(RIBBON[i].v!==want)bad.push("tile "+(i+1)+" says "+RIBBON[i].v+", law says "+want);
+  }
+  chk("the ribbon transcript obeys the law it is captioned with",!bad.length,
+      bad.length?bad.join("; "):(RIBBON.length-1)+" probes + 1 seed, all consistent");
+
+  /* 5. the Bench closes inside the 343 pt content column (§13.3) */
+  var right=ASSAY_X+64;
+  chk("Bench content closes inside the 343 pt column",right===359&&16+RAIL_W<=ASSAY_X,
+      "rails 16–"+(16+RAIL_W)+" · gutter 6 · Assay "+ASSAY_X+"–"+right+" · margin "+(375-right)+" pt");
+
+  /* 6. the Ramp strip fits its rail */
+  chk("Ramp strip fits the rail",RAMP_W<=RAIL_W-2,RAMP_W+" pt strip in a "+RAIL_W+" pt rail");
+
+  /* 7. stroke.hairline is never state-bearing — the reject ring is stroke.primary */
+  var probe=ribbonTile(0,"reject",T_LIGHT,{});
+  var hairRings=[].filter.call(probe.querySelectorAll("circle"),function(c){
+    return c.getAttribute("stroke")===T_LIGHT.hair;});
+  chk("no verdict ring is drawn in stroke.hairline",hairRings.length===0,
+      "reject ring is stroke.primary, 14.19 : 1 on ground.sunken");
+
+  /* 8. both constellations are the same drawing */
+  chk("Assay and Codex thumbnail share one dot diameter",DOT_D===1.6,DOT_D+" pt at every pitch");
+
+  return {ok:ok,rows:out};
+}
+function reportAssertions(){
+  var r;
+  try{r=assertions();}catch(e){r={ok:false,rows:[{name:"assertions threw",pass:false,detail:String(e)}]};}
+  var host=document.getElementById("asserts");
+  if(!host)return r;
+  var box=H("div","assertbar");
+  var head=document.createElement("b");
+  head.textContent=(r.ok?"✓ ":"✗ ")+"Shipped assertions — "+
+    r.rows.filter(function(x){return x.pass;}).length+" of "+r.rows.length+" passing";
+  box.appendChild(head);
+  r.rows.forEach(function(x){
+    var line=H("div");
+    line.textContent=(x.pass?"  ✓  ":"  ✗  ")+x.name+" — "+x.detail;
+    if(!x.pass)line.style.color="#16120C";
+    box.appendChild(line);
+  });
+  host.appendChild(box);
+  return r;
+}
+
+/* ============================================================
+   BUILD
+   ============================================================ */
+function fillWell(id,left,right,node){
+  var host=document.getElementById(id), inner=H("div","well__in");
+  var b=H("div","wellbar");
+  b.appendChild(H("span",null,left));
+  b.appendChild(H("span",null,right));
+  inner.appendChild(b);inner.appendChild(node);host.appendChild(inner);
+}
+function boot(){
+  dressPlates();
+
+  /* rail — a graduated printer's scale that indexes the plates */
+  var rail=document.getElementById("rail");
+  var PL=[["p1","I"],["p2","II"],["p3","III"],["p4","IV"],["p5","V"],
+          ["p6","VI"],["p7","VII"],["p8","VIII"],["p9","IX"]];
+  PL.forEach(function(p,i){
+    var li=document.createElement("li"),a=H("a","rail__a");
+    a.href="#"+p[0];a.setAttribute("data-major",(i+1)%5===0?"1":"0");
+    a.appendChild(H("span","rail__n",p[1]));
+    a.appendChild(H("span","rail__t"));
+    li.appendChild(a);rail.appendChild(li);
+  });
+
+  buildLadders("ladders");
+  buildLadders("ladders-grey");
+  buildYard(document.getElementById("yard-colour"));
+  buildYard(document.getElementById("yard-grey"));
+
+  fillWell("well-probe","Specimen · PROBE · PLATE light · LIVE",
+    "375 × 667 pt · 1 : 1 · does not follow your theme",buildProbe());
+
+  /* A and B, unlabelled by verdict, one identical glyph, answer key below the pair */
+  var pr=document.getElementById("pair");
+  pr.appendChild(verdictPane("admit","A"));pr.appendChild(verdictPane("reject","B"));
+  var prg=document.getElementById("pair-grey");
+  if(prg){prg.appendChild(verdictPane("admit","A"));prg.appendChild(verdictPane("reject","B"));}
+  var pk=document.getElementById("pair-key");if(pk)pk.appendChild(verdictKey());
+  var pt2=document.getElementById("pair-tiles");
+  pt2.appendChild(tilePane("admit","A"));pt2.appendChild(tilePane("reject","B"));
+
+  fillWell("well-bench","Specimen · Bench · PLATE light · LIVE — press the Seal",
+    LAW.text,buildBench());
+  var ps=document.getElementById("pair-seal");
+  ps.appendChild(sealPane(true));ps.appendChild(sealPane(false));
+
+  var shelf=document.getElementById("shelf");
+  LAWS.forEach(function(l){shelf.appendChild(shelfCell(l));});
+
+  fillWell("well-chrome","Specimen · Settings and Codex chrome",
+    "375 pt column · the only letterforms in the app",buildChrome());
+
+  var thh=document.getElementById("themes");
+  thh.appendChild(themePane(T_LIGHT,"","canonical · ink on laid paper · worst hue 5.98 : 1"));
+  thh.appendChild(themePane(T_DARK,"","chalk on prepared board · ink↔hue band 1.82× — the weaker of the two"));
+  thh.appendChild(themePane(T_HC,"","hues → stroke.primary · index 0.273→0.409·S · every stroke +0.5 pt · unlit cell re-inked · hatch 1→2 pt · squash off"));
+
+  table("t-colour",["Token","Use","Light (canonical)",": 1","Dark",": 1","High Contrast",": 1"],
+    COLOUR_ROWS.map(function(r){return [{tok:r[0]},r[1],r[2],r[3],r[4],r[5],r[6],r[7]];}));
+  table("t-ladder",["Ground / ink set","|ΔL*| hollow → dotted","|ΔL*| dotted → striped","|ΔL*| striped → solid"],LADDER_ROWS);
+  table("t-hue",["Hue","Okabe–Ito","Y","PLATE light","k","Y","on paper","PLATE dark","on board"],HUE_ROWS);
+  table("t-band",["Band","Light Y","Dark Y","Members","Never touches"],BAND_ROWS);
+  table("t-dim",["Token","Value","Applied to"],DIM_ROWS);
+  table("t-motion",["Token","Curve / ms","Where"],MOTION_ROWS);
+
+  var cl=document.getElementById("costs-list");
+  COSTS.forEach(function(c,i){
+    var li=H("li","costs__li");
+    li.appendChild(H("span","costs__n",String(i+1).padStart(2,"0")));
+    var b=H("p","costs__b");
+    var strong=document.createElement("b");strong.textContent=c[0]+" ";
+    b.appendChild(strong);b.appendChild(document.createTextNode(c[1]));
+    li.appendChild(b);cl.appendChild(li);
+  });
+  /* the costs plate is torn along its head — damage as texture, not a hue */
+  var bite=document.getElementById("bite"),cbox=document.getElementById("costs");
+  bite.setAttribute("width","100%");bite.setAttribute("height","10");
+  bite.setAttribute("viewBox","0 0 800 10");bite.setAttribute("preserveAspectRatio","none");
+  bite.style.cssText="left:0;top:0;width:100%;height:10px";
+  var pt=pageTheme();
+  bite.appendChild(E("path",{d:foulPath(0,4,800,4,3,404),fill:"none",stroke:pt.ink2,"stroke-width":1}));
+  bite.appendChild(E("path",{d:foulPath(0,7,800,7,2,77),fill:"none",stroke:pt.hair,"stroke-width":1}));
+
+  buildPress();
+  reportAssertions();
+
+  /* rail follows the reader */
+  var links=[].slice.call(document.querySelectorAll(".rail__a"));
+  if("IntersectionObserver" in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        var a=links.filter(function(l){return l.getAttribute("href")==="#"+e.target.id;})[0];
+        if(a&&e.isIntersecting){links.forEach(function(l){l.classList.remove("is-on");});a.classList.add("is-on");}
+      });
+    },{rootMargin:"-45% 0px -45% 0px"});
+    PL.forEach(function(p){var el=document.getElementById(p[0]);if(el)io.observe(el);});
+  }
+  /* the page's own chrome follows the viewer; redraw hairlines when it flips */
+  var mo=new MutationObserver(function(){dressPlates();});
+  mo.observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+  if(window.matchMedia)window.matchMedia("(prefers-color-scheme: dark)").addEventListener
+    &&window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",dressPlates);
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);
+else boot();
+})();
+</script>
