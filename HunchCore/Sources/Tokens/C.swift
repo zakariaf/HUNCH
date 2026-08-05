@@ -11,6 +11,46 @@ import Foundation
 /// Two worked examples ship here because they belong to the resolution order rather
 /// than to a drawing. Everything else is appended by the component skills.
 public enum C {
+    /// The dashed hollow frame and backward chevron that marks a `prev` referent — §4.2's
+    /// diegetic symbol, drawn identically at every one of its four sites so the identity is
+    /// what does the naming that words are forbidden from doing.
+    public enum GhostFrame {
+        /// Fixed at every size, deliberately. The dash is a TEXTURE, and this app pins
+        /// textures to an absolute pitch (§13.5's `pitch = max(5, 0.22·R)` and the coverage
+        /// ladder that depends on it). A dash that scaled with the box would make the 36 pt
+        /// ECHO seed and the 168 pt DRIFT sigil different marks.
+        ///
+        /// `[3, 3]` is this mark's signature and no other dashed mark may use it: the
+        /// counterexample ring is `[4, 3]`, and the empty-rail outline and the Anomaly
+        /// `.absent` ring must pick something else.
+        public static let dash: [Double] = [3, 3]
+        /// Reproduces the PHOSPHOR mockup exactly at `side = 44`.
+        public static let chevronRatio = 0.09
+        /// Keeps the 36 pt ECHO seed chevron legible once the ratio floors out.
+        public static let chevronFloor = 4.0
+    }
+
+    /// The bar across a barred control — the Seal and the barred mode-rack key draw the
+    /// identical mark (§4.3, §12.4).
+    public enum MachinedBar {
+        /// The bar runs −0.52 … +0.52 of the control, so it overhangs by 2 % on each side and
+        /// reads as a machined part rather than as a drawn line that stops at the edge.
+        public static let overhangRatio = 0.02
+    }
+
+    /// The mark that strikes a region as excluded — an unlit ramp cell, an inert ramp, an
+    /// eliminated ECHO pool member.
+    public enum CancelHatch {
+        /// Fixed at every site and exactly perpendicular to §13.5's `striped` fill, so the
+        /// mark never disappears into a striped glyph.
+        public static let angleDegrees = -45.0
+        /// Perpendicular spacing — a 14 pt axis step. Coverage is `weight / spacing`, held
+        /// below `dotted`'s 22.7 % so the hatch never reads as a fill.
+        public static let spacing = 9.9
+        /// The transient reject ring's slash is a diameter chord with a little overshoot.
+        public static let slashOvershoot = 1.06
+    }
+
     /// `C.Glyph` and the model type `Glyphs.Glyph` are different modules and L2 is always
     /// written fully qualified, so there is no ambiguity at a call site.
     public enum Glyph {
