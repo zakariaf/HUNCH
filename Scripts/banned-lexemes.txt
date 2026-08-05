@@ -1,0 +1,84 @@
+# Scripts/banned-lexemes.txt — GAME_DESIGN.md §1.13, transcribed from that paragraph.
+# Format: locale<TAB>lexeme.  # comments.  Matching is case-insensitive (test($w;"i")).
+# Diacritics are NOT folded, which is why every accented form is listed explicitly.
+# Exclamation marks are on the same list and need one row per locale (§1.13).
+
+en	brain
+en	cognitive
+en	memory
+en	focus
+en	IQ
+en	mental
+en	dementia
+en	Alzheimer
+en	smarter
+en	sharper
+en	train
+en	training
+en	workout
+en	therapy
+en	mindful
+de	Gehirn
+de	Gehirnjogging
+de	Denksport
+de	Gedächtnis
+de	Konzentration
+de	geistig
+fr	cerveau
+fr	gymnastique cérébrale
+fr	mémoire
+fr	concentration
+fr	mental
+pt-BR	cerebro
+pt-BR	cérebro
+pt-BR	mente
+pt-BR	memoria
+pt-BR	memória
+pt-BR	concentración
+pt-BR	concentração
+pt-BR	agilidad mental
+it	cervello
+it	mente
+it	memoria
+it	concentrazione
+tr	beyin
+tr	zihin
+tr	hafıza
+tr	zeka
+ru	мозг
+ru	память
+ru	внимание
+ru	интеллект
+ja	脳
+ja	脳トレ
+ja	記憶力
+ja	集中力
+ja	認知
+ko	두뇌
+ko	뇌
+ko	기억력
+ko	집중력
+ko	인지
+zh-Hans	大脑
+zh-Hans	脑力
+zh-Hans	记忆力
+zh-Hans	专注力
+zh-Hans	智力
+ar	دماغ
+ar	ذاكرة
+ar	تركيز
+ar	ذهني
+
+# Exclamation marks — one row per locale, no wildcard exists in the jq filter.
+en	!
+de	!
+fr	!
+es	!
+pt-BR	!
+it	!
+tr	!
+ru	!
+ja	!
+ko	!
+zh-Hans	!
+ar	!

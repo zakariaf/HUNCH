@@ -92,6 +92,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C0F1000000000000000060 /* Build configuration list for PBXNativeTarget "Hunch" */;
 			buildPhases = (
+				C0F1000000000000000400 /* Source hygiene */,
 				C0F1000000000000000070 /* Sources */,
 				C0F1000000000000000030 /* Frameworks */,
 				C0F1000000000000000080 /* Resources */,
@@ -233,6 +234,31 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		C0F1000000000000000400 /* Source hygiene */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Scripts/check-source-hygiene.sh",
+				"$(SRCROOT)/App",
+				"$(SRCROOT)/HunchCore/Sources",
+			);
+			name = "Source hygiene";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "\"$SRCROOT/Scripts/check-source-hygiene.sh\" --fast\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		C0F1000000000000000070 /* Sources */ = {
