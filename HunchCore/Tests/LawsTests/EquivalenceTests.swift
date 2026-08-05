@@ -6,7 +6,6 @@ import Laws
 
 @Suite("Equivalence, dead terms and liveness", .tags(.unit, .presubmission))
 struct EquivalenceTests {
-    static func sub(_ raw: UInt8) -> Subset4 { Subset4(rawValue: raw)! }  // swift-format-ignore: NeverForceUnwrap
 
     /// §4.5's promise to the player: a differently-spelled declaration that means the same law
     /// is CORRECT. Rejecting an equivalent phrasing would punish the player for the grammar
@@ -14,13 +13,14 @@ struct EquivalenceTests {
     @Test("Two spellings of one law are the same law (§4.5)")
     func spellingIsIrrelevant() {
         // "shape ∈ {triangle,square,hexagon}" vs the complement of "shape ∈ {circle}".
-        let a = Law(.atom(.init(attribute: .shape, subset: Self.sub(0b1110))))
-        let b = Law(LawNode.atom(.init(attribute: .shape, subset: Self.sub(0b0001))).complemented)
+        let a = Law(.atom(.init(attribute: .shape, subset: Fixture.subset(0b1110))))
+        let b = Law(
+            LawNode.atom(.init(attribute: .shape, subset: Fixture.subset(0b0001))).complemented)
         #expect(a.isSameLaw(as: b))
         #expect(a.key == b.key)
 
         // "pips ∈ {3,4}" — the player who thinks "pips >= 3" lights the same two cells.
-        let c = Law(.atom(.init(attribute: .pips, subset: Self.sub(0b1100))))
+        let c = Law(.atom(.init(attribute: .pips, subset: Fixture.subset(0b1100))))
         #expect(!a.isSameLaw(as: c))
     }
 
@@ -28,8 +28,9 @@ struct EquivalenceTests {
     /// law by lifting.
     @Test("Comparison happens at the larger arity")
     func crossArityComparison() {
-        let stateless = Law(.atom(.init(attribute: .fill, subset: Self.sub(0b0100))))
-        let lifted = LawTable(.atom(.init(attribute: .fill, subset: Self.sub(0b0100)))).lifted()
+        let stateless = Law(.atom(.init(attribute: .fill, subset: Fixture.subset(0b0100))))
+        let lifted = LawTable(.atom(.init(attribute: .fill, subset: Fixture.subset(0b0100))))
+            .lifted()
         #expect(LawTable.equalInCommonSpace(stateless.table, lifted))
     }
 
@@ -45,8 +46,8 @@ struct EquivalenceTests {
     @Test("LawSet resolves a forced bucket collision by full compare")
     func lawSetHandlesCollisions() {
         var set = LawSet()
-        let a = LawTable(.atom(.init(attribute: .fill, subset: Self.sub(0b0001))))
-        let b = LawTable(.atom(.init(attribute: .hue, subset: Self.sub(0b1000))))
+        let a = LawTable(.atom(.init(attribute: .fill, subset: Fixture.subset(0b0001))))
+        let b = LawTable(.atom(.init(attribute: .hue, subset: Fixture.subset(0b1000))))
         let collide = LawKey(rawValue: 42)
         // Bound out of the macro: #expect cannot call a mutating member on its captured value.
         let first = set.insert(a, forcedKey: collide)
@@ -64,16 +65,16 @@ struct EquivalenceTests {
     func subsumedAndIsDead() {
         // shape ∈ {circle} AND shape ∈ {circle,triangle} — the second term does nothing.
         let node = LawNode.coupled(
-            .atom(.init(attribute: .shape, subset: Self.sub(0b0001))), .and,
-            .atom(.init(attribute: .shape, subset: Self.sub(0b0011))))
+            .atom(.init(attribute: .shape, subset: Fixture.subset(0b0001))), .and,
+            .atom(.init(attribute: .shape, subset: Fixture.subset(0b0011))))
         #expect(!Law(node).deadLeaves.isEmpty)
     }
 
     @Test("A live two-term law has no dead leaves")
     func liveLawHasNoDeadLeaves() {
         let node = LawNode.coupled(
-            .atom(.init(attribute: .shape, subset: Self.sub(0b1010))), .and,
-            .atom(.init(attribute: .pips, subset: Self.sub(0b1100))))
+            .atom(.init(attribute: .shape, subset: Fixture.subset(0b1010))), .and,
+            .atom(.init(attribute: .pips, subset: Fixture.subset(0b1100))))
         #expect(Law(node).deadLeaves.isEmpty)
     }
 
@@ -89,7 +90,7 @@ struct EquivalenceTests {
 
     @Test("Pivotal attributes are exactly the ones the law depends on")
     func pivotalAttributes() {
-        let atom = Law(.atom(.init(attribute: .fill, subset: Self.sub(0b0100))))
+        let atom = Law(.atom(.init(attribute: .fill, subset: Fixture.subset(0b0100))))
         #expect(atom.pivotalAttributes == [.fill])
         #expect(atom.hasLiveNamedAttributes)
 
@@ -101,7 +102,7 @@ struct EquivalenceTests {
             .aggregate(
                 .parity(
                     .init(
-                        attributes: AttributeSet(rawValue: 0b1111)!, isOdd: false))))  // swift-format-ignore: NeverForceUnwrap
+                        attributes: Fixture.attributeSet(0b1111), isOdd: false))))
         #expect(parity.pivotalAttributes.count == 4)
     }
 }
