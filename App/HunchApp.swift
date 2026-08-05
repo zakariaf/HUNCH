@@ -8,7 +8,11 @@ import SwiftUI
 struct HunchApp: App {
     var body: some Scene {
         WindowGroup {
-            TokenProofView()
+            #if DEBUG
+                SnapshotGallery()
+            #else
+                TokenProofView()
+            #endif
         }
     }
 }

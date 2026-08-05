@@ -209,6 +209,30 @@
       "command": "node .claude/skills/hunch-glyph-renderer/scripts/check-coverage-separation.js",
       "status": "pass",
       "task": "E04/T06"
+    },
+    {
+      "id": "E04-T07-single-owner",
+      "area": "drawing",
+      "statement": "each of the seven shared marks has exactly one owning function; the machined bar and the tick row are drawn from one place, not from each of their seven sites",
+      "command": "Scripts/check-inventory.sh",
+      "status": "pass",
+      "task": "E04/T07"
+    },
+    {
+      "id": "E04-T08-achromatic-verdict",
+      "area": "accessibility",
+      "statement": "the verdict is ring direction and closure, never colour; the twin split ring and the counterexample's distinct dash patterns survive greyscale",
+      "command": "swift build --package-path Modules",
+      "status": "pass",
+      "task": "E04/T08"
+    },
+    {
+      "id": "E04-T09-gallery",
+      "area": "drawing",
+      "statement": "the DEBUG snapshot gallery renders every mark x state x three themes plus greyscale and Bold Text, as the visual-regression corpus",
+      "command": "xcodebuild build -scheme Hunch",
+      "status": "pass",
+      "task": "E04/T09"
     }
   ]
 }

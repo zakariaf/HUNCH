@@ -4,7 +4,7 @@ Current phase, what is done, what is next, known issues. Updated at the end of e
 
 ## Phase
 
-**E01 — Foundations, bootstrap and CI.** 8 of 9 tasks complete.
+**E04 — Glyph renderer.** Complete. E01, E02, E03 complete. 30 of ~89 tasks across E01–E10.
 
 ## Done
 
@@ -21,8 +21,18 @@ Current phase, what is done, what is next, known issues. Updated at the end of e
 
 ## Next
 
-**T09 — the library checkers** (`check-inventory.sh`, `check-symbols.sh`, `check-skills.sh`),
-then E02.
+**E05 — the rule grammar**: `LawNode`, the evaluator, RNF, equivalence, the `Band` type and the
+lower-band index. Then E06 (generator), E07 (persistence), E08–E10 (the PROBE surface).
+
+## Known issues
+
+- The verdict ring's `.reject` cancel stroke renders faintly in the DEBUG gallery. The mark's
+  geometry is spec-correct and the gallery's ring centre was the actual bug (fixed: the ring is
+  concentric with the glyph *body*, not the canvas). Re-verify when E08 puts the ring on a real
+  round — that is the first place it carries meaning rather than being a specimen.
+- `check-symbols.sh` and `check-inventory.sh` still report unresolved `C.*` members and
+  undeclared inventory rows for components E05–E16 have not written yet. Both are deferred out
+  of CI with the epic that re-enables them named inline.
 
 ## Known issues
 
