@@ -135,7 +135,7 @@ caseless and a transform mangles shaping; SF Pro's small-caps degrades non-Latin
 (§13.4, §12.9 traps 5 and 6). `.textCase(nil)` is written explicitly so the system's own header
 casing can never stack on top of the correct one.
 
-Labels sit on a 20 pt band flush to the 16 pt margin with `space.s12` of air before the first row
+Labels sit on a 20 pt band flush to the 16 pt margin with `space.cozy` of air before the first row
 beneath (PHOSPHOR §3).
 
 ---

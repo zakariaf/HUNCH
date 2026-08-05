@@ -1,7 +1,7 @@
 ---
 name: hunch-swift-concurrency
 description: "Rules HUNCH's isolation — default isolation per target, the MainActor roster, the exactly two justified actors, Sendable conformances, the seeded RNG that never escapes one synchronous call tree, and the single documented unchecked-Sendable hatch for the audio render thread. Use when a concurrency diagnostic appears, when adding async, actor, Sendable, nonisolated, Task or @concurrent, or when choosing between a Sendable struct, @MainActor @Observable, Mutex and actor for a piece of mutable state. Not for general code style or naming — see the code skill."
-allowed-tools: Read Grep Glob
+allowed-tools: Read, Grep, Glob
 metadata:
   version: "1.0"
   owns: "default isolation per target, the MainActor roster, the two actors, the RNG scoping rule, the one escape hatch"

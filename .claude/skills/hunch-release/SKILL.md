@@ -2,7 +2,7 @@
 name: hunch-release
 description: "Runs HUNCH's release procedure — version and build numbers, the pre-archive gates, archive, sign, upload, and the App Store Connect metadata that gets builds rejected. Invoke deliberately; it has side effects and is user-invoked only."
 disable-model-invocation: true
-allowed-tools: Read Grep Glob Bash(Scripts/check-source-hygiene.sh:*) Bash(swift test:*) Bash(xcodebuild -showBuildSettings:*) Bash(xcrun swift-format lint:*) Bash(git status:*) Bash(git log:*) Bash(git describe:*)
+allowed-tools: Read, Grep, Glob, Bash(Scripts/check-source-hygiene.sh:*), Bash(swift test:*), Bash(xcodebuild -showBuildSettings:*), Bash(xcrun swift-format lint:*), Bash(git status:*), Bash(git log:*), Bash(git describe:*)
 metadata:
   version: "1.0"
   owns: "the gate order before an archive, version and build-number handling at release time, the archive/export/upload commands, and HUNCH's rejection surface"

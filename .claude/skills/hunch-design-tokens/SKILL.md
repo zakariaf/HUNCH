@@ -1,7 +1,7 @@
 ---
 name: hunch-design-tokens
 description: "Resolves every colour, stroke weight, space, radius, type role, opacity and duration in HUNCH to a named token in HunchCore/Tokens, and fixes the resolution order across dark, light, High Contrast, Bold Text and Dynamic Type. Use before writing any hex, lineWidth, opacity, font size, radius or duration. Load this first for any drawing task. It owns values, never component geometry."
-allowed-tools: Read Grep Glob Bash(swift ${CLAUDE_SKILL_DIR}/scripts/*)
+allowed-tools: Read, Grep, Glob, Bash(swift ${CLAUDE_SKILL_DIR}/scripts/*)
 metadata:
   version: "1.0"
   owns: "L0/L1/L2 token layering, RenderEnv, resolution order, register segregation, the three themes"

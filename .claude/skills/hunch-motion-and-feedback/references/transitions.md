@@ -90,7 +90,7 @@ direction is load-bearing — it re-reads the chain in the order the player buil
 stagger is capped so the total stays 600 ms; tiles past the cap arrive together.
 
 **`SievePauseOverlay`** is a presented subtree (`04 A25` again) and is one of three in the app, alongside
-`AssayInspectorView` and `ResetConfirmAlert`. Its scrim is 70 %, which is not `opacity.scrim` — the Bench
+`AssayInspectorView` and `ResetConfirmAlert`. Its scrim is 70 %, which is not `opacity.scrimBlurred` — the Bench
 scrim is a different token for a different job, and borrowing one for the other is how two surfaces end up
 sharing a value that only one of them wanted.
 

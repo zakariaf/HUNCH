@@ -1,7 +1,7 @@
 ---
 name: hunch-motion-and-feedback
 description: "Choreographs HUNCH's motion, audio and haptics as one timeline — the law reveal beat by beat, the admit and reject rings, screen transitions, the Reduce Motion substitution table, and the audio cues and haptic patterns keyed to the same beats. Use when animating anything, when a cue or haptic should fire, or when Reduce Motion, Low Power or a strike changes behaviour. Duration and easing values come from the token skill; this skill owns what happens when."
-allowed-tools: Read Grep Glob
+allowed-tools: Read, Grep, Glob
 metadata:
   version: "1.0"
   owns: "beat sheets, cue and haptic firing points, the Reduce Motion substitution table, the Feedback target's shape"

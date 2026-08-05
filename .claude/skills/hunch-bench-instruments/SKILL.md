@@ -1,7 +1,7 @@
 ---
 name: hunch-bench-instruments
 description: "Builds HUNCH's interactive play surface — the Bench, the Dial, its instruments, the SIEVE gate band and the counterexample — each with its geometry, states, select modes and size regimes. Use when working on a ramp, socket, rule-tile, wedge, Fork, Tally, coupler, Assay, Seal, throat, ribbon or commit bar. Not buttons, bars, sheets, the Codex or the Profile, which are the chrome skill, and not the glyph inside a cell."
-allowed-tools: Read Grep Glob
+allowed-tools: Read, Grep, Glob
 metadata:
   version: "1.0"
   owns: "rows B of DESIGN-SYSTEM-SCOPE.md §3 — fourteen composed surfaces: their geometry, states, select modes, interaction and accessibility"
