@@ -1,0 +1,216 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>50 Apps Challenge — episode slides</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:#141413;
+    --paper:#F5F4EF;
+    --dim:#7A7973;
+    --line:#302F2C;
+    --hot:#E8622F;
+    --sans:"Archivo","Helvetica Neue",Arial,sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:#000;overflow:hidden}
+  body{display:grid;place-items:center;font-family:var(--sans)}
+
+  #stage{
+    width:min(100vw,177.78vh);
+    height:min(56.25vw,100vh);
+    background:var(--ink);
+    position:relative;
+    overflow:hidden;
+    container-type:size;
+    cursor:none;
+  }
+  body.showcursor #stage{cursor:default}
+
+  .slide{
+    position:absolute;inset:0;
+    padding:7cqw 7cqw 6cqw;
+    display:flex;flex-direction:column;
+    opacity:0;visibility:hidden;
+    transition:opacity .28s ease;
+  }
+  .slide.on{opacity:1;visibility:visible}
+  #stage::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:.55cqw;
+    background:var(--hot);z-index:3;
+  }
+
+  .eyebrow{
+    font-family:var(--mono);font-size:1.35cqw;letter-spacing:.34em;
+    color:var(--dim);text-transform:uppercase;
+  }
+
+  /* ---------- title + outro ---------- */
+  .center{justify-content:center}
+  .hello{font-size:5.2cqw;font-weight:400;color:var(--paper);margin-top:2.4cqw;letter-spacing:-.01em}
+  .wordmark{
+    font-size:9.4cqw;font-weight:700;color:var(--hot);
+    line-height:1.02;letter-spacing:-.035em;margin-top:.4cqw;
+  }
+  .rule{width:7cqw;height:.28cqw;background:var(--line);margin:3.2cqw 0}
+  .lede{font-size:2.15cqw;font-weight:400;color:#B8B6AE;line-height:1.55;max-width:64cqw}
+  .kicker{
+    font-family:var(--mono);font-size:1.35cqw;color:var(--dim);
+    margin-top:auto;display:flex;gap:.8cqw;align-items:center;
+  }
+  .kicker b{color:var(--hot);font-weight:500}
+
+  .ring{position:absolute;right:7cqw;top:7cqw;width:16cqw;height:16cqw}
+  .ring circle{fill:none;stroke:var(--line);stroke-width:.12cqw}
+
+  /* ---------- process slides ---------- */
+  .phead{display:flex;justify-content:space-between;align-items:baseline}
+  .list{margin-top:3.4cqw;display:flex;flex-direction:column;flex:1}
+  .step{
+    display:grid;grid-template-columns:5.5cqw 1fr;gap:1.6cqw;align-items:baseline;
+    padding:.58cqw 0;border-top:.08cqw solid #232320;
+    opacity:.3;transition:opacity .3s ease;
+  }
+  .step:last-child{border-bottom:.08cqw solid #232320}
+  .num{font-family:var(--mono);font-size:1.5cqw;color:var(--dim)}
+  .name{font-size:2.35cqw;font-weight:400;color:var(--paper);letter-spacing:-.01em}
+  .say{display:none;font-size:1.65cqw;color:#9E9C94;margin-top:.7cqw;line-height:1.5;max-width:58cqw}
+
+  .step.done{opacity:.42}
+  .step.done .name{color:var(--dim);text-decoration:line-through;text-decoration-color:#3A3A36}
+  .step.now{opacity:1;position:relative}
+  .step.now .num{color:var(--hot);font-weight:500}
+  .step.now .name{font-size:3.5cqw;font-weight:700;color:var(--paper);letter-spacing:-.025em}
+  .step.now .say{display:block}
+  .step.now::before{
+    content:"";position:absolute;left:-3.4cqw;top:1.5cqw;
+    width:2cqw;height:.28cqw;background:var(--hot);
+  }
+
+  /* ---------- chrome ---------- */
+  #dots{position:absolute;left:7cqw;bottom:3cqw;display:flex;gap:.65cqw;z-index:4}
+  .dot{width:.55cqw;height:.55cqw;border-radius:50%;background:#302F2C}
+  .dot.on{background:var(--hot)}
+  #hint{
+    position:absolute;right:7cqw;bottom:2.7cqw;z-index:4;
+    font-family:var(--mono);font-size:1.05cqw;color:#46453F;
+  }
+  @media (prefers-reduced-motion:reduce){.slide{transition:none}}
+</style>
+
+<div id="stage">
+  <div id="dots"></div>
+  <div id="hint">← → &nbsp;·&nbsp; F fullscreen</div>
+</div>
+
+<script>
+/* ============================================================
+   CHANGE THIS ONE LINE EACH EPISODE
+   ============================================================ */
+const EPISODE = 3;
+const APP_NAME = "";            // optional, e.g. "Tally" — shows on the title slide
+/* ========================================================= */
+
+const STEPS = [
+  ["Find the idea, set up the repo",
+   "Go hunting. Check it doesn't already exist, check people actually want it, check one person can ship it — then create the repository."],
+  ["Write the spec",
+   "Turn the idea into documentation — every screen, every feature, what's in v1 and what isn't."],
+  ["Research the platform",
+   "Flutter, Swift, React Native — pick one, then dig up the current best practices for it."],
+  ["Choose the design system",
+   "Deep research on what good looks like on this platform, then build a few real examples."],
+  ["Build the Claude Code skills",
+   "Fold the engineering best practices and the design system into skills, and write the CLAUDE.md."],
+  ["Create the epics and tasks",
+   "Break the spec into epics, then into task files Claude can pick up one at a time."],
+  ["Implement and test",
+   "Work the tasks epic by epic. Run it, test it, fix what breaks."],
+  ["Build the required pages",
+   "Privacy policy, support page, landing page, account deletion — the URLs the stores demand before they'll take you."],
+  ["Publish",
+   "Screenshots, listing, review, live on the App Store and Google Play."]
+];
+
+const pad = n => String(n).padStart(2,"0");
+const stage = document.getElementById("stage");
+const slides = [];
+
+function add(html, cls=""){
+  const d = document.createElement("div");
+  d.className = "slide " + cls;
+  d.innerHTML = html;
+  stage.insertBefore(d, document.getElementById("dots"));
+  slides.push(d);
+}
+
+/* title */
+add(`
+  <svg class="ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48"/><circle cx="50" cy="50" r="31"/><circle cx="50" cy="50" r="14" fill="#E8622F" fill-opacity=".16" stroke="none"/></svg>
+  <div class="eyebrow">Episode ${pad(EPISODE)}</div>
+  <div class="hello">Hello and welcome</div>
+  <div class="wordmark">50 Apps<br>Challenge</div>
+  <div class="rule"></div>
+  <div class="lede">One real app per episode — built end to end in Claude Code and shipped to the App Store and Google Play.</div>
+  <div class="kicker"><b>■</b> No feature tours. No throwaway HTML pages. Real apps.</div>
+`, "center");
+
+/* the process, then one slide per step */
+const listHTML = active => `
+  <div class="phead">
+    <div class="eyebrow">Episode ${pad(EPISODE)}${APP_NAME ? " — " + APP_NAME : ""}</div>
+    <div class="eyebrow">${active < 0 ? "The process" : "Step " + pad(active+1) + " of " + pad(STEPS.length)}</div>
+  </div>
+  <div class="list">
+    ${STEPS.map(([n,s],i) => `
+      <div class="step ${i===active?"now":(active>i?"done":"")}">
+        <div class="num">${pad(i+1)}</div>
+        <div><div class="name">${n}</div><div class="say">${s}</div></div>
+      </div>`).join("")}
+  </div>`;
+
+add(listHTML(-1));
+STEPS.forEach((_, i) => add(listHTML(i)));
+
+/* outro */
+add(`
+  <div class="eyebrow">Episode ${pad(EPISODE)} — done</div>
+  <div class="wordmark" style="margin-top:2.4cqw">Shipped.</div>
+  <div class="rule"></div>
+  <div class="lede">That's one down, ${STEPS.length && 50 - EPISODE} to go. Next episode: a new idea, the same ${STEPS.length} steps, another app on the store.</div>
+  <div class="kicker"><b>■</b> Subscribe if you want to watch the other ${50 - EPISODE}.</div>
+`, "center");
+
+/* nav */
+const dots = document.getElementById("dots");
+slides.forEach(() => dots.insertAdjacentHTML("beforeend", '<div class="dot"></div>'));
+const dotEls = [...dots.children];
+let i = 0;
+function show(n){
+  i = Math.max(0, Math.min(slides.length-1, n));
+  slides.forEach((s,k) => s.classList.toggle("on", k===i));
+  dotEls.forEach((d,k) => d.classList.toggle("on", k===i));
+}
+show(0);
+
+addEventListener("keydown", e => {
+  const k = e.key;
+  if (k==="ArrowRight" || k==="ArrowDown" || k===" " || k==="PageDown"){ e.preventDefault(); show(i+1); }
+  else if (k==="ArrowLeft" || k==="ArrowUp" || k==="PageUp"){ e.preventDefault(); show(i-1); }
+  else if (k==="Home"){ show(0); }
+  else if (k==="End"){ show(slides.length-1); }
+  else if (k==="f" || k==="F"){ document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+  else if (k==="h" || k==="H"){ document.getElementById("hint").style.display = "none"; }
+});
+stage.addEventListener("click", e => show(e.clientX < innerWidth/2 ? i-1 : i+1));
+
+let t;
+addEventListener("mousemove", () => {
+  document.body.classList.add("showcursor");
+  clearTimeout(t);
+  t = setTimeout(() => document.body.classList.remove("showcursor"), 1800);
+});
+</script>
