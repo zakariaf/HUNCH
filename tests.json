@@ -233,6 +233,62 @@
       "command": "xcodebuild build -scheme Hunch",
       "status": "pass",
       "task": "E04/T09"
+    },
+    {
+      "id": "E05-T01-ast-narrower-than-grammar",
+      "area": "grammar",
+      "statement": "Subset4 rejects the empty and full masks; Contextual fixes cur on the leading side; there is no NOT case",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E05/T01"
+    },
+    {
+      "id": "E05-T02-exemplar-metrics",
+      "area": "grammar",
+      "statement": "all eight of \u00a75.2's exemplar laws reproduce their published p and the five \u00a75.1 metrics, including band 8 COUNT at deficit .286",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E05/T02"
+    },
+    {
+      "id": "E05-T03-worked-rounds",
+      "area": "grammar",
+      "statement": "\u00a75.5's 15-probe band-5 round and \u00a75.6's band-3 round reproduce verdict for verdict under previously-PROBED semantics",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E05/T03"
+    },
+    {
+      "id": "E05-T04-rnf-is-not-equivalence",
+      "area": "grammar",
+      "statement": "RNF gives one law one layout, and does NOT merge a same-attribute Bridge pair even though its extension would",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E05/T04"
+    },
+    {
+      "id": "E05-T05-liveness-independence",
+      "area": "grammar",
+      "statement": "attribute liveness permutes cur and prev independently, so RANK a(cur) == PREV RANK a keeps its attribute live",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E05/T05"
+    },
+    {
+      "id": "E05-T06-par-derivation",
+      "area": "grammar",
+      "statement": "\u00a75.4's ceil(k*log2|H| + d) reproduces \u00a75.7's locked par row for all eight bands",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E05/T06"
+    },
+    {
+      "id": "E05-T08-band-populations",
+      "area": "grammar",
+      "statement": "the six stateless bands enumerate to \u00a75.2's counts exactly (40/1272/108/2322/5688/337) and the lower-band index totals 9,767",
+      "command": "HUNCH_CALIBRATION=1 swift test --package-path HunchCore --filter statelessBandsReproduce",
+      "status": "pass",
+      "task": "E05/T08"
     }
   ]
 }

@@ -54,6 +54,9 @@ public struct LawSet: Sendable {
         return true
     }
 
+    /// Every stored table, for building the next band's exclusion set.
+    public var tables: [LawTable] { buckets.values.flatMap { $0 } }
+
     public func contains(_ table: LawTable) -> Bool {
         contains(table, forcedKey: nil)
     }
