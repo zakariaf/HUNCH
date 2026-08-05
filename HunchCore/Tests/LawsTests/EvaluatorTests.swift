@@ -9,7 +9,6 @@ import Laws
 /// "previously admitted" reading, the worked round in §5.5 does not reproduce.
 @Suite("Evaluator", .tags(.unit, .presubmission))
 struct EvaluatorTests {
-    static func sub(_ raw: UInt8) -> Subset4 { Subset4(rawValue: raw)! }  // swift-format-ignore: NeverForceUnwrap
 
     // A func, not a `static let` closure: a function type is not Sendable, and strict
     // concurrency rejects it as shared mutable state. Correctly.
@@ -21,7 +20,7 @@ struct EvaluatorTests {
 
     @Test("A stateless law ignores `previous` entirely")
     func statelessIgnoresPrevious() {
-        let law = Law(.atom(.init(attribute: .fill, subset: Self.sub(0b0100))))
+        let law = Law(.atom(.init(attribute: .fill, subset: Fixture.subset(0b0100))))
         let probe = Self.g(.striped, .circle, .one, .amber)
         for previous in stride(from: 0, to: 256, by: 17) {
             #expect(law.admits(probe, after: Deck.glyph(id: previous)))
@@ -55,7 +54,7 @@ struct EvaluatorTests {
             .coupled(
                 .contextual(.init(current: .pips, comparator: .gt, previous: .pips)),
                 .and,
-                .atom(.init(attribute: .shape, subset: Self.sub(0b1010)))))
+                .atom(.init(attribute: .shape, subset: Fixture.subset(0b1010)))))
 
         expectApproximatelyEqual(law.admitRate, 0.188, absoluteTolerance: 0.001)
 
@@ -90,9 +89,10 @@ struct EvaluatorTests {
     func exclusiveRoundReproduces() {
         let law = Law(
             .coupled(
-                .atom(.init(attribute: .shape, subset: Self.sub(0b0011))),  // circle, triangle
+                // circle, triangle
+                .atom(.init(attribute: .shape, subset: Fixture.subset(0b0011))),
                 .xor,
-                .atom(.init(attribute: .fill, subset: Self.sub(0b0011)))))  // hollow, dotted
+                .atom(.init(attribute: .fill, subset: Fixture.subset(0b0011)))))  // hollow, dotted
         let seed = Self.g(.hollow, .circle, .one, .amber)
         let probes: [Glyph] = [
             Self.g(.hollow, .circle, .one, .amber),  // T⊕T -> reject
@@ -109,7 +109,7 @@ struct EvaluatorTests {
 
     @Test("verdicts returns exactly probes.count entries, and the seed is never scored")
     func seedIsNotAProbe() {
-        let law = Law(.atom(.init(attribute: .hue, subset: Self.sub(0b0001))))
+        let law = Law(.atom(.init(attribute: .hue, subset: Fixture.subset(0b0001))))
         let seed = Self.g(.hollow, .circle, .one, .amber)
         #expect(law.verdicts(seededBy: seed, probes: []).isEmpty)
         #expect(law.verdicts(seededBy: seed, probes: [seed]).count == 1)
