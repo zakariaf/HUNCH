@@ -10,7 +10,7 @@ extension Color {
     /// `Color(.displayP3, …)` constructor with these same three numbers produces a *different*
     /// colour and moves every one of those ratios, with no test noticing — because the tests
     /// live in `HunchCore`, which has no `Color` at all.
-    init(_ rgb: RGB8) {
+    nonisolated init(_ rgb: RGB8) {
         self.init(
             .sRGB,
             red: Double(rgb.red) / 255,
@@ -24,7 +24,7 @@ extension Color {
     /// `Tokens` precisely so that crossing them will not compile; taking them separately here
     /// keeps that property true at the SwiftUI boundary instead of laundering both through
     /// `RGB8` and losing it.
-    init(_ accent: AccentColor) { self.init(accent.rgb) }
+    nonisolated init(_ accent: AccentColor) { self.init(accent.rgb) }
 
-    init(_ hue: HueColor) { self.init(hue.rgb) }
+    nonisolated init(_ hue: HueColor) { self.init(hue.rgb) }
 }
