@@ -46,7 +46,7 @@ jobs:
       - run: Scripts/check-skills.sh             # E01·T09
       # - run: .claude/skills/hunch-swift-code/scripts/check-boundary.sh --all   # E02·T01
       # - run: swift .claude/skills/hunch-design-tokens/scripts/check-tokens.swift  # E03·T01
-      # - run: node .claude/skills/hunch-glyph-renderer/scripts/check-coverage-separation.js  # E04
+      - run: node .claude/skills/hunch-glyph-renderer/scripts/check-coverage-separation.js
       # - run: node .claude/skills/hunch-sigil-drawing/scripts/check-sigil-distinctness.js    # E04
 
       # 01 P23: swift test is the inner loop, so CI runs it too. No simulator, no host app.

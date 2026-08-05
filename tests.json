@@ -177,6 +177,38 @@
       "command": "swift test --package-path HunchCore",
       "status": "pass",
       "task": "E03/T05"
+    },
+    {
+      "id": "E04-T01-screen-frame",
+      "area": "drawing",
+      "statement": "the glyph frame is screen-space y-down: bodyCentre -0.10*S, indexCentre +0.43*S, both negated from \u00a713.5's y-up statement",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E04/T01"
+    },
+    {
+      "id": "E04-T06-coverage-ladder",
+      "area": "drawing",
+      "statement": "the fill ink-coverage ladder is 0/22.7/38.6/100 % at every size, derived from the pitch tokens rather than asserted",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E04/T06"
+    },
+    {
+      "id": "E04-T06-constant-T",
+      "area": "accessibility",
+      "statement": "T = 8.00 pt^2, the measured minimum pairwise ink difference over all 32,640 deck pairs at S=44 @2x",
+      "command": "node .claude/skills/hunch-glyph-renderer/scripts/check-coverage-separation.js",
+      "status": "pass",
+      "task": "E04/T06"
+    },
+    {
+      "id": "E04-T06-greyscale-separation",
+      "area": "accessibility",
+      "statement": "every pair in the deck separates by geometry alone in all six render environments; tightest margin is High Contrast + Bold Text at 12 %",
+      "command": "node .claude/skills/hunch-glyph-renderer/scripts/check-coverage-separation.js",
+      "status": "pass",
+      "task": "E04/T06"
     }
   ]
 }
