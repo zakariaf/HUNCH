@@ -1,0 +1,54 @@
+// Config/Base.xcconfig — every build setting HUNCH sets, except the per-configuration deltas.
+#include? "Local.xcconfig"                  // optional include: no error when absent
+
+// ── Language ─────────────────────────────────────────────────────────────────
+SWIFT_VERSION = 6.0                         // 07 B2 — the ".0" is load-bearing
+SWIFT_APPROACHABLE_CONCURRENCY = YES        // 07 B4 — five upcoming-feature flags in one switch
+SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor   // App/ only; packages decide per target (01 P17, 08 §4)
+SWIFT_UPCOMING_FEATURE_EXISTENTIAL_ANY = YES              // 03 W43 names the price
+SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES     // 07 B7b names the price
+SWIFT_UPCOMING_FEATURE_INTERNAL_IMPORTS_BY_DEFAULT = YES  // 07 B7a names the price
+
+// ── Platform ─────────────────────────────────────────────────────────────────
+// The wizard writes SDKROOT into the PROJECT-level buildSettings, which 07 B5 requires us to
+// empty — so it has to be restated here or every target resolves to macOS and the scheme
+// offers no iOS destination at all. This is not "restating a default" (07 B13): with an empty
+// pbxproj there is no default to inherit.
+SDKROOT = iphoneos
+SUPPORTED_PLATFORMS = iphoneos iphonesimulator
+// 18.0 is not the guide's default choice — Synchronization/Atomic is iOS 18+, and VoiceBank
+// needs it (08 §7.7). Must equal platforms: [.iOS(.v18)] in BOTH manifests.
+IPHONEOS_DEPLOYMENT_TARGET = 18.0
+TARGETED_DEVICE_FAMILY = 1                  // iPhone only. This is the SETTING; UIDeviceFamily is
+                                            // the plist key it generates — writing that name does nothing.
+INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait
+INFOPLIST_KEY_UILaunchScreen_Generation = YES   // no storyboard; E20·T10 owns the launch surface
+
+// ── Product ──────────────────────────────────────────────────────────────────
+PRODUCT_NAME = $(TARGET_NAME)                // per-target: three targets sharing one module
+                                            // name makes the build system emit the same
+                                            // .swiftmodule three times ("Multiple commands produce")
+PRODUCT_BUNDLE_IDENTIFIER = $(HUNCH_BUNDLE_ID_PREFIX).hunch   // HUNCH_ prefix per 07 B11
+MARKETING_VERSION = 0.1.0                   // 07 B27 — a human bumps this at release time
+CURRENT_PROJECT_VERSION = 1                 // 07 B27 — CI overrides it on the command line
+CODE_SIGN_ENTITLEMENTS = App/Hunch.entitlements           // 01 P31 — never set through the UI
+
+// ── Compliance ───────────────────────────────────────────────────────────────
+// 07 B37. Omit it and every TestFlight build stalls in "Missing Compliance" until someone
+// clicks through, per build. NO is truthful: HUNCH ships no cryptography and makes no
+// network calls at all.
+INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO
+
+// ── Localization ─────────────────────────────────────────────────────────────
+LOCALIZATION_PREFERS_STRING_CATALOGS = YES  // the 26.6 template already writes this; stated
+                                            // because the catalog is a brief requirement (07 §12)
+
+// ── Build hygiene ────────────────────────────────────────────────────────────
+ENABLE_USER_SCRIPT_SANDBOXING = YES         // 07 B14 — stays on; see source-hygiene.md §5
+GENERATE_INFOPLIST_FILE = YES               // 01 P30 — no Info.plist file exists; see §8
+
+// Test hosting is deliberately NOT here: a unit-test bundle needs TEST_HOST/BUNDLE_LOADER and
+// a UI-test bundle sets USES_XCTRUNNER, and Xcode rejects a target carrying both. xcconfig has
+// no per-target conditional (only sdk/arch/variant/config), so the two test targets get their
+// own files — Config/UnitTests.xcconfig and Config/UITests.xcconfig — which include this one.
+// That keeps 07 B5's rule intact: project.pbxproj still carries zero inline settings.

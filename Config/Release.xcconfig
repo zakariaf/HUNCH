@@ -1,0 +1,15 @@
+// Config/Release.xcconfig
+#include "Base.xcconfig"
+
+// 07 B12 — the Swift default is -O, not -Os; -Osize is the lever for the 15 MB budget.
+// Measure band-8 generation on a real device before keeping it: B12 says measure your
+// hottest path, and here that is Generator + LawIndex, not drawing.
+SWIFT_OPTIMIZATION_LEVEL = -Osize
+SWIFT_COMPILATION_MODE = wholemodule
+DEBUG_INFORMATION_FORMAT = dwarf-with-dsym
+ENABLE_NS_ASSERTIONS = NO
+
+// 07 B19 — blanket flag FIRST, targeted exemptions after. Flags apply left to right, so a
+// trailing -warnings-as-errors silently overrides an earlier -Wwarning. 08 §7.12 states the
+// opposite ordering while giving this exact reasoning; B19 is the reproduced one.
+OTHER_SWIFT_FLAGS = $(inherited) -warnings-as-errors -Werror UnknownWarningGroup

@@ -1,0 +1,8 @@
+// Config/Debug.xcconfig
+#include "Base.xcconfig"
+
+SWIFT_OPTIMIZATION_LEVEL = -Onone
+ONLY_ACTIVE_ARCH = YES                      // roughly halves debug build time
+ENABLE_TESTABILITY = YES                    // @testable import — HUNCH's tests do not use it
+                                            // (06 T4), but previews and the debugger want it
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) DEBUG   // gates the snapshot gallery, scope §4.4

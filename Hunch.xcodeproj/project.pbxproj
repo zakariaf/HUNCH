@@ -1,0 +1,380 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXFileReference section */
+		C0F1000000000000000001 /* Hunch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hunch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0F1000000000000000002 /* HunchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HunchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0F1000000000000000003 /* HunchAutomationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HunchAutomationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0F1000000000000000010 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
+		C0F1000000000000000013 /* UnitTests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = UnitTests.xcconfig; sourceTree = "<group>"; };
+		C0F1000000000000000014 /* UnitTestsRelease.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = UnitTestsRelease.xcconfig; sourceTree = "<group>"; };
+		C0F1000000000000000015 /* UITests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = UITests.xcconfig; sourceTree = "<group>"; };
+		C0F1000000000000000016 /* UITestsRelease.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = UITestsRelease.xcconfig; sourceTree = "<group>"; };
+		C0F1000000000000000011 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		C0F1000000000000000012 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		C0F1000000000000000020 /* App */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = App; sourceTree = "<group>"; };
+		C0F1000000000000000021 /* HunchTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = HunchTests; sourceTree = "<group>"; };
+		C0F1000000000000000022 /* HunchAutomationTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = HunchAutomationTests; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C0F1000000000000000030 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0F1000000000000000031 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0F1000000000000000032 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C0F1000000000000000040 = {
+			isa = PBXGroup;
+			children = (
+				C0F1000000000000000041 /* Config */,
+				C0F1000000000000000020 /* App */,
+				C0F1000000000000000021 /* HunchTests */,
+				C0F1000000000000000022 /* HunchAutomationTests */,
+				C0F1000000000000000042 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C0F1000000000000000041 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				C0F1000000000000000010 /* Base.xcconfig */,
+				C0F1000000000000000011 /* Debug.xcconfig */,
+				C0F1000000000000000012 /* Release.xcconfig */,
+				C0F1000000000000000013 /* UnitTests.xcconfig */,
+				C0F1000000000000000014 /* UnitTestsRelease.xcconfig */,
+				C0F1000000000000000015 /* UITests.xcconfig */,
+				C0F1000000000000000016 /* UITestsRelease.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		C0F1000000000000000042 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C0F1000000000000000001 /* Hunch.app */,
+				C0F1000000000000000002 /* HunchTests.xctest */,
+				C0F1000000000000000003 /* HunchAutomationTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C0F1000000000000000050 /* Hunch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C0F1000000000000000060 /* Build configuration list for PBXNativeTarget "Hunch" */;
+			buildPhases = (
+				C0F1000000000000000070 /* Sources */,
+				C0F1000000000000000030 /* Frameworks */,
+				C0F1000000000000000080 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				C0F1000000000000000020 /* App */,
+			);
+			name = Hunch;
+			packageProductDependencies = (
+			);
+			productName = Hunch;
+			productReference = C0F1000000000000000001 /* Hunch.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C0F1000000000000000051 /* HunchTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C0F1000000000000000061 /* Build configuration list for PBXNativeTarget "HunchTests" */;
+			buildPhases = (
+				C0F1000000000000000071 /* Sources */,
+				C0F1000000000000000031 /* Frameworks */,
+				C0F1000000000000000081 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C0F1000000000000000090 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C0F1000000000000000021 /* HunchTests */,
+			);
+			name = HunchTests;
+			packageProductDependencies = (
+			);
+			productName = HunchTests;
+			productReference = C0F1000000000000000002 /* HunchTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C0F1000000000000000052 /* HunchAutomationTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C0F1000000000000000062 /* Build configuration list for PBXNativeTarget "HunchAutomationTests" */;
+			buildPhases = (
+				C0F1000000000000000072 /* Sources */,
+				C0F1000000000000000032 /* Frameworks */,
+				C0F1000000000000000082 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C0F1000000000000000091 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C0F1000000000000000022 /* HunchAutomationTests */,
+			);
+			name = HunchAutomationTests;
+			packageProductDependencies = (
+			);
+			productName = HunchAutomationTests;
+			productReference = C0F1000000000000000003 /* HunchAutomationTests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C0F1000000000000000100 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2660;
+				LastUpgradeCheck = 2660;
+				TargetAttributes = {
+					C0F1000000000000000050 = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					C0F1000000000000000051 = {
+						CreatedOnToolsVersion = 26.6;
+						TestTargetID = C0F1000000000000000050;
+					};
+					C0F1000000000000000052 = {
+						CreatedOnToolsVersion = 26.6;
+						TestTargetID = C0F1000000000000000050;
+					};
+				};
+			};
+			buildConfigurationList = C0F1000000000000000063 /* Build configuration list for PBXProject "Hunch" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C0F1000000000000000040;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = C0F1000000000000000042 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C0F1000000000000000050 /* Hunch */,
+				C0F1000000000000000051 /* HunchTests */,
+				C0F1000000000000000052 /* HunchAutomationTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C0F1000000000000000080 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0F1000000000000000081 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0F1000000000000000082 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C0F1000000000000000070 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0F1000000000000000071 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0F1000000000000000072 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C0F1000000000000000090 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C0F1000000000000000050 /* Hunch */;
+			targetProxy = C0F1000000000000000110 /* PBXContainerItemProxy */;
+		};
+		C0F1000000000000000091 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C0F1000000000000000050 /* Hunch */;
+			targetProxy = C0F1000000000000000111 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXContainerItemProxy section */
+		C0F1000000000000000110 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C0F1000000000000000100 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C0F1000000000000000050;
+			remoteInfo = Hunch;
+		};
+		C0F1000000000000000111 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C0F1000000000000000100 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C0F1000000000000000050;
+			remoteInfo = Hunch;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin XCBuildConfiguration section */
+		C0F1000000000000000200 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C0F1000000000000000011 /* Debug.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		C0F1000000000000000201 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C0F1000000000000000012 /* Release.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		C0F1000000000000000202 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C0F1000000000000000013 /* UnitTests.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		C0F1000000000000000203 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C0F1000000000000000014 /* UnitTestsRelease.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		C0F1000000000000000204 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C0F1000000000000000015 /* UITests.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		C0F1000000000000000205 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C0F1000000000000000016 /* UITestsRelease.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		C0F1000000000000000206 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C0F1000000000000000010 /* Base.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		C0F1000000000000000207 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C0F1000000000000000010 /* Base.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C0F1000000000000000060 /* Build configuration list for PBXNativeTarget "Hunch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0F1000000000000000200 /* Debug */,
+				C0F1000000000000000201 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C0F1000000000000000061 /* Build configuration list for PBXNativeTarget "HunchTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0F1000000000000000202 /* Debug */,
+				C0F1000000000000000203 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C0F1000000000000000062 /* Build configuration list for PBXNativeTarget "HunchAutomationTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0F1000000000000000204 /* Debug */,
+				C0F1000000000000000205 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C0F1000000000000000063 /* Build configuration list for PBXProject "Hunch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0F1000000000000000206 /* Debug */,
+				C0F1000000000000000207 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C0F1000000000000000100 /* Project object */;
+}

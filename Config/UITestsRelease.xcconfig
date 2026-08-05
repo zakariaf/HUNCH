@@ -1,0 +1,10 @@
+// Config/UITestsRelease.xcconfig — HunchAutomationTests, Release configuration.
+#include "Release.xcconfig"
+
+TEST_TARGET_NAME = Hunch
+
+PRODUCT_BUNDLE_IDENTIFIER = $(HUNCH_BUNDLE_ID_PREFIX).hunchuitests
+
+// XCTestCase's designated initialisers are nonisolated, so inheriting Base's MainActor
+// default makes every subclass a hard error. 08 §4 scopes that setting to App/ anyway.
+SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated
