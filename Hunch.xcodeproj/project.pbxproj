@@ -158,6 +158,13 @@
 		};
 /* End PBXNativeTarget section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		C0F1000000000000000300 /* XCLocalSwiftPackageReference "HunchCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = HunchCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin PBXProject section */
 		C0F1000000000000000100 /* Project object */ = {
 			isa = PBXProject;
@@ -190,6 +197,9 @@
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C0F1000000000000000042 /* Products */;
+			packageReferences = (
+				C0F1000000000000000300 /* XCLocalSwiftPackageReference "HunchCore" */,
+			);
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
