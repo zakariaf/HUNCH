@@ -1,0 +1,118 @@
+{
+  "schema": 1,
+  "note": "Every invariant this repo asserts, with its current status. Entries are NEVER removed or weakened; a test that stops being true is a bug in the code or a DECISIONS.md entry, not a deletion.",
+  "invariants": [
+    {
+      "id": "E01-T01-bootstrap",
+      "area": "repo",
+      "statement": "main has a pushed commit; the four bootstrap files are tracked; .gitignore ignores and whitelists correctly",
+      "command": "bash /tmp/check-bootstrap.sh",
+      "status": "pass",
+      "task": "E01/T01"
+    },
+    {
+      "id": "E01-T02-pbxproj-clean",
+      "area": "build",
+      "statement": "project.pbxproj carries zero inline build settings",
+      "command": "Scripts/check-pbxproj-clean.sh Hunch.xcodeproj",
+      "status": "pass",
+      "task": "E01/T02"
+    },
+    {
+      "id": "E01-T02-generated-plist",
+      "area": "build",
+      "statement": "the generated Info.plist is iPhone-only, portrait-only, declares export compliance, resolves the bundle id and carries the wordmark",
+      "command": "xcodebuild test -scheme Hunch -testPlan Presubmission",
+      "status": "pass",
+      "task": "E01/T02"
+    },
+    {
+      "id": "E01-T03-tag-vocabulary",
+      "area": "test",
+      "statement": "the eight tags are declared, pairwise distinct, and the two axes are disjoint",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E01/T03"
+    },
+    {
+      "id": "E01-T03-testsupport-unreachable",
+      "area": "boundary",
+      "statement": "HunchTestSupport is absent from products and from every non-test target's dependencies",
+      "command": "Scripts/check-source-hygiene.sh",
+      "status": "pass",
+      "task": "E01/T03"
+    },
+    {
+      "id": "E01-T04-approximate-equality",
+      "area": "test",
+      "statement": "isApproximatelyEqual handles infinities, NaN, signed zero, absolute and relative tolerance",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E01/T04"
+    },
+    {
+      "id": "E01-T05-splitmix64-vectors",
+      "area": "determinism",
+      "statement": "SplitMix64 reproduces the published reference vectors for seed 0",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E01/T05"
+    },
+    {
+      "id": "E01-T05-finaliser-fixes-zero",
+      "area": "determinism",
+      "statement": "mix(0) == 0, which is why next() adds the gamma before finalising",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E01/T05"
+    },
+    {
+      "id": "E01-T04-corpora-frozen",
+      "area": "determinism",
+      "statement": "Corpora.seed(band:index:) derivation is frozen against recorded vectors",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E01/T04"
+    },
+    {
+      "id": "E01-T06-hygiene-can-fail",
+      "area": "hygiene",
+      "statement": "each of checks 1,2,3,4,5,6,9,10 catches a planted violation, and the legal spellings (.random(using:), TOKENS-EXEMPT) are not flagged",
+      "command": "see the probe block in E01/T06",
+      "status": "pass",
+      "task": "E01/T06"
+    },
+    {
+      "id": "E01-T06-no-network",
+      "area": "constraint",
+      "statement": "no network API appears in any Swift source; enforced at build time and in CI",
+      "command": "Scripts/check-source-hygiene.sh",
+      "status": "pass",
+      "task": "E01/T06"
+    },
+    {
+      "id": "E01-T06-sandbox",
+      "area": "build",
+      "statement": "the hygiene build phase runs with ENABLE_USER_SCRIPT_SANDBOXING=YES and zero deny(1) lines",
+      "command": "xcodebuild build -scheme Hunch -destination \"id=$UDID\"",
+      "status": "pass",
+      "task": "E01/T06"
+    },
+    {
+      "id": "E01-T07-fast-suite-budget",
+      "area": "test",
+      "statement": "swift test --package-path HunchCore completes in under 10 seconds",
+      "command": "the timed step in .github/workflows/ci.yml",
+      "status": "pass",
+      "task": "E01/T07"
+    },
+    {
+      "id": "E01-T07-testplan-selects",
+      "area": "test",
+      "statement": "the Presubmission plan selects a non-zero number of tests",
+      "command": "xcodebuild test -scheme Hunch -testPlan Presubmission",
+      "status": "pass",
+      "task": "E01/T07"
+    }
+  ]
+}

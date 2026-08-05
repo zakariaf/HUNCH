@@ -70,7 +70,11 @@ than free, and the archive layer pays it in one place.
 | `design/` | The design system scope and the chosen art direction. |
 | `epics/` | The delivery board: twenty epics, one directory each. |
 | `.claude/skills/` | Thirteen skills that hold the drawing and engineering standards. |
-| `CLAUDE.md`, `SPEC.md`, `DECISIONS.md`, `PROGRESS.md`, `tests.json` | Arriving in E01/T08. |
+| `CLAUDE.md` | Commands, rules and the gotchas that cost real time. |
+| `SPEC.md` | The index into canon: named artefacts, hard constraints, how each is verified. |
+| `DECISIONS.md` | Every judgement call made on your behalf, with its reason. |
+| `PROGRESS.md` | Current phase, what is done, what is next, known issues. |
+| `tests.json` | Every invariant this repo asserts, with its status. |
 
 ## What it does not do
 

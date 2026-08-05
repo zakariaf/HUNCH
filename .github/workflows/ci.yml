@@ -36,6 +36,7 @@ jobs:
       # its script exists: a step that cannot fail is worse than no step (07 B6).
       - run: Scripts/check-source-hygiene.sh
       - run: Scripts/check-pbxproj-clean.sh Hunch.xcodeproj
+      - run: Scripts/check-tests-json.sh
       - run: Scripts/check-inventory.sh          # E01·T09
       - run: Scripts/check-symbols.sh            # E01·T09
       - run: Scripts/check-skills.sh             # E01·T09
