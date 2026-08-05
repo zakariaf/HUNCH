@@ -9,36 +9,34 @@ import Laws
 /// equivalence would silently break G10's node-identity promise.
 @Suite("RNF", .tags(.unit, .presubmission))
 struct RNFTests {
-    static func sub(_ raw: UInt8) -> Subset4 { Subset4(rawValue: raw)! }  // swift-format-ignore: NeverForceUnwrap
-    static func attrs(_ raw: UInt8) -> AttributeSet { AttributeSet(rawValue: raw)! }  // swift-format-ignore: NeverForceUnwrap
 
     /// §3.1's nine identities, checked at the EXTENSION level — the strongest form: the
     /// complement must admit exactly what the original rejects.
     @Test("Every complement identity holds over the whole universe (§3.1)")
     func complementIdentities() {
         let cases: [LawNode] = [
-            .atom(.init(attribute: .fill, subset: Self.sub(0b0100))),
+            .atom(.init(attribute: .fill, subset: Fixture.subset(0b0100))),
             .relational(.init(leading: .shape, comparator: .lt, trailing: .pips)),
             .contextual(.init(current: .pips, comparator: .gte, previous: .hue)),
             .coupled(
-                .atom(.init(attribute: .shape, subset: Self.sub(0b0011))), .and,
-                .atom(.init(attribute: .pips, subset: Self.sub(0b1100)))),
+                .atom(.init(attribute: .shape, subset: Fixture.subset(0b0011))), .and,
+                .atom(.init(attribute: .pips, subset: Fixture.subset(0b1100)))),
             .coupled(
-                .atom(.init(attribute: .shape, subset: Self.sub(0b0011))), .or,
-                .atom(.init(attribute: .pips, subset: Self.sub(0b1100)))),
+                .atom(.init(attribute: .shape, subset: Fixture.subset(0b0011))), .or,
+                .atom(.init(attribute: .pips, subset: Fixture.subset(0b1100)))),
             .coupled(
-                .atom(.init(attribute: .shape, subset: Self.sub(0b0011))), .xor,
-                .atom(.init(attribute: .fill, subset: Self.sub(0b0011)))),
+                .atom(.init(attribute: .shape, subset: Fixture.subset(0b0011))), .xor,
+                .atom(.init(attribute: .fill, subset: Fixture.subset(0b0011)))),
             .guarded(
                 .init(
                     gate: .hue, gateValue: 0, branch: .pips,
-                    then: Self.sub(0b1100), otherwise: Self.sub(0b0001))),
+                    then: Fixture.subset(0b1100), otherwise: Fixture.subset(0b0001))),
             .aggregate(
                 .count(
                     .init(
-                        attributes: Self.attrs(0b0111), rankIn: Self.sub(0b1100),
-                        countIn: CountSet(rawValue: 0b1100, over: 3)!))),  // swift-format-ignore: NeverForceUnwrap
-            .aggregate(.parity(.init(attributes: Self.attrs(0b1111), isOdd: false))),
+                        attributes: Fixture.attributeSet(0b0111), rankIn: Fixture.subset(0b1100),
+                        countIn: Fixture.countSet(0b1100, over: 3)))),
+            .aggregate(.parity(.init(attributes: Fixture.attributeSet(0b1111), isOdd: false))),
         ]
         for node in cases {
             let table = LawTable(node)
@@ -73,25 +71,25 @@ struct RNFTests {
 
     @Test("Step 4: two atoms on one attribute merge by set algebra (§3.4)")
     func sameAttributeMerge() {
-        let a = LawNode.atom(.init(attribute: .pips, subset: Self.sub(0b1110)))  // {2,3,4}
-        let b = LawNode.atom(.init(attribute: .pips, subset: Self.sub(0b1100)))  // {3,4}
+        let a = LawNode.atom(.init(attribute: .pips, subset: Fixture.subset(0b1110)))  // {2,3,4}
+        let b = LawNode.atom(.init(attribute: .pips, subset: Fixture.subset(0b1100)))  // {3,4}
         #expect(
             LawNode.coupled(a, .and, b).renderedNormalForm
-                == .atom(.init(attribute: .pips, subset: Self.sub(0b1100))))
+                == .atom(.init(attribute: .pips, subset: Fixture.subset(0b1100))))
         #expect(
             LawNode.coupled(a, .or, b).renderedNormalForm
-                == .atom(.init(attribute: .pips, subset: Self.sub(0b1110))))
+                == .atom(.init(attribute: .pips, subset: Fixture.subset(0b1110))))
         #expect(
             LawNode.coupled(a, .xor, b).renderedNormalForm
-                == .atom(.init(attribute: .pips, subset: Self.sub(0b0010))))
+                == .atom(.init(attribute: .pips, subset: Fixture.subset(0b0010))))
     }
 
     /// The merge is what stops a band-2 skeleton shipping a band-1 extension, which is what
     /// T08's band-2 count depends on.
     @Test("The merge unmasks a two-term law as a one-term law")
     func mergeUnmasksLowerBands() {
-        let a = LawNode.atom(.init(attribute: .hue, subset: Self.sub(0b0011)))
-        let b = LawNode.atom(.init(attribute: .hue, subset: Self.sub(0b0111)))
+        let a = LawNode.atom(.init(attribute: .hue, subset: Fixture.subset(0b0011)))
+        let b = LawNode.atom(.init(attribute: .hue, subset: Fixture.subset(0b0111)))
         let merged = LawNode.coupled(a, .and, b).renderedNormalForm
         #expect(merged.leafCount == 1)  // was 2
     }
@@ -114,8 +112,8 @@ struct RNFTests {
     /// One law, one layout: every spelling of a commutative shape normalises to one node.
     @Test("Transposed operands normalise to one identical node")
     func oneLawOneLayout() {
-        let x = LawNode.atom(.init(attribute: .shape, subset: Self.sub(0b0011)))
-        let y = LawNode.atom(.init(attribute: .pips, subset: Self.sub(0b1100)))
+        let x = LawNode.atom(.init(attribute: .shape, subset: Fixture.subset(0b0011)))
+        let y = LawNode.atom(.init(attribute: .pips, subset: Fixture.subset(0b1100)))
         for coupler in Coupler.allCases {
             #expect(
                 LawNode.coupled(x, coupler, y).renderedNormalForm
@@ -128,8 +126,8 @@ struct RNFTests {
     @Test("The sort key is deterministic and total")
     func sortKeyIsDeterministic() {
         let nodes: [LawNode] = [
-            .atom(.init(attribute: .fill, subset: Self.sub(0b0001))),
-            .atom(.init(attribute: .hue, subset: Self.sub(0b1000))),
+            .atom(.init(attribute: .fill, subset: Fixture.subset(0b0001))),
+            .atom(.init(attribute: .hue, subset: Fixture.subset(0b1000))),
             .relational(.init(leading: .fill, comparator: .eq, trailing: .shape)),
             .contextual(.init(current: .pips, comparator: .gt, previous: .pips)),
         ]
@@ -141,7 +139,7 @@ struct RNFTests {
 
     @Test("A constant extension has no normal form, and constantFold names which constant")
     func constantsAreDetected() {
-        let s = Self.sub(0b0011)
+        let s = Fixture.subset(0b0011)
         let atom = LawNode.atom(.init(attribute: .shape, subset: s))
         let never = LawNode.coupled(atom, .and, atom.complemented)
         let always = LawNode.coupled(atom, .or, atom.complemented)
@@ -150,9 +148,9 @@ struct RNFTests {
         // An AND of two DISJOINT atoms on DIFFERENT attributes is satisfiable — the structural
         // route to a constant is narrower than the extension route.
         let disjointDifferent = LawNode.coupled(
-            .atom(.init(attribute: .shape, subset: Self.sub(0b0001))),
+            .atom(.init(attribute: .shape, subset: Fixture.subset(0b0001))),
             .and,
-            .atom(.init(attribute: .pips, subset: Self.sub(0b1000))))
+            .atom(.init(attribute: .pips, subset: Fixture.subset(0b1000))))
         #expect(disjointDifferent.constantFold == nil)
     }
 }
