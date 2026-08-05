@@ -73,3 +73,31 @@ public struct Glyph: Hashable, Sendable, Codable {
         ordinal(of: attribute) + 1
     }
 }
+
+extension Glyph.Shape {
+    /// The achromatic discriminator for this channel (§13.5.1). `circle` is 0.
+    ///
+    /// A model fact, not a drawing fact: the accessibility layer reads it too, and putting it
+    /// in `HunchUI` would mean VoiceOver imports the renderer to say "three pips".
+    public var cornerCount: Int {
+        switch self {
+        case .circle: 0
+        case .triangle: 3
+        case .square: 4
+        case .hexagon: 6
+        }
+    }
+}
+
+extension Glyph.Pips {
+    /// The number of contour nodes drawn, 1…4. A four-arm switch rather than `rawValue + 1`
+    /// because the raw values are frozen by `glyphID` and must not become load-bearing here.
+    public var count: Int {
+        switch self {
+        case .one: 1
+        case .two: 2
+        case .three: 3
+        case .four: 4
+        }
+    }
+}
