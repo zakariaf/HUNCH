@@ -113,6 +113,70 @@
       "command": "xcodebuild test -scheme Hunch -testPlan Presubmission",
       "status": "pass",
       "task": "E01/T07"
+    },
+    {
+      "id": "E03-T01-luminance-is-wcag",
+      "area": "tokens",
+      "statement": "RGB8.relativeLuminance is WCAG 2.1 sRGB with the 0.04045 knee and 2.4 exponent; contrastRatio is symmetric and closed on 1.0\u202621.0",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E03/T01"
+    },
+    {
+      "id": "E03-T01-okabe-ito-verbatim",
+      "area": "tokens",
+      "statement": "the four hues are Okabe-Ito byte-identical in dark AND light; they are never re-lit",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E03/T01"
+    },
+    {
+      "id": "E03-T01-canon-ratio-corrections",
+      "area": "tokens",
+      "statement": "the four measured corrections to \u00a713.2 hold: amber 8.79, teal 5.78, teal-rose 1.12, amber-brass 1.22",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E03/T01"
+    },
+    {
+      "id": "E03-T03-resolution-order",
+      "area": "tokens",
+      "statement": "weight resolution is Select\u2192Scale\u2192Offset\u2192Derive: Bold Text + High Contrast on .body is 4.25, not 4.375; the ladder stays strictly increasing and pairwise distinct",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E03/T03"
+    },
+    {
+      "id": "E03-T04-derive-is-last",
+      "area": "tokens",
+      "statement": "the light keyline (+1.0) and the halo (x3) are derived from the already-resolved weight and are never themselves scaled or offset",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E03/T04"
+    },
+    {
+      "id": "E03-T05-state-bearing-floor",
+      "area": "accessibility",
+      "statement": "every state-bearing token clears 4.5:1 on its own ground in all three themes; stroke.hairline is deliberately below it and never state-bearing",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E03/T05"
+    },
+    {
+      "id": "E03-T05-light-needs-keyline",
+      "area": "accessibility",
+      "statement": "the raw Okabe-Ito hues do NOT clear 3:1 on the light ground, which is why the keyline exists; the keyline itself clears 15:1",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E03/T05"
+    },
+    {
+      "id": "E03-T05-high-contrast-floor",
+      "area": "accessibility",
+      "statement": "the High Contrast state-bearing set clears its measured 9.68 floor and each of the four ratios is pinned individually",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E03/T05"
     }
   ]
 }
