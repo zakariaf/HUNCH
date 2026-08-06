@@ -287,6 +287,37 @@ public enum C {
         }
     }
 
+    /// §4.2's comparator mark — a **construction**, never an icon.
+    public enum Wedge {
+        public static let markSide = 24.0
+
+        /// The `lte`/`gte` underbar, as a fraction of the mark box below the limbs.
+        public static let underbarDrop = 0.18
+        public static let underbarInset = 0.12
+    }
+
+    /// §4.2's junction between the two rails: one path, two that reunite, two that do not.
+    public enum Coupler {
+        public static let nodeSide = 44.0
+
+        /// AND is a **welded** bar and reads heavier than the two forked topologies. The
+        /// progression one-path → two-that-rejoin → two-that-do-not is the whole explanation,
+        /// and weight is what stops AND reading as a thin OR.
+        public static let weldWeight = 3.0
+        public static let strandWeight = 1.5
+
+        /// How far the two strands separate, as a fraction of the node's side.
+        public static let strandSpread = 0.30
+    }
+
+    /// §4.2's railway switch. The incoming line originates at the **lit gate cell's** x centre
+    /// and moves when the selection moves — a player taps a different gate cell, watches the
+    /// line slide, and has learned lit-routes-to-lit without a word.
+    public enum Fork {
+        public static let trackSeparation = 0.22
+        public static let throwLength = 0.34
+    }
+
     public enum Key {
         /// §4.2 — a palette stamp, 68 × 44.
         public static let paletteStamp = C.Size(width: 68, height: 44)

@@ -1,5 +1,6 @@
 public import SwiftUI
 
+public import Bench
 public import Glyphs
 public import Tokens
 
@@ -16,6 +17,20 @@ public import Tokens
 /// claim, and it is why there is no attribute emblem to learn.
 @MainActor
 public struct RampView: View {
+
+    /// `ramp.md` §1's census — **seven** interactive sites for one drawing, and the enumeration
+    /// is normative. The instance that gets lost is the Fork's **else** dock: it is a full,
+    /// independent ramp on the same attribute as the then dock, not a mirror and not a shared
+    /// selection. Collapsing it makes 8,736 guard forms unreachable.
+    public nonisolated enum Instance: String, CaseIterable, Hashable, Sendable {
+        case dialRamp
+        case benchRampTile
+        case forkGateDock
+        case forkThenDock
+        case forkElseDock
+        case tallyRankRamp
+        case tallyCounterDial
+    }
 
     public enum SelectMode: Hashable, Sendable {
         /// The Dial: exactly one lit, tapping another moves the selection.
@@ -77,6 +92,11 @@ public struct RampView: View {
         case .single, .exactlyOne: false
         }
     }
+
+    /// **The predicate is core**, not this view's: `RankSet.isVacuous` is what the Seal reads
+    /// too, and two implementations of "inert" is how the rail and the Seal end up disagreeing
+    /// about which drafts are declarable.
+    public nonisolated static func isInert(admitted: RankSet) -> Bool { admitted.isVacuous }
 
     public var body: some View {
         // The header abuts cell 1 with no gutter (§12.8's intra-group exemption), so the header
@@ -220,5 +240,261 @@ struct RampCell: View {
             shape: attribute == .shape ? Glyph.Shape(rawValue: raw) ?? base.shape : base.shape,
             pips: attribute == .pips ? Glyph.Pips(rawValue: raw) ?? base.pips : base.pips,
             hue: attribute == .hue ? Glyph.Hue(rawValue: raw) ?? base.hue : base.hue)
+    }
+}
+
+/// §4.2's **BRIDGE**: two attribute sockets with a wedge between them.
+///
+/// The **trailing** socket carries the ghost toggle, and that one toggle is the entire
+/// contextual grammar. The leading socket is always `cur` and carries none — RNF rule 3 made
+/// physical (§3.4), and it costs nothing: every one of the 96 contextual forms is
+/// `RANK a(cur) ⋈ PREV RANK b`, so `cur`-leading is the grammar's own orientation rather than a
+/// restriction. Putting the toggle on the *leading* socket would make the only expressible
+/// family the transposed one, and the tile would render a law RNF forbids.
+@MainActor
+public struct BridgeView: View {
+    public var env: RenderEnv
+    public var leading: Glyph.Attribute?
+    public var trailing: Glyph.Attribute?
+    public var comparator: Glyphs.Comparator
+    public var trailingIsPrevious: Bool
+    public var onTapSocket: (Bool) -> Void
+    public var onCycleComparator: () -> Void
+    public var onToggleGhost: () -> Void
+
+    public init(
+        env: RenderEnv,
+        leading: Glyph.Attribute?,
+        trailing: Glyph.Attribute?,
+        comparator: Glyphs.Comparator,
+        trailingIsPrevious: Bool,
+        onTapSocket: @escaping (Bool) -> Void = { _ in },
+        onCycleComparator: @escaping () -> Void = {},
+        onToggleGhost: @escaping () -> Void = {}
+    ) {
+        self.env = env
+        self.leading = leading
+        self.trailing = trailing
+        self.comparator = comparator
+        self.trailingIsPrevious = trailingIsPrevious
+        self.onTapSocket = onTapSocket
+        self.onCycleComparator = onCycleComparator
+        self.onToggleGhost = onToggleGhost
+    }
+
+    public var body: some View {
+        HStack(spacing: Space.s8) {
+            socket(leading, isTrailing: false)
+            Button(action: onCycleComparator) {
+                WedgeShape(comparator: comparator)
+                    .stroke(
+                        Color(env.palette.stroke.primary), lineWidth: env.weight(.body))
+            }
+            .buttonStyle(.plain)
+            .frame(width: Space.targetMin, height: Space.targetMin)
+            .contentShape(.rect)
+            socket(trailing, isTrailing: true)
+        }
+        .accessibilityElement(children: .contain)
+    }
+
+    @ViewBuilder
+    private func socket(_ attribute: Glyph.Attribute?, isTrailing: Bool) -> some View {
+        Button {
+            onTapSocket(isTrailing)
+        } label: {
+            ZStack {
+                if let attribute {
+                    AttributeHeaderView(env: env, attribute: attribute)
+                }
+                // The ghost frame is the SAME mark the ribbon used to mark `prev` ten probes
+                // earlier (§6.6 layer 6). Symbol identity does the naming that words are
+                // forbidden from doing, so this must never become a second dashed style.
+                if isTrailing, trailingIsPrevious {
+                    Canvas { context, size in
+                        GhostFrame.draw(
+                            into: context, box: CGRect(origin: .zero, size: size),
+                            role: .marker, env: env)
+                    }
+                }
+            }
+        }
+        .buttonStyle(.plain)
+        .frame(width: Space.targetMin, height: Space.targetMin)
+        .contentShape(.rect)
+        .accessibilityAddTraits(isTrailing && trailingIsPrevious ? .isSelected : [])
+        .overlay(alignment: .bottomTrailing) {
+            if isTrailing {
+                Button(action: onToggleGhost) { Color.clear }
+                    .buttonStyle(.plain)
+                    .frame(width: Space.s12, height: Space.s12)
+                    .contentShape(.rect)
+            }
+        }
+    }
+}
+
+/// §4.2's **FORK**: a railway switch. The gate dock holds a ramp restricted to one lit cell; the
+/// lit and dim docks each hold a **full, independent** ramp on the same attribute.
+@MainActor
+public struct ForkView: View {
+    public var env: RenderEnv
+    public var attribute: Glyph.Attribute
+    public var gateRank: Int
+    public var thenAdmitted: RankSet
+    public var elseAdmitted: RankSet
+    public var metrics: RampView.Metrics
+    public var onGate: (Int) -> Void
+    public var onThen: (Int) -> Void
+    public var onElse: (Int) -> Void
+
+    public init(
+        env: RenderEnv, attribute: Glyph.Attribute, gateRank: Int, thenAdmitted: RankSet,
+        elseAdmitted: RankSet, metrics: RampView.Metrics,
+        onGate: @escaping (Int) -> Void = { _ in },
+        onThen: @escaping (Int) -> Void = { _ in },
+        onElse: @escaping (Int) -> Void = { _ in }
+    ) {
+        self.env = env
+        self.attribute = attribute
+        self.gateRank = gateRank
+        self.thenAdmitted = thenAdmitted
+        self.elseAdmitted = elseAdmitted
+        self.metrics = metrics
+        self.onGate = onGate
+        self.onThen = onThen
+        self.onElse = onElse
+    }
+
+    public var body: some View {
+        VStack(spacing: Space.s8) {
+            RampView(
+                env: env, attribute: attribute, admitted: [gateRank], mode: .exactlyOne,
+                metrics: metrics, onToggle: onGate)
+            TurnoutShape(litCellIndex: gateRank)
+                .stroke(Color(env.palette.stroke.secondary), lineWidth: env.weight(.thin))
+                .frame(height: Space.s24)
+                .accessibilityHidden(true)
+            RampView(
+                env: env, attribute: attribute, admitted: thenAdmitted.litRanks, mode: .multi,
+                metrics: metrics, onToggle: onThen)
+            RampView(
+                env: env, attribute: attribute, admitted: elseAdmitted.litRanks, mode: .multi,
+                metrics: metrics, onToggle: onElse)
+        }
+        .accessibilityElement(children: .contain)
+    }
+}
+
+/// §4.2's **TALLY**: the four attribute headers in a column, a shared rank ramp, and a counter
+/// dial whose stops mean "how many counted attributes have a rank in the ramp".
+@MainActor
+public struct TallyView: View {
+    public var env: RenderEnv
+    public var counted: Set<Glyph.Attribute>
+    public var rankAdmitted: RankSet
+    public var countAdmitted: Set<Int>
+    public var isParity: Bool
+    public var metrics: RampView.Metrics
+    public var onToggleAttribute: (Glyph.Attribute) -> Void
+    public var onToggleRank: (Int) -> Void
+    public var onToggleCount: (Int) -> Void
+    public var onToggleParity: () -> Void
+
+    public init(
+        env: RenderEnv, counted: Set<Glyph.Attribute>, rankAdmitted: RankSet,
+        countAdmitted: Set<Int>, isParity: Bool, metrics: RampView.Metrics,
+        onToggleAttribute: @escaping (Glyph.Attribute) -> Void = { _ in },
+        onToggleRank: @escaping (Int) -> Void = { _ in },
+        onToggleCount: @escaping (Int) -> Void = { _ in },
+        onToggleParity: @escaping () -> Void = {}
+    ) {
+        self.env = env
+        self.counted = counted
+        self.rankAdmitted = rankAdmitted
+        self.countAdmitted = countAdmitted
+        self.isParity = isParity
+        self.metrics = metrics
+        self.onToggleAttribute = onToggleAttribute
+        self.onToggleRank = onToggleRank
+        self.onToggleCount = onToggleCount
+        self.onToggleParity = onToggleParity
+    }
+
+    public var body: some View {
+        VStack(spacing: Space.s8) {
+            HStack(spacing: Space.s4) {
+                ForEach(Glyph.Attribute.allCases, id: \.self) { attribute in
+                    Button {
+                        onToggleAttribute(attribute)
+                    } label: {
+                        AttributeHeaderView(env: env, attribute: attribute)
+                            .opacity(counted.contains(attribute) ? 1 : Opacity.disabled)
+                    }
+                    .buttonStyle(.plain)
+                    .frame(width: Space.targetMin, height: Space.targetMin)
+                    .contentShape(.rect)
+                    .accessibilityAddTraits(counted.contains(attribute) ? .isSelected : [])
+                }
+                Button(action: onToggleParity) { Color.clear }
+                    .buttonStyle(.plain)
+                    .frame(width: Space.targetMin, height: Space.targetMin)
+                    .contentShape(.rect)
+                    .accessibilityAddTraits(isParity ? .isSelected : [])
+            }
+            // Headerless: the column of attribute toggles above IS this ramp's header.
+            RampView(
+                env: env, attribute: nil, admitted: rankAdmitted.litRanks, mode: .multi,
+                metrics: metrics, onToggle: onToggleRank)
+            // §4.2: five stops, collapsing to two in parity mode (even / odd).
+            RampView(
+                env: env, attribute: nil, admitted: countAdmitted,
+                mode: .stops(isParity ? 2 : 5), metrics: metrics, onToggle: onToggleCount)
+        }
+        .accessibilityElement(children: .contain)
+    }
+}
+
+/// §4.2's **COUPLER**: the junction between the two rails.
+///
+/// **Absent, not disabled** when a Fork or a Tally occupies the whole Bench: not greyed, not an
+/// empty node, and removed from the accessibility tree entirely — a silent stop on the Rails
+/// rotor is a dead swipe every time a Fork is on the Bench.
+@MainActor
+public struct CouplerView: View {
+    public var env: RenderEnv
+    public var coupler: Coupler
+    public var onCycle: () -> Void
+
+    public init(env: RenderEnv, coupler: Coupler, onCycle: @escaping () -> Void = {}) {
+        self.env = env
+        self.coupler = coupler
+        self.onCycle = onCycle
+    }
+
+    public var body: some View {
+        Button(action: onCycle) {
+            CouplerShape(coupler: coupler)
+                .stroke(
+                    Color(env.palette.stroke.primary),
+                    lineWidth: CouplerShape.weight(coupler))
+        }
+        .buttonStyle(.plain)
+        .frame(width: C.Coupler.nodeSide, height: C.Coupler.nodeSide)
+        .contentShape(.rect)
+    }
+}
+
+extension RankSet {
+    /// The lit ranks, for a `RampView` that speaks in indices.
+    public var litRanks: Set<Int> { Set((0..<4).filter { contains(rank: $0) }) }
+}
+
+extension Coupler {
+    /// Tap to cycle: AND → OR → XOR, wrapping.
+    public var next: Coupler {
+        let all = Coupler.allCases
+        guard let index = all.firstIndex(of: self) else { return .and }
+        return all[(index + 1) % all.count]
     }
 }

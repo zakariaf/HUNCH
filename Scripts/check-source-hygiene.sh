@@ -91,7 +91,10 @@ fi
 #    not a non-zero exit, so the check would silently check nothing.
 net='URLSession|URLRequest|NSURLSession|NSURLConnection|CFNetwork|CFURL(Request|Connection)'
 net="$net"'|NWConnection|NWListener|NWBrowser|NWPathMonitor|CKContainer|CKDatabase|CKRecord'
-net="$net"'|WKWebView|SFSafariViewController|getaddrinfo|Socket\('
+# `Socket\(` needs a left boundary: §4.2 calls the Bridge's two attribute slots SOCKETS, so
+# `onTapSocket(` is domain vocabulary and matched the bare pattern. A check that fires on canon
+# gets an exemption comment today and gets deleted next year.
+net="$net"'|WKWebView|SFSafariViewController|getaddrinfo|(^|[^A-Za-z_])Socket\('
 net="$net"'|^[[:space:]]*(public |package |internal )?import[[:space:]]+(Network|CloudKit|WebKit|SafariServices|SystemConfiguration)\b'
 hits=$(grep -rnE "$net" --include='*.swift' "${roots[@]}" || true)
 [ -n "$hits" ] && report 'Network API in an app that has no network (the brief):' "$hits"
