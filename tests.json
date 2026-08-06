@@ -289,6 +289,62 @@
       "command": "HUNCH_CALIBRATION=1 swift test --package-path HunchCore --filter statelessBandsReproduce",
       "status": "pass",
       "task": "E05/T08"
+    },
+    {
+      "id": "E06-T01-published-deltas",
+      "area": "generator",
+      "statement": "all eight of \u00a75.2's published \u03b4 values reproduce within 0.001, and each lands inside its own band's range",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E06/T01"
+    },
+    {
+      "id": "E06-T06-generator-purity",
+      "area": "generator",
+      "statement": "generate() is pure over its five arguments plus an explicitly threaded LawIndex; sampling is integer-only and unbiased",
+      "command": "HUNCH_CALIBRATION=1 swift test --package-path HunchCore --filter GeneratorTests",
+      "status": "pass",
+      "task": "E06/T06"
+    },
+    {
+      "id": "E06-T06-fallback-budget",
+      "area": "generator",
+      "statement": "the anchor fallback rate stays under 2 % per band once the target is clamped into achievableDifficultyRange",
+      "command": "HUNCH_CALIBRATION=1 swift test --package-path HunchCore --filter emittedLawsAreValid",
+      "status": "pass",
+      "task": "E06/T06"
+    },
+    {
+      "id": "E06-T07-scoring",
+      "area": "generator",
+      "statement": "\u00a76.9's three worked rounds reproduce; the gradient is flat below par; the middle mark threshold does not move",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E06/T07"
+    },
+    {
+      "id": "E06-T08-counterexample",
+      "area": "generator",
+      "statement": "\u00a74.5's four selection steps hold, including a false negative winning over a strictly nearer false positive",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E06/T08"
+    },
+    {
+      "id": "E06-T09-ten-thousand-laws",
+      "area": "verification",
+      "statement": "10,000 laws per band across six stateless bands satisfy every invariant the brief names: valid, RNF, satisfiable, falsifiable, in-window, in-band, not secretly easier, one node per extension",
+      "command": "HUNCH_CALIBRATION=1 swift test --package-path HunchCore --filter tenThousandLaws",
+      "status": "pass",
+      "task": "E06/T09"
+    },
+    {
+      "id": "E06-T10-cross-process-determinism",
+      "area": "verification",
+      "statement": "a 192-row golden recorded in one process reproduces byte-identically in a separate process; the law index order is stable across builds",
+      "command": "HUNCH_CALIBRATION=1 swift test --package-path HunchCore --filter goldenReproduces",
+      "status": "pass",
+      "task": "E06/T10"
     }
   ]
 }
