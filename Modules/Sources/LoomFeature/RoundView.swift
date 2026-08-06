@@ -75,12 +75,34 @@ public struct RoundView: View {
                 }
                 region(layout.benchHandle) { BenchHandleRegion() }
                 region(layout.commitBar) {
-                    CommitBar {
-                        CommitKeyRegion()
-                    } centre: {
-                        CommitKeyRegion()
-                    } trailing: {
-                        CommitKeyRegion()
+                    RenderEnvReader { env in
+                        // §12.6's Left-hand keys setting mirrors exactly this bar's order and
+                        // the Bench handle's side; it lands in E19 and flips one flag here.
+                        CommitBar {
+                            CommitKey(env: env, isEnabled: round.acceptsInput) {
+                                round.probeDraft()
+                            } face: {
+                                KeyFace()
+                            }
+                        } centre: {
+                            CommitKey(
+                                env: env,
+                                breath: CommitKey<KeyFace>.BreathPresentation(
+                                    isBreathing: round.isBreathing,
+                                    reduceMotion: env.isReduceMotionEnabled),
+                                isEnabled: round.acceptsInput && round.isTwinAvailable
+                            ) {
+                                round.probeTwin()
+                            } face: {
+                                KeyFace()
+                            }
+                        } trailing: {
+                            CommitKey(env: env, isEnabled: round.acceptsInput) {
+                                round.openBench()
+                            } face: {
+                                KeyFace()
+                            }
+                        }
                     }
                 }
             }
@@ -146,4 +168,6 @@ public struct RoundView: View {
 private struct InstrumentBarRegion: View { var body: some View { Color.clear } }
 private struct BezelGapRegion: View { var body: some View { Color.clear } }
 private struct BenchHandleRegion: View { var body: some View { Color.clear } }
-private struct CommitKeyRegion: View { var body: some View { Color.clear } }
+/// The key's own drawing — the sigil each of the three carries. **E17·T03** draws them; until
+/// then a key is its border and its press state, which is enough to place and to press.
+private struct KeyFace: View { var body: some View { Color.clear } }

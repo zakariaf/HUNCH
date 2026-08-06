@@ -209,6 +209,18 @@ public enum C {
         public static let returnElbowDrop = 18.0
     }
 
+    /// §6.6 layer 3's breath, on the twin key. The key never grows a second affordance: the
+    /// breath is *only* an opacity/hairline event, and a barred or hinting control never gains
+    /// text anywhere in this app.
+    public enum TwinKey {
+        public static let breathPulse = Duration.milliseconds(1_200)
+        public static let breathInterval = Duration.seconds(8)
+
+        /// Reduce Motion's substitution: a **static** lift instead of a pulse. Written at the
+        /// same time as the animation, so the two cannot diverge.
+        public static let breathStaticLift = 0.30
+    }
+
     public enum TickRow {
         /// The tick itself never scales with the pitch (§6.2): at DRIFT band 8's 40 ticks the
         /// pitch compresses to 7.2 pt on the compact class and the tick stays 2 pt, which is

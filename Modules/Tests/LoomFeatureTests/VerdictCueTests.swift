@@ -74,7 +74,7 @@ struct VerdictCueTests {
         round.endVerdictBeat()
         recorder.reset()
 
-        round.twin()
+        round.probeTwin()
         round.landVerdict()
         // The seed is a triangle and the opening law is `shape ∈ {triangle}`, so both verdicts
         // are admits — the twin flag is what tells the two apart, not the verdict.

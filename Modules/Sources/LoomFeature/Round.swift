@@ -82,6 +82,10 @@ public final class Round {
     /// commit — a phase change there would swallow the last bit the player paid for.
     private var hasReachedCap = false
 
+    /// Latched forever on the first twin press. The breath stops on first *use*, not on first
+    /// success — its job is to teach that the key exists, and it has done that either way.
+    private var twinEverUsed = false
+
     public init(
         law: Law,
         band: Band,
@@ -238,18 +242,44 @@ public final class Round {
         }
     }
 
-    /// The twin key: re-feed the glyph currently in the throat, unchanged (§4.1).
+    /// The twin key: re-feed the glyph currently in the throat, unchanged (§6.3).
     ///
-    /// Never blocked and never refunded. Under previously-probed semantics the twin is the
-    /// experiment that detects statefulness *at all* — same glyph, different verdict — so a
-    /// repeat guard here would be a bug rather than a courtesy.
+    /// Never blocked and never refunded, and there is no cooldown and no cap exemption — under
+    /// previously-probed semantics the twin is the experiment that detects statefulness *at
+    /// all* (same glyph, different verdict), so a repeat guard here would be a bug rather than
+    /// a courtesy. It costs one probe like anything else.
+    ///
+    /// Whether the ribbon *marks* a twin pair is decided by adjacency inside `Ribbon.probe`,
+    /// never by which key was pressed: at probe 0 there is no previous probe to be a twin of,
+    /// so a twin-of-seed is an ordinary first probe. See `DECISIONS.md` 52.
     @discardableResult
-    public func twin() -> Verdict? {
+    public func probeTwin() -> Verdict? {
+        // Latched on the PRESS, not on the verdict: a player who presses twin and immediately
+        // backgrounds the app must not get the breath back on resume.
+        twinEverUsed = true
         guard outcome == nil, probesUsed < cap else { return nil }
         switch gate.request(.twin) {
         case .fires: return beginBeat(.twin, queued: false)
         case .queued, .dropped: return nil
         }
+    }
+
+    /// The twin key is live in every band from probe 0 and stays live until the round ends.
+    public var isTwinAvailable: Bool { outcome == nil && probesUsed < cap }
+
+    /// §6.6 layer 3's breath: past the point where three marks are still reachable, the twin
+    /// key breathes — a 1.2 s hairline pulse every 8 s, no arrow, no badge, no text.
+    ///
+    /// **The same rule in every band**, which is what stops it leaking contextuality: at bands
+    /// 1–4 following it costs one mildly wasted probe, and that waste *is* the lesson.
+    public var isBreathing: Bool {
+        Round.breathes(probesUsed: probesUsed, par: par, twinEverUsed: twinEverUsed)
+    }
+
+    /// A predicate, not a timer — so it cannot drift with the frame rate and needs no clock to
+    /// test. The 0.6 is §6.9's three-mark threshold and is `Scoring`'s, not this file's.
+    public static func breathes(probesUsed: Int, par: Int, twinEverUsed: Bool) -> Bool {
+        !twinEverUsed && Double(probesUsed) > Scoring.threeMarkFraction * Double(par)
     }
 
     /// t = 0 of the beat sheet: commit, announce, and start the clock.
@@ -317,6 +347,21 @@ public final class Round {
             return
         }
         if let queued = gate.unlock() { beginBeat(queued, queued: true) }
+    }
+
+    /// The Bench handle or the Bench key: raise the Bench and lower the Dial (§6.1). The
+    /// declaration itself, the Seal and the counterexample are E09's; this is the one
+    /// transition the commit bar needs to have a third key at all.
+    public func openBench() {
+        guard let next = RoundPhase.advance(phase, on: .benchOpened) else { return }
+        phase = next
+    }
+
+    /// The Dial key from the Bench. §6.7: the draft survives verbatim — a player probes
+    /// specifically to test a specific draft, so discarding it would make the trip pointless.
+    public func closeBench() {
+        guard let next = RoundPhase.advance(phase, on: .benchDismissed) else { return }
+        phase = next
     }
 
     /// Leaving from the run frame. Below one probe this is not a transition at all: the round

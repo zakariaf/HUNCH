@@ -17,6 +17,12 @@ public enum Scoring {
         case voided
     }
 
+    /// §6.9's three-mark threshold as a fraction of par, named because **two** rules key off it:
+    /// the third Seal mark, and §6.6's breath — the hint that starts once a round has passed the
+    /// point where three marks are still reachable. Writing `0.6` in a feature module would give
+    /// a locked constant a second home, which is what §5.7 exists to prevent.
+    public static let threeMarkFraction = 0.6
+
     /// §6.9's formula, evaluated multiply-then-round-once so a strike never produces a
     /// fractional intermediate.
     public static func score(probesUsed: Int, par: Int, strikes: Int) -> Int {
@@ -34,7 +40,7 @@ public enum Scoring {
     /// mark, not continuously.
     public static func marks(probesUsed: Int, par: Int, cap: Int) -> Int {
         let probes = max(1, probesUsed)
-        if Double(probes) <= 0.6 * Double(par) { return 3 }
+        if Double(probes) <= threeMarkFraction * Double(par) { return 3 }
         if probes <= par { return 2 }
         return 1
     }

@@ -141,7 +141,7 @@ struct RoundTests {
         let round = Fixtures.round(law: Fixtures.contextualLaw, band: .contextual)
         round.probeDraft()
         round.endVerdictBeat()
-        let after = round.probeDraft()
+        let after = round.probeTwin()
 
         #expect(after != nil)
         #expect(round.probesUsed == 2)
