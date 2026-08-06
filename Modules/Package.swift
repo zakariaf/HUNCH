@@ -38,6 +38,7 @@ let package = Package(
         .library(name: "Feedback", targets: ["Feedback"]),
         .library(name: "HunchAppFeature", targets: ["HunchAppFeature"]),
         .library(name: "HunchNavigation", targets: ["HunchNavigation"]),
+        .library(name: "HunchLocalization", targets: ["HunchLocalization"]),
     ],
     dependencies: [.package(path: "../HunchCore")],
     targets: [
@@ -79,6 +80,20 @@ let package = Package(
                 "HunchUI", "Feedback",
                 .product(name: "HunchCore", package: "HunchCore"),
             ],
+            swiftSettings: ui
+        ),
+
+        // The catalog lives here rather than in HunchUI: a string table is not a drawing, and
+        // HunchUI's own resource bundle exists only because an empty one fails codesign.
+        .target(
+            name: "HunchLocalization",
+            resources: [.process("Resources")],
+            swiftSettings: base
+        ),
+
+        .testTarget(
+            name: "HunchLocalizationTests",
+            dependencies: ["HunchLocalization", "ModulesTestSupport"],
             swiftSettings: ui
         ),
 

@@ -577,6 +577,23 @@
       "command": "swift test --package-path HunchCore --filter SettingsSchemaTests",
       "status": "pass",
       "task": "E17/T08"
+    },
+    {
+      "id": "E18-T01-catalog-resolves",
+      "area": "localization",
+      "statement": "every LocKey has a catalog entry and every entry has a key; the catalog stays inside its 250-key budget; no entry is a wordmark and no string names a Profile axis",
+      "command": "swift test --package-path Modules --filter 'CatalogResolutionTests|LanguageOverrideTests'",
+      "status": "pass",
+      "task": "E18/T01, E18/T02, E18/T05"
+    },
+    {
+      "id": "E18-T03-twelve-locales",
+      "area": "localization",
+      "statement": "Localizable.xcstrings carries all twelve shipping locales for all 104 keys",
+      "command": "bash Scripts/check-source-hygiene.sh  # check 8's locale-set and per-key arms",
+      "status": "known-issue",
+      "note": "OPEN AND OWNED, not a regression — which is what this status is for. The English source is complete and commented; the eleven other locales are not written. §12.9's process has a native speaker flip each entry from needsReview to translated, and no machine draft was authored here: marking untrusted output as reviewed, in a repo with no reviewer, is theatre that would show as green. Check 8's budget and duplicate-comment arms run today; its locale-set and per-key-completeness arms engage the moment a second locale appears, so the gate re-arms itself rather than needing to be remembered.",
+      "task": "E18/T03"
     }
   ]
 }

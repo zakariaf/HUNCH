@@ -1,0 +1,1167 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "SETTINGS_SECTION_DISPLAY": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Display"
+          }
+        }
+      }
+    },
+    "SETTINGS_SECTION_FEEDBACK": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Feedback"
+          }
+        }
+      }
+    },
+    "SETTINGS_SECTION_PLAY": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play"
+          }
+        }
+      }
+    },
+    "SETTINGS_SECTION_VOICEOVER": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "VoiceOver"
+          }
+        }
+      }
+    },
+    "SETTINGS_SECTION_LANGUAGE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Language"
+          }
+        }
+      }
+    },
+    "SETTINGS_SECTION_DATA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Data"
+          }
+        }
+      }
+    },
+    "SETTINGS_SECTION_ABOUT": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About"
+          }
+        }
+      },
+      "comment": "Settings section header. May differ from the row label and the screen title."
+    },
+    "SETTINGS_ROW_THEME": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Theme"
+          }
+        }
+      }
+    },
+    "SETTINGS_ROW_GRAIN": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grain"
+          }
+        }
+      }
+    },
+    "SETTINGS_ROW_REDUCE_MOTION": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reduce motion"
+          }
+        }
+      }
+    },
+    "SETTINGS_ROW_LEFT_HAND_KEYS": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Left-hand keys"
+          }
+        }
+      }
+    },
+    "SETTINGS_ROW_HAPTICS": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haptics"
+          }
+        }
+      }
+    },
+    "SETTINGS_ROW_SOUND": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sound"
+          }
+        }
+      }
+    },
+    "SETTINGS_ROW_LEVEL": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Level"
+          }
+        }
+      }
+    },
+    "SETTINGS_ROW_CONFIRM_SEAL": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirm the Seal"
+          }
+        }
+      }
+    },
+    "SETTINGS_ROW_STEADY_STREAM": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Steady stream"
+          }
+        }
+      }
+    },
+    "SETTINGS_ROW_VOICEOVER_DETAIL": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Detail"
+          }
+        }
+      }
+    },
+    "SETTINGS_ROW_ANNOUNCE_VERDICTS": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Announce verdicts"
+          }
+        }
+      }
+    },
+    "SETTINGS_ROW_ANNOUNCE_ASSAY": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Announce the Assay"
+          }
+        }
+      }
+    },
+    "SETTINGS_ROW_APP_LANGUAGE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App language"
+          }
+        }
+      }
+    },
+    "SETTINGS_ROW_CLEAR_STATISTICS": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear statistics"
+          }
+        }
+      }
+    },
+    "SETTINGS_ROW_CLEAR_CODEX": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear Codex"
+          }
+        }
+      }
+    },
+    "SETTINGS_ROW_RESET_PROFILE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset Profile"
+          }
+        }
+      }
+    },
+    "SETTINGS_ROW_RESET_LADDER": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset the ladder"
+          }
+        }
+      }
+    },
+    "SETTINGS_ROW_RESET_EVERYTHING": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset everything"
+          }
+        }
+      }
+    },
+    "SETTINGS_ROW_ABOUT": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About"
+          }
+        }
+      },
+      "comment": "Settings row that opens the About screen. May differ from the section header."
+    },
+    "OPTION_THEME_SYSTEM": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System"
+          }
+        }
+      },
+      "comment": "Theme option: follow the system appearance."
+    },
+    "OPTION_THEME_DARK": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dark"
+          }
+        }
+      }
+    },
+    "OPTION_THEME_LIGHT": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Light"
+          }
+        }
+      }
+    },
+    "OPTION_THEME_HIGH_CONTRAST": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "High Contrast"
+          }
+        }
+      }
+    },
+    "OPTION_MOTION_SYSTEM": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System"
+          }
+        }
+      },
+      "comment": "Reduce-motion option: follow the system setting."
+    },
+    "OPTION_MOTION_ALWAYS": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Always"
+          }
+        }
+      }
+    },
+    "OPTION_LEVEL_NORMAL": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Normal"
+          }
+        }
+      }
+    },
+    "OPTION_LEVEL_LOW": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Low"
+          }
+        }
+      }
+    },
+    "OPTION_DETAIL_FULL": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full"
+          }
+        }
+      }
+    },
+    "OPTION_DETAIL_TERSE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terse"
+          }
+        }
+      }
+    },
+    "OPTION_LANGUAGE_SYSTEM": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System"
+          }
+        }
+      },
+      "comment": "Language option: follow the system language."
+    },
+    "ALERT_CLEAR_STATISTICS_TITLE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear statistics?"
+          }
+        }
+      }
+    },
+    "ALERT_CLEAR_STATISTICS_BODY": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your counts return to zero. Your Codex, ladder and Profile are untouched."
+          }
+        }
+      }
+    },
+    "ALERT_CLEAR_STATISTICS_VERB": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear"
+          }
+        }
+      },
+      "comment": "Destructive button in the clear-statistics alert."
+    },
+    "ALERT_CLEAR_CODEX_TITLE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear the Codex?"
+          }
+        }
+      }
+    },
+    "ALERT_CLEAR_CODEX_BODY": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every page is deleted. ECHO and SIEVE lock again. The toolbox you have earned stays."
+          }
+        }
+      }
+    },
+    "ALERT_CLEAR_CODEX_VERB": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear"
+          }
+        }
+      },
+      "comment": "Destructive button in the clear-Codex alert. A different object is being cleared."
+    },
+    "ALERT_RESET_PROFILE_TITLE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset the Profile?"
+          }
+        }
+      }
+    },
+    "ALERT_RESET_PROFILE_BODY": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The portrait re-forms from nothing. Your pages and your ladder stay."
+          }
+        }
+      }
+    },
+    "ALERT_RESET_PROFILE_VERB": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset"
+          }
+        }
+      },
+      "comment": "Destructive button in the reset-Profile alert."
+    },
+    "ALERT_RESET_LADDER_TITLE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset the ladder?"
+          }
+        }
+      }
+    },
+    "ALERT_RESET_LADDER_BODY": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The next round is round one again, and your toolbox returns to its opening state. Your pages stay."
+          }
+        }
+      }
+    },
+    "ALERT_RESET_LADDER_VERB": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset"
+          }
+        }
+      },
+      "comment": "Destructive button in the reset-ladder alert. A different object is being reset."
+    },
+    "ALERT_RESET_EVERYTHING_TITLE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset everything?"
+          }
+        }
+      }
+    },
+    "ALERT_RESET_EVERYTHING_BODY": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every page, every count and the ladder are deleted. Your language and theme stay, and so does the Anomaly streak."
+          }
+        }
+      }
+    },
+    "ALERT_RESET_EVERYTHING_VERB": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset"
+          }
+        }
+      },
+      "comment": "Destructive button in the reset-everything alert. The widest of the five."
+    },
+    "ALERT_CANCEL": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        }
+      }
+    },
+    "ABOUT_VERSION": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
+          }
+        }
+      }
+    },
+    "ABOUT_BUILD": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Build"
+          }
+        }
+      }
+    },
+    "ABOUT_NO_DATA_COLLECTED": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No data is collected. Nothing leaves this device."
+          }
+        }
+      }
+    },
+    "ABOUT_COPYRIGHT": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "© 2026"
+          }
+        }
+      }
+    },
+    "ABOUT_STORAGE_HEALTHY": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Storage is fine."
+          }
+        }
+      }
+    },
+    "ABOUT_STORAGE_FAILING": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Writing failed. This session will not be kept."
+          }
+        }
+      }
+    },
+    "TITLE_CODEX": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Codex"
+          }
+        }
+      }
+    },
+    "TITLE_ANOMALY": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anomaly"
+          }
+        }
+      }
+    },
+    "TITLE_STATISTICS": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Statistics"
+          }
+        }
+      }
+    },
+    "TITLE_PROFILE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profile"
+          }
+        }
+      }
+    },
+    "TITLE_SETTINGS": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
+          }
+        }
+      }
+    },
+    "TITLE_ABOUT": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About"
+          }
+        }
+      },
+      "comment": "Navigation title of the About screen itself."
+    },
+    "A11Y_ATTRIBUTE_FILL": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "fill"
+          }
+        }
+      }
+    },
+    "A11Y_ATTRIBUTE_SHAPE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "shape"
+          }
+        }
+      }
+    },
+    "A11Y_ATTRIBUTE_PIPS": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "pips"
+          }
+        }
+      }
+    },
+    "A11Y_ATTRIBUTE_HUE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "hue"
+          }
+        }
+      }
+    },
+    "A11Y_VALUE_FILL_HOLLOW": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "hollow"
+          }
+        }
+      }
+    },
+    "A11Y_VALUE_FILL_DOTTED": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "dotted"
+          }
+        }
+      }
+    },
+    "A11Y_VALUE_FILL_STRIPED": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "striped"
+          }
+        }
+      }
+    },
+    "A11Y_VALUE_FILL_SOLID": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "solid"
+          }
+        }
+      }
+    },
+    "A11Y_VALUE_SHAPE_CIRCLE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "circle"
+          }
+        }
+      }
+    },
+    "A11Y_VALUE_SHAPE_TRIANGLE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "triangle"
+          }
+        }
+      }
+    },
+    "A11Y_VALUE_SHAPE_SQUARE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "square"
+          }
+        }
+      }
+    },
+    "A11Y_VALUE_SHAPE_HEXAGON": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "hexagon"
+          }
+        }
+      }
+    },
+    "A11Y_VALUE_PIPS_ONE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "one pip"
+          }
+        }
+      }
+    },
+    "A11Y_VALUE_PIPS_TWO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "two pips"
+          }
+        }
+      }
+    },
+    "A11Y_VALUE_PIPS_THREE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "three pips"
+          }
+        }
+      }
+    },
+    "A11Y_VALUE_PIPS_FOUR": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "four pips"
+          }
+        }
+      }
+    },
+    "A11Y_VALUE_HUE_AMBER": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "amber"
+          }
+        }
+      }
+    },
+    "A11Y_VALUE_HUE_TEAL": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "teal"
+          }
+        }
+      }
+    },
+    "A11Y_VALUE_HUE_FROST": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "frost"
+          }
+        }
+      }
+    },
+    "A11Y_VALUE_HUE_ROSE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "rose"
+          }
+        }
+      }
+    },
+    "A11Y_GLYPH_LABEL": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ %2$@, %3$@, %4$@"
+          }
+        }
+      },
+      "comment": "Spoken glyph label. Four interpolations in canonical order: fill, shape, pips, hue. Never concatenate fragments — the adjective order differs by language."
+    },
+    "A11Y_ANNOUNCE_ADMIT": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Admitted."
+          }
+        }
+      }
+    },
+    "A11Y_ANNOUNCE_REJECT": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rejected."
+          }
+        }
+      }
+    },
+    "A11Y_ANNOUNCE_STRIKE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not the law. One counterexample."
+          }
+        }
+      }
+    },
+    "A11Y_ANNOUNCE_COUNTEREXAMPLE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Loom disagrees about this one."
+          }
+        }
+      }
+    },
+    "A11Y_ANNOUNCE_SEAL_BARRED": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Seal is barred."
+          }
+        }
+      }
+    },
+    "A11Y_ANNOUNCE_INSCRIBED": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Correct. Inscribed."
+          }
+        }
+      }
+    },
+    "A11Y_ANNOUNCE_REVEALED": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The law is revealed."
+          }
+        }
+      }
+    },
+    "A11Y_ANNOUNCE_DRIFT_CHANGED": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The law has changed."
+          }
+        }
+      }
+    },
+    "A11Y_ANNOUNCE_CAP_REACHED": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No probes remain."
+          }
+        }
+      }
+    },
+    "A11Y_FORMAT_PROBES_OF_PAR": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld of %2$lld probes"
+          }
+        }
+      }
+    },
+    "A11Y_FORMAT_MARKS": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld marks"
+          }
+        }
+      }
+    },
+    "A11Y_FORMAT_STREAK": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld days"
+          }
+        }
+      }
+    },
+    "A11Y_FORMAT_PAGES": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld pages"
+          }
+        }
+      }
+    },
+    "A11Y_VERTEX_1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You reach for harder laws."
+          }
+        }
+      },
+      "comment": "Spoken description of a Profile vertex. Describe the behaviour; never name the axis."
+    },
+    "A11Y_VERTEX_2": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A law you have held stays held."
+          }
+        }
+      },
+      "comment": "Spoken description of a Profile vertex. Describe the behaviour; never name the axis."
+    },
+    "A11Y_VERTEX_3": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You let go of an idea that stopped working."
+          }
+        }
+      },
+      "comment": "Spoken description of a Profile vertex. Describe the behaviour; never name the axis."
+    },
+    "A11Y_VERTEX_4": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You wait until the evidence closes."
+          }
+        }
+      },
+      "comment": "Spoken description of a Profile vertex. Describe the behaviour; never name the axis."
+    },
+    "A11Y_VERTEX_5": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You spend few probes."
+          }
+        }
+      },
+      "comment": "Spoken description of a Profile vertex. Describe the behaviour; never name the axis."
+    }
+  },
+  "version": "1.0"
+}
