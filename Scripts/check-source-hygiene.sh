@@ -227,6 +227,27 @@ if [ "${#present[@]}" -gt 0 ]; then
     "$hits"
 fi
 
+# 12. §4.2's gesture inventory is exhaustive: tap and trailing swipe, nothing else, anywhere in
+#     the declaration UI. Drag and pinch are precisely the gestures VoiceOver cannot perform and
+#     that no textless affordance can teach, so this is an accessibility rule rather than a
+#     preference. The Bench drawer's handle is the ONE sanctioned drag in the play surface
+#     (§13.7.3) and it is not part of the declaration UI — it is exempt by file, not by comment.
+declarationFiles=(
+  Modules/Sources/HunchUI/RuleTileCanvas.swift
+  Modules/Sources/HunchUI/AttributeHeaderView.swift
+  Modules/Sources/HunchUI/TileShapes.swift
+  Modules/Sources/LoomFeature/BenchView.swift
+)
+present=(); for f in "${declarationFiles[@]}"; do [ -f "$f" ] && present+=("$f"); done
+if [ "${#present[@]}" -gt 0 ]; then
+  banned='LongPressGesture|MagnifyGesture|MagnificationGesture|RotateGesture|RotationGesture'
+  banned="$banned"'|DragGesture|onLongPressGesture|count:[[:space:]]*2'
+  hits=$(grep -rnE "$banned" "${present[@]}" | grep -vE ':[[:space:]]*(//|\*)' || true)
+  [ -n "$hits" ] && report \
+    'A gesture §4.2 rules out of the declaration UI (drag, pinch, long-press, double-tap):' \
+    "$hits"
+fi
+
 label=""; [ "$fast" -eq 1 ] && label=" (fast subset)"
 [ "$status" -eq 0 ] && echo "Source hygiene: clean$label"
 exit "$status"
