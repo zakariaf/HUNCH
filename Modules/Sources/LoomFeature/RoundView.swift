@@ -48,7 +48,8 @@ public struct RoundView: View {
                 width: proxy.size.width,
                 height: proxy.size.height + insets.top + insets.bottom)
             let layout = PlaySurfaceLayout(
-                size: screen, safeAreaTop: insets.top, safeAreaBottom: insets.bottom)
+                size: screen, safeAreaTop: insets.top, safeAreaBottom: insets.bottom,
+                mode: round.phase == .declaring ? .bench : .dial)
 
             ZStack(alignment: .topLeading) {
                 region(layout, layout.instrumentBar) {
@@ -97,39 +98,65 @@ public struct RoundView: View {
                 if let bezelGap = layout.bezelGap {
                     region(layout, bezelGap) { BezelGapRegion() }
                 }
-                region(layout, layout.dial) {
-                    RenderEnvReader { env in
-                        DialView(
-                            draft: round.draft, layout: layout, env: env,
-                            isEnabled: round.acceptsInput, onSelect: select)
+                if layout.mode == .bench {
+                    region(layout, layout.benchRegion) {
+                        RenderEnvReader { env in BenchView(layout: layout, env: env) }
+                    }
+                    region(layout, layout.palette) {
+                        RenderEnvReader { env in PaletteView(env: env) }
+                    }
+                } else {
+                    region(layout, layout.dial) {
+                        RenderEnvReader { env in
+                            DialView(
+                                draft: round.draft, layout: layout, env: env,
+                                isEnabled: round.acceptsInput, onSelect: select)
+                        }
                     }
                 }
-                region(layout, layout.benchHandle) { BenchHandleRegion() }
+                if layout.mode == .dial {
+                    region(layout, layout.benchHandle) {
+                        RenderEnvReader { env in
+                            BenchHandleView(
+                                env: env, isOpen: false, onToggle: round.openBench)
+                        }
+                    }
+                }
                 region(layout, layout.commitBar) {
                     RenderEnvReader { env in
                         // §12.6's Left-hand keys setting mirrors exactly this bar's order and
                         // the Bench handle's side; it lands in E19 and flips one flag here.
+                        // §12.8 tier 1: the bar does not move between modes, only its keys do —
+                        // PROBE · twin · Bench becomes Dial · Seal.
                         CommitBar {
                             CommitKey(env: env, isEnabled: round.acceptsInput) {
-                                round.probeDraft()
+                                if layout.mode == .bench {
+                                    round.closeBench()
+                                } else {
+                                    round.probeDraft()
+                                }
                             } face: {
                                 KeyFace()
                             }
                         } centre: {
-                            CommitKey(
-                                env: env,
-                                breath: CommitKey<KeyFace>.BreathPresentation(
-                                    isBreathing: round.isBreathing,
-                                    reduceMotion: env.isReduceMotionEnabled),
-                                isEnabled: round.acceptsInput && round.isTwinAvailable
-                            ) {
-                                round.probeTwin()
-                            } face: {
-                                KeyFace()
+                            if layout.mode == .dial {
+                                CommitKey(
+                                    env: env,
+                                    breath: CommitKey<KeyFace>.BreathPresentation(
+                                        isBreathing: round.isBreathing,
+                                        reduceMotion: env.isReduceMotionEnabled),
+                                    isEnabled: round.acceptsInput && round.isTwinAvailable
+                                ) {
+                                    round.probeTwin()
+                                } face: {
+                                    KeyFace()
+                                }
                             }
                         } trailing: {
                             CommitKey(env: env, isEnabled: round.acceptsInput) {
-                                round.openBench()
+                                // E09·T07 puts the Seal here; until then the trailing key is
+                                // the Bench key in Dial mode and inert in Bench mode.
+                                if layout.mode == .dial { round.openBench() }
                             } face: {
                                 KeyFace()
                             }

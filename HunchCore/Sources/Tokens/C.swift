@@ -236,6 +236,62 @@ public enum C {
     /// §6.6 layer 3's breath, on the twin key. The key never grows a second affordance: the
     /// breath is *only* an opacity/hairline event, and a barred or hinting control never gains
     /// text anywhere in this app.
+    /// §4.2's declaration surface.
+    public enum Bench {
+        /// §13.7.3 — the Dial slides down by this much to become the Bench drawer.
+        public static let travel = 332.0
+
+        /// §4.2, §6.2 — the pull-up handle's band. Height only; the origin is laid out upward
+        /// from the bottom safe edge by `PlaySurfaceLayout`.
+        public static let handleHeight = Space.targetMin
+
+        /// §4.2 — the palette of four tile stamps, directly above the commit bar.
+        public static let paletteHeight = Space.targetMin
+
+        /// §6.7 — the **tap**-driven Dial ↔ Bench transition.
+        ///
+        /// Not the drag. §13.7.3's row is an interactive drag bounded by `Dur.sheet`, and that
+        /// bound is the *settle after release*. A tap has no finger to follow, so the whole
+        /// choreography runs on this fixed clock instead. Two names, two clocks, neither a copy
+        /// of the other — see `DECISIONS.md` 63.
+        public static let tapTransition = Duration.milliseconds(380)
+
+        /// §12.8 — every interactive target lives within this of the bottom safe edge.
+        public static let reachBudget = 460.0
+
+        /// §13.7.3 — a flick commits when the predicted end passes a third of the travel; a
+        /// slow drag needs half of it.
+        public static let flickFraction = 1.0 / 3
+        public static let dragCommitFraction = 0.5
+    }
+
+    public enum RuleTile {
+        /// §4.2 — the rails are 291 pt wide. A rail's *content* width, which is what the ramp's
+        /// derived gutter is computed against.
+        public static let railContent = 291.0
+
+        /// §11.2 — a Codex page draws the same tile at 0.78. Scale the tile, never re-lay it.
+        public static let codexScale = 0.78
+    }
+
+    public enum Assay {
+        /// §4.3's evidence grid. 64 pt in the Bench's trailing column; the inspector opens it
+        /// full-width (E09·T06).
+        public enum Site: Hashable, Sendable { case benchWell, inspector }
+
+        public static func gridSide(_ site: Site) -> Double {
+            switch site {
+            case .benchWell: 64
+            case .inspector: 288
+            }
+        }
+    }
+
+    public enum Key {
+        /// §4.2 — a palette stamp, 68 × 44.
+        public static let paletteStamp = C.Size(width: 68, height: 44)
+    }
+
     public enum TwinKey {
         public static let breathPulse = Duration.milliseconds(1_200)
         public static let breathInterval = Duration.seconds(8)

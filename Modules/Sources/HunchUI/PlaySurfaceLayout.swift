@@ -32,7 +32,18 @@ public nonisolated struct PlaySurfaceLayout: Equatable, Sendable {
         case compact, large
     }
 
+    /// Which surface is up. **One type, two modes** — and the four invariant rects are computed
+    /// before the mode is consulted, which is what makes §6.7's "the throat and the ribbon do
+    /// not move" a property of the type rather than a coincidence two code paths share.
+    ///
+    /// Laying the two modes out independently and then asserting they agree is the version of
+    /// this that rots the first time somebody edits one of them.
+    public nonisolated enum Mode: String, CaseIterable, Equatable, Sendable {
+        case dial, bench
+    }
+
     public let deviceClass: DeviceClass
+    public let mode: Mode
     public let width: CGFloat
     public let safeTop: CGFloat
     public let safeBottom: CGFloat
@@ -53,12 +64,15 @@ public nonisolated struct PlaySurfaceLayout: Equatable, Sendable {
     /// 1 on `compact`, 2 on `large`. Follows the ribbon's height rather than the device name.
     public let ribbonLanes: Int
 
-    public init(size: CGSize, safeAreaTop: CGFloat, safeAreaBottom: CGFloat) {
+    public init(
+        size: CGSize, safeAreaTop: CGFloat, safeAreaBottom: CGFloat, mode: Mode = .dial
+    ) {
         let safeTop = safeAreaTop
         let safeBottom = size.height - safeAreaBottom
         let metrics = Metrics.forSafeHeight(safeBottom - safeTop)
 
         self.deviceClass = metrics.deviceClass
+        self.mode = mode
         self.width = size.width
         self.safeTop = safeTop
         self.safeBottom = safeBottom
@@ -97,14 +111,64 @@ public nonisolated struct PlaySurfaceLayout: Equatable, Sendable {
     }
 
     /// The two devices §6.2 tabulates, for tests and previews.
-    public static func reference(_ deviceClass: DeviceClass) -> Self {
+    public static func reference(_ deviceClass: DeviceClass, mode: Mode = .dial) -> Self {
         switch deviceClass {
         case .compact:
-            Self(size: CGSize(width: 375, height: 667), safeAreaTop: 20, safeAreaBottom: 0)
+            Self(
+                size: CGSize(width: 375, height: 667), safeAreaTop: 20, safeAreaBottom: 0,
+                mode: mode)
         case .large:
-            Self(size: CGSize(width: 440, height: 956), safeAreaTop: 62, safeAreaBottom: 34)
+            Self(
+                size: CGSize(width: 440, height: 956), safeAreaTop: 62, safeAreaBottom: 34,
+                mode: mode)
         }
     }
+
+    // ── The Bench (§4.2) ─────────────────────────────────────────────────────────────────
+
+    public var safeArea: CGRect {
+        CGRect(x: 0, y: safeTop, width: width, height: safeBottom - safeTop)
+    }
+
+    /// §4.2's palette of four tile stamps, immediately above the commit bar. It comes out of
+    /// the Bench's own height rather than out of the handle-to-commit gap, because that gap is
+    /// 44 pt on the compact device and **4 pt** on the large one — a palette laid out into it
+    /// would be legal on one device and 4 pt tall on the other.
+    public var palette: CGRect {
+        CGRect(
+            x: 0, y: commitBar.minY - C.Bench.paletteHeight, width: width,
+            height: C.Bench.paletteHeight)
+    }
+
+    /// The drawer itself: everything between the evidence and the palette.
+    public var benchRegion: CGRect {
+        let top = (bezelGap?.maxY ?? ribbon.maxY)
+        return CGRect(x: 0, y: top, width: width, height: palette.minY - top)
+    }
+
+    /// §4.2 — the rails, 291 pt wide, and the Assay's 64 pt trailing column beside them. The
+    /// column **is** the grid, so its width is `C.Assay`'s and never a second constant here.
+    public var rails: CGRect {
+        CGRect(
+            x: railsOrigin, y: benchRegion.minY, width: C.RuleTile.railContent,
+            height: benchRegion.height)
+    }
+
+    public var assayColumn: CGRect {
+        CGRect(
+            x: rails.maxX + Space.s4, y: benchRegion.minY,
+            width: C.Assay.gridSide(.benchWell), height: benchRegion.height)
+    }
+
+    private var railsOrigin: CGFloat {
+        let content = C.RuleTile.railContent + Space.s4 + C.Assay.gridSide(.benchWell)
+        return max(0, (width - content) / 2)
+    }
+
+    /// §4.2 — PROBE · twin · Bench in Dial mode; Dial · Seal in Bench mode. The bar itself does
+    /// not move: §12.8 tier 1 puts the thing that ends a decision in the same place under the
+    /// same thumb on every surface, and only its contents change.
+    public var commitBarKeys: Int { mode == .bench ? 2 : 3 }
 
     /// Top to bottom, gaps excluded. The bezel gap is a gap, so it is not here.
     public var orderedRegions: [CGRect] {
