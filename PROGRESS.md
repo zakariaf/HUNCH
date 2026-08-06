@@ -42,4 +42,11 @@ lower-band index. Then E06 (generator), E07 (persistence), E08–E10 (the PROBE 
 - The pre-commit hook is not versioned (`.git/hooks` is outside the work tree). Documented in
   `CLAUDE.md`.
 - Check 8 (String Catalog) and check 7 (play-surface text) are inert until `Modules/` exists in
-  E03. Both are written and will engage without edit.
+  E03. Both are written and will engage without edit. **Check 7 verified live in E08·T02** by
+  planting a `Text("x")` in `RoundView.swift`: it failed, and passed again once removed.
+- **E08·T03, checked by eye in the DEBUG gallery.** The "THROAT — one register moves, three
+  hold" section draws each attribute as four columns: the base glyph, the stepped glyph, the
+  moving register's passes alone, and the held registers' passes alone. The third and fourth
+  columns are complementary and neither is empty for fill, shape or pips; for hue the fourth is
+  empty by construction, because hue is the ink colour of every pass. That is the renderer-side
+  proof that §6.3's crossfade is separable rather than a whole-glyph fade wearing its name.

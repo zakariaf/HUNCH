@@ -45,6 +45,22 @@ public final class Round {
     /// twin is one more.
     public private(set) var draft: Glyph
 
+    /// The attribute the player most recently moved.
+    ///
+    /// Seeded to `.fill` — the canonical order's first (§2) — so the throat swipe is live on
+    /// the very first frame. A gesture that does nothing until some *other* control has been
+    /// used is a gesture nobody discovers, and this one is §6.3's cheapest path to a controlled
+    /// variation.
+    public private(set) var lastTouched: Glyph.Attribute = .fill
+
+    /// The register that changed on the last edit, or `nil` if nothing moved.
+    ///
+    /// The throat crossfades exactly this pass and holds the other three (§6.3) — which is not
+    /// polish: change-one-hold-three is *the* inductive move, and animating the whole glyph
+    /// hides the act inside the result. `nil` after a clamped step, so a swipe that changed
+    /// nothing animates nothing.
+    public private(set) var changedRegister: Glyph.Attribute?
+
     /// Set by the cap-th commit and read by `endVerdictBeat()`. §6.11 case 4 delivers that
     /// verdict in full and only *then* ends the round, so exhaustion cannot be part of the
     /// commit — a phase change there would swallow the last bit the player paid for.
@@ -104,11 +120,56 @@ public final class Round {
 
     // ── Composing ────────────────────────────────────────────────────────────────────────
 
-    /// Ribbon-load and every Dial edit land here: the throat adopts a glyph wholesale (§6.3).
-    /// Refused outside an open-input phase, because the throat is the input.
+    /// Ribbon-load: the throat and the Dial adopt a glyph wholesale (§6.3). Refused outside an
+    /// open-input phase, because the throat is the input.
+    ///
+    /// Every register that differs is reported as changed — a ribbon-load is not a controlled
+    /// variation and must not be dressed as one.
     public func setDraft(_ glyph: Glyph) {
         guard phase.acceptsInput else { return }
+        let differing = Glyph.Attribute.allCases.filter {
+            glyph.ordinal(of: $0) != draft.ordinal(of: $0)
+        }
         draft = glyph
+        changedRegister = differing.count == 1 ? differing[0] : nil
+    }
+
+    /// One Dial cell tap: that ramp's selection moves and the throat redraws (§6.3).
+    ///
+    /// - Parameter rank: the **visible** rank, 1…4 — what the ramp shows and VoiceOver reads,
+    ///   not the 0-based ordinal that `glyphID` is packed from.
+    public func select(_ attribute: Glyph.Attribute, rank: Int) {
+        guard phase.acceptsInput, (1...4).contains(rank) else { return }
+        lastTouched = attribute
+        let moved = draft.rank(of: attribute) != rank
+        draft = Round.glyph(draft, setting: attribute, toOrdinal: rank - 1)
+        changedRegister = moved ? attribute : nil
+    }
+
+    /// A horizontal swipe on the throat: step the last-touched attribute by ±1 (§6.3).
+    ///
+    /// **Wrapping is off**, and that is a decision rather than an omission: §6.3 says so in
+    /// three words, and a ramp that wrapped would send a swipe at rank 4 to rank 1, which reads
+    /// as a different glyph arriving rather than as one attribute moving by one step.
+    public func stepDraft(by delta: Int) {
+        guard phase.acceptsInput else { return }
+        select(lastTouched, rank: min(4, max(1, draft.rank(of: lastTouched) + delta)))
+    }
+
+    /// Called when the register crossfade is spent, so a later frame does not re-animate a
+    /// change that has already been shown.
+    public func clearChangedRegister() { changedRegister = nil }
+
+    /// The one place a glyph is rebuilt with a single attribute replaced.
+    static func glyph(_ base: Glyph, setting attribute: Glyph.Attribute, toOrdinal ordinal: Int)
+        -> Glyph
+    {
+        let raw = UInt8(min(3, max(0, ordinal)))
+        return Glyph(
+            fill: attribute == .fill ? Glyph.Fill(rawValue: raw) ?? base.fill : base.fill,
+            shape: attribute == .shape ? Glyph.Shape(rawValue: raw) ?? base.shape : base.shape,
+            pips: attribute == .pips ? Glyph.Pips(rawValue: raw) ?? base.pips : base.pips,
+            hue: attribute == .hue ? Glyph.Hue(rawValue: raw) ?? base.hue : base.hue)
     }
 
     // ── Probing ──────────────────────────────────────────────────────────────────────────

@@ -22,7 +22,20 @@ nonisolated struct GlyphRenderer {
     /// Draws one glyph centred in `canvas`, in the four-pass order of
     /// DIRECTION-A-PHOSPHOR.md §2. Pass A, the blurred bed, is **not** here: it is one
     /// offscreen layer per glyph-bearing region and belongs to the region's view.
-    func draw(into context: inout GraphicsContext, canvas: CGSize) {
+    ///
+    /// - Parameter registers: which of the four attribute registers to draw. The default is all
+    ///   four. Drawing a *subset* is what makes §6.3's "only the changed register animates"
+    ///   implementable at all: the throat draws the three held registers once and crossfades the
+    ///   fourth between two glyphs, inside ONE canvas, because a region gets one bloom bed and
+    ///   compositing two whole glyph canvases would give it two.
+    ///
+    ///   `.hue` is special and is handled by the caller, not here: it is the index stroke *and*
+    ///   the ink colour of every other pass, so a hue change moves no geometry but recolours
+    ///   the whole drawing. `ThroatView.affectedRegisters(by:)` is the one place that is stated.
+    func draw(
+        into context: inout GraphicsContext, canvas: CGSize,
+        registers: Set<Glyph.Attribute> = Set(Glyph.Attribute.allCases)
+    ) {
         let box = CGRect(
             x: (canvas.width - side) / 2, y: (canvas.height - side) / 2,
             width: side, height: side)
@@ -38,19 +51,26 @@ nonisolated struct GlyphRenderer {
         if C.Glyph.isBloomed(side: side, in: env) {
             var halo = context
             halo.opacity = Opacity.halo
-            halo.stroke(
-                silhouette, with: ink,
-                style: StrokeStyle(
-                    lineWidth: C.Glyph.haloStroke(side: side, in: env), lineJoin: .round))
-            halo.stroke(
-                index, with: ink,
-                style: StrokeStyle(
-                    lineWidth: C.Glyph.haloIndexStroke(in: env), lineCap: .butt))
+            if registers.contains(.shape) {
+                halo.stroke(
+                    silhouette, with: ink,
+                    style: StrokeStyle(
+                        lineWidth: C.Glyph.haloStroke(side: side, in: env), lineJoin: .round))
+            }
+            if registers.contains(.hue) {
+                halo.stroke(
+                    index, with: ink,
+                    style: StrokeStyle(
+                        lineWidth: C.Glyph.haloIndexStroke(in: env), lineCap: .butt))
+            }
         }
 
         // PASS C — texture, then the light-theme keyline, then the silhouette.
-        drawTexture(into: &context, box: box, bodyCentre: bodyCentre, ink: ink)
-        if let keylineWeight = C.Glyph.keylineStroke(side: side, in: env),
+        if registers.contains(.fill) {
+            drawTexture(into: &context, box: box, bodyCentre: bodyCentre, ink: ink)
+        }
+        if registers.contains(.shape),
+            let keylineWeight = C.Glyph.keylineStroke(side: side, in: env),
             let keyline = env.palette.glyphKeyline
         {
             context.stroke(
@@ -58,15 +78,17 @@ nonisolated struct GlyphRenderer {
                 style: StrokeStyle(
                     lineWidth: keylineWeight, lineJoin: .miter, miterLimit: 10))
         }
-        context.stroke(
-            silhouette, with: ink,
-            style: StrokeStyle(
-                lineWidth: bodyWeight, lineJoin: .miter, miterLimit: 10))
+        if registers.contains(.shape) {
+            context.stroke(
+                silhouette, with: ink,
+                style: StrokeStyle(
+                    lineWidth: bodyWeight, lineJoin: .miter, miterLimit: 10))
+        }
 
         // PASS D — pip nodes and their knockout ring, so a node separates from the
         // silhouette stroke and from texture reaching the contour.
         let pipRadius = C.Glyph.pipRadius(side: side)
-        for ray in Self.pipRays.prefix(glyph.pips.count) {
+        for ray in registers.contains(.pips) ? Self.pipRays.prefix(glyph.pips.count) : [] {
             let node = contourHit(degrees: ray, bodyCentre: bodyCentre)
             let knockout = Path(
                 ellipseIn: CGRect(
@@ -83,10 +105,12 @@ nonisolated struct GlyphRenderer {
         // The index stroke is last and is never knocked out: it is the hue channel, and
         // it OVERLAPS the S node — frost's tip lands inside the pip disc on circle and
         // hexagon at every size. Knock out first, ink the hue last. See §5.1.
-        context.stroke(
-            index, with: ink,
-            style: StrokeStyle(
-                lineWidth: C.Glyph.indexStroke(in: env), lineCap: .butt))
+        if registers.contains(.hue) {
+            context.stroke(
+                index, with: ink,
+                style: StrokeStyle(
+                    lineWidth: C.Glyph.indexStroke(in: env), lineCap: .butt))
+        }
     }
 
     private func indexPath(bodyCentre: CGPoint) -> Path {

@@ -55,7 +55,12 @@ public enum C {
     /// written fully qualified, so there is no ambiguity at a call site.
     public enum Glyph {
         // ── Lengths, all ratios of the box side S (§13.5) ──────────────────
-        public static func radius(side S: Double) -> Double { 0.37 * S }
+        /// §13.5's body radius as a fraction of the box side. Named because the throat has to
+        /// size a well against `2R × the ring's expansion` and cannot do that from a function
+        /// it can only call with a side it has not computed yet.
+        public static let radiusRatio = 0.37
+
+        public static func radius(side S: Double) -> Double { radiusRatio * S }
         /// Signed y offset of `bodyCentre` from the box centre, **screen frame**.
         /// §13.5 writes `+0.10·S` in a y-up frame; this is that value negated.
         public static func centreOffset(side S: Double) -> Double { -0.10 * S }
@@ -138,6 +143,36 @@ public enum C {
         /// §13.5.1's shipped constant: the minimum pairwise ink difference over the deck,
         /// in pt² at S = 44. Measured, not asserted — `check-coverage-separation.js`.
         public static let minimumPairwiseInkDifference = 8.0
+    }
+
+    public enum VerdictRing {
+        /// The transient admit ring's radius at the end of its expansion, as a multiple of the
+        /// body radius — §13.7.2's 200 ms bloom. **Declared exactly once, here**: the throat's
+        /// well is sized against it, the reject ring contracts *from* it, and if it were also a
+        /// `C.Throat` member the two would drift the day §13.7.2 moves.
+        public static let transientAdmitRadius = 1.35
+
+        /// The reject ring's gap, degrees. Doubled under Differentiate Without Colour (§13.11),
+        /// which is why it is a pair rather than a constant.
+        public static let rejectGapDegrees = 30.0
+        public static let rejectGapDegreesDifferentiated = 60.0
+    }
+
+    /// §6.2's live-draft well. `submitContraction` and `registerCrossfade` are §6.5's and
+    /// §6.3's respectively, and they are deliberately different clocks from the verdict beat.
+    public enum Throat {
+        public static let glyphSide = 96.0
+        public static let glyphSideLarge = 128.0
+
+        /// §6.5 t = 0: the throat glyph contracts to 0.92 over 90 ms, ease-in.
+        public static let submitContraction = 0.92
+
+        /// §6.3: "the throat redraws in 80 ms". One register crossfades and three hold, so this
+        /// is neither the verdict beat's clock nor the rings' — three clocks, kept apart.
+        public static let registerCrossfade = Duration.milliseconds(80)
+
+        /// §6.5, 90–260 ms: the adjudication hold's rotating hairline aperture. One turn.
+        public static let apertureSweepDegrees = 360.0
     }
 
     public enum TickRow {

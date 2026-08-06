@@ -2,6 +2,10 @@ public import SwiftUI
 
 public import HunchUI
 
+internal import Glyphs
+internal import Rounds
+internal import Tokens
+
 /// The PROBE play surface — §6.2's seven regions and nothing else.
 ///
 /// It positions; it does not draw. Each region is filled by its own view as the epic proceeds
@@ -16,6 +20,11 @@ public struct RoundView: View {
 
     @State private var round: Round
 
+    /// The draft as it was before the last edit, so the throat can crossfade one register
+    /// between two glyphs. Held by the view rather than by `Round`: it is a fact about the
+    /// last *animation*, not about the round, and a resumed round has no outgoing draft.
+    @State private var outgoingDraft: Glyph?
+
     public init(round: Round) {
         _round = State(initialValue: round)
     }
@@ -29,7 +38,20 @@ public struct RoundView: View {
 
             ZStack(alignment: .topLeading) {
                 region(layout.instrumentBar) { InstrumentBarRegion() }
-                region(layout.throat) { ThroatRegion() }
+                region(layout.throat) {
+                    RenderEnvReader { env in
+                        ThroatView(
+                            draft: round.draft,
+                            outgoing: outgoingDraft,
+                            changedRegister: round.changedRegister,
+                            isSeed: round.probesUsed == 0 && round.draft == round.seedGlyph,
+                            presentation: round.acceptsInput ? .live : .animating,
+                            aperture: apertureTurn,
+                            layout: layout,
+                            env: env,
+                            onStep: step)
+                    }
+                }
                 region(layout.ribbon) { RibbonRegion() }
                 if let bezelGap = layout.bezelGap {
                     region(bezelGap) { BezelGapRegion() }
@@ -51,6 +73,17 @@ public struct RoundView: View {
         }
     }
 
+    /// One throat swipe or one VoiceOver adjustment. The outgoing draft is captured *before*
+    /// the edit, because after it there is nothing left to crossfade from.
+    private func step(_ delta: Int) {
+        outgoingDraft = round.draft
+        round.stepDraft(by: delta)
+    }
+
+    /// §6.5's 90–260 ms hold. T06 drives it; until then the aperture is absent, which is the
+    /// same thing the view shows outside the beat.
+    private var apertureTurn: Double? { nil }
+
     /// One region, placed by its rectangle. `.position` takes a centre, which is the one
     /// conversion this file does — every rectangle it is given is a `CGRect` in screen space.
     private func region(
@@ -67,7 +100,6 @@ public struct RoundView: View {
 // change here and the compiler names the site.
 
 private struct InstrumentBarRegion: View { var body: some View { Color.clear } }
-private struct ThroatRegion: View { var body: some View { Color.clear } }
 private struct RibbonRegion: View { var body: some View { Color.clear } }
 private struct BezelGapRegion: View { var body: some View { Color.clear } }
 private struct DialRegion: View { var body: some View { Color.clear } }

@@ -35,6 +35,9 @@
                         section("VERDICT RING", env) { verdictRings(env) }
                         section("MARKS", env) { marks(env) }
                         section("GLYPH — the four channels", env) { channels(env) }
+                        section("THROAT — one register moves, three hold", env) {
+                            heldRegisters(env)
+                        }
                     }
                     .padding(Space.s16)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -186,12 +189,62 @@
             }
         }
 
+        /// §6.3's claim, drawn so it can be checked by eye: each pair differs in exactly one
+        /// attribute, and the right-hand drawing shows only that register's pass. If the held
+        /// registers were not truly separable the right column would come out empty or whole.
+        @ViewBuilder
+        private func heldRegisters(_ env: RenderEnv) -> some View {
+            let base = Deck.glyph(id: 22)
+            VStack(alignment: .leading, spacing: Space.s8) {
+                ForEach(Glyph.Attribute.allCases, id: \.self) { attribute in
+                    let stepped = Deck.glyph(id: steppedID(base, attribute))
+                    HStack(spacing: Space.s12) {
+                        GlyphCanvasView(glyph: base, side: 44, env: env)
+                        GlyphCanvasView(glyph: stepped, side: 44, env: env)
+                        RegisterPassView(
+                            glyph: stepped, side: 44, env: env,
+                            registers: ThroatView.affectedRegisters(by: attribute))
+                        RegisterPassView(
+                            glyph: stepped, side: 44, env: env,
+                            registers: Set(Glyph.Attribute.allCases)
+                                .subtracting(ThroatView.affectedRegisters(by: attribute)))
+                    }
+                }
+            }
+        }
+
+        private func steppedID(_ glyph: Glyph, _ attribute: Glyph.Attribute) -> Int {
+            let shift = [Glyph.Attribute.fill: 6, .shape: 4, .pips: 2, .hue: 0][attribute] ?? 0
+            let ordinal = glyph.ordinal(of: attribute)
+            let next = ordinal == 3 ? ordinal - 1 : ordinal + 1
+            return glyph.id ^ ((ordinal ^ next) << shift)
+        }
+
         @ViewBuilder
         private func row(_ glyphs: [Glyph], _ env: RenderEnv) -> some View {
             HStack(spacing: Space.s8) {
                 ForEach(glyphs, id: \.id) { GlyphCanvasView(glyph: $0, side: 48, env: env) }
                 Spacer()
             }
+        }
+    }
+    /// One glyph drawn through a subset of its four register passes — the DEBUG proof that
+    /// §6.3's "three hold perfectly still" is a property of the renderer and not a hope.
+    @MainActor
+    struct RegisterPassView: View {
+        let glyph: Glyph
+        let side: Double
+        let env: RenderEnv
+        let registers: Set<Glyph.Attribute>
+
+        var body: some View {
+            let bleed = C.Glyph.bleed(side: side, in: env)
+            Canvas { context, size in
+                var context = context
+                GlyphRenderer(glyph: glyph, side: side, env: env)
+                    .draw(into: &context, canvas: size, registers: registers)
+            }
+            .frame(width: side + 2 * bleed.x, height: side + 2 * bleed.y)
         }
     }
 #endif

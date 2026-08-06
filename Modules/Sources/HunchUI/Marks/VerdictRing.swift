@@ -87,20 +87,25 @@ extension VerdictRing {
         let hair = env.weight(.bodySm)
         // Differentiate Without Colour doubles the reject gap (§13.11), which is the whole
         // reason the gap is a parameter rather than a constant.
-        let rejectGap = env.isDifferentiateWithoutColorEnabled ? 60.0 : 30.0
+        let rejectGap =
+            env.isDifferentiateWithoutColorEnabled
+            ? C.VerdictRing.rejectGapDegreesDifferentiated : C.VerdictRing.rejectGapDegrees
+        // The expansion the throat's well is sized against. One home (`C.VerdictRing`), two
+        // readings: admit expands to it, reject contracts from it.
+        let expansion = C.VerdictRing.transientAdmitRadius
 
         switch state {
         case .admit:
             // Admit COMPLETES and blooms outward. Transient expands with progress; settled
             // sits at the body. Closed at every moment — closure is the channel.
-            let scale = role == .transient ? 1.0 + 0.35 * progress : 1.0
+            let scale = role == .transient ? 1.0 + (expansion - 1) * progress : 1.0
             let ink = role == .transient ? 1.0 - 0.6 * progress : 1.0
             return [Ring(radiusScale: scale, weight: body, ink: ink, accent: brass)]
 
         case .reject:
             // Reject CONTRACTS and BREAKS. The direction and the closure are the achromatic
             // signal; the cancel stroke is drawn by the caller.
-            let scale = role == .transient ? 1.35 - 0.35 * progress : 1.0
+            let scale = role == .transient ? expansion - (expansion - 1) * progress : 1.0
             return [
                 Ring(
                     radiusScale: scale, weight: hair, ink: 1, accent: cold,
