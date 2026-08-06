@@ -27,3 +27,19 @@ public enum Mode: UInt8, CaseIterable, Sendable, Codable {
         wordmark.utf8.reduce(UInt64(0)) { ($0 << 8) | UInt64($1) }
     }
 }
+
+extension Mode {
+    /// The lowercase stable string used in a *filename* — `round-probe.json`. A human reads it
+    /// in a bug report, which is why it is not the `UInt8` raw value.
+    ///
+    /// Never `String(describing:)`: that is a reflection spelling and it changes when the case
+    /// is renamed, silently orphaning every suspended round on disk.
+    public var slug: String {
+        switch self {
+        case .probe: "probe"
+        case .drift: "drift"
+        case .echo: "echo"
+        case .sieve: "sieve"
+        }
+    }
+}
