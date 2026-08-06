@@ -44,7 +44,7 @@ let package = Package(
         .library(
             name: "HunchCore",
             targets: [
-                "Tokens", "Glyphs", "Laws", "Bench", "LawGeneration", "Rounds", "Archive",
+                "Tokens", "Glyphs", "Laws", "Bench", "LawGeneration", "Rounds", "Archive", "Onboarding",
                 "Persistence",
             ])
     ],
@@ -94,6 +94,15 @@ let package = Package(
         .testTarget(
             name: "RoundsTests",
             dependencies: ["Rounds", "LawGeneration", "HunchTestSupport"],
+            swiftSettings: coreSettings
+        ),
+
+        .target(
+            name: "Onboarding", dependencies: ["Glyphs", "Tokens"], swiftSettings: coreSettings),
+
+        .testTarget(
+            name: "OnboardingTests",
+            dependencies: ["Onboarding", "Laws", "HunchTestSupport"],
             swiftSettings: coreSettings
         ),
 

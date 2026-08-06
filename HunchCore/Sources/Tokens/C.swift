@@ -323,6 +323,25 @@ public enum C {
         public static let paletteStamp = C.Size(width: 68, height: 44)
     }
 
+    /// §12.5's recovery vocabulary. One opacity breath, five situations — the *pair* is the
+    /// vocabulary and the period is the situation, which is why the periods differ and the
+    /// opacities do not.
+    public enum Nudge {
+        public static let breathLow = 0.55
+        public static let breathHigh = 1.00
+        public static let breathPeriod = Duration.milliseconds(1_200)
+        /// First cycle only, so the nudge is noticed once rather than pulsing at the player.
+        public static let clickAmplitude = 0.4
+        public static let idleThresholdSeconds = 12
+        public static let idleRepeatSeconds = 20
+        public static let idleBudget = 5
+        public static let globalIdleThresholdSeconds = 90
+        public static let globalIdleDim = 0.60
+        /// Nudge 3's cell sweep.
+        public static let sweepStagger = Duration.milliseconds(80)
+        public static let barredSealBudget = 3
+    }
+
     public enum TwinKey {
         public static let breathPulse = Duration.milliseconds(1_200)
         public static let breathInterval = Duration.seconds(8)
