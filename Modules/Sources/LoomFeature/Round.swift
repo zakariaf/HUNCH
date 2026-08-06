@@ -1,3 +1,4 @@
+public import Bench
 public import Feedback
 public import Glyphs
 public import Laws
@@ -106,6 +107,7 @@ public final class Round {
         self.targetDelta = targetDelta
         ribbon = Ribbon(seedGlyph: seedGlyph)
         draft = seedGlyph
+        assayPin = seedGlyph
         // A fresh round's first frame is this one. `arming` exists for the *resumed* round,
         // where a law is integrity-checked before anything is drawn (E10 owns that route).
         phase = .probing
@@ -347,6 +349,51 @@ public final class Round {
             return
         }
         if let queued = gate.unlock() { beginBeat(queued, queued: true) }
+    }
+
+    /// The law the player is building on the Bench, or `nil` while the rails are empty.
+    ///
+    /// **Never `law`.** The Assay draws *this*, and drawing the hidden law there would hand the
+    /// answer over in one picture — which is why the Assay's input is a separate property with a
+    /// separate name rather than an argument some call site could get the wrong way round.
+    public private(set) var benchDraft: Law?
+
+    public func setBenchDraft(_ draft: Law?) {
+        guard phase.acceptsInput else { return }
+        benchDraft = draft
+    }
+
+    /// What the Assay shows: the draft's extension conditioned on the pinned `prev`, or an
+    /// all-dark grid when the rails are empty — which is not a placeholder but the truth, since
+    /// an empty Bench admits nothing and the Seal is barred for exactly that.
+    public var assay: Assay {
+        guard let benchDraft else { return Assay(lit: .empty, pinned: assayPin) }
+        return Assay.live(for: benchDraft, pinned: assayPin)
+    }
+
+    /// §4.3's evidence overlay, gated at band 4 — a free consistency check trivialises the low
+    /// bands, where the reasoning *is* the game.
+    public var assayEvidence: AssayEvidence {
+        guard let benchDraft,
+            AssayEvidence.isUnlocked(band: band)
+        else { return .none }
+        var transcript: [(glyph: Glyph, previous: Glyph, verdict: Verdict)] = []
+        var previous = seedGlyph
+        for record in ribbon.probes {
+            transcript.append((glyph: record.glyph, previous: previous, verdict: record.verdict))
+            previous = record.glyph
+        }
+        return AssayEvidence.overlay(
+            draft: benchDraft, pinned: assayPin, transcript: transcript)
+    }
+
+    /// §4.3: the pin **defaults to the seed glyph** and is scrubbable to any of the 256, so the
+    /// first slice a player sees is the one their next probe will actually be judged against.
+    public private(set) var assayPin: Glyph
+
+    public func pinAssay(to glyph: Glyph) {
+        guard phase.acceptsInput else { return }
+        assayPin = glyph
     }
 
     /// §6.2's spool sheet, and the three-tap cycle that drives it. Not a filter and not a mode

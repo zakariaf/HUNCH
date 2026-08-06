@@ -1,5 +1,6 @@
 public import SwiftUI
 
+public import Bench
 public import HunchUI
 
 public import Tokens
@@ -14,30 +15,43 @@ public import Tokens
 public struct BenchView: View {
     public var layout: PlaySurfaceLayout
     public var env: RenderEnv
+    public var assay: Assay
+    public var evidence: AssayEvidence
     public var onStamp: (Int) -> Void
+    public var onExpandAssay: () -> Void
 
     public init(
-        layout: PlaySurfaceLayout, env: RenderEnv, onStamp: @escaping (Int) -> Void = { _ in }
+        layout: PlaySurfaceLayout,
+        env: RenderEnv,
+        assay: Assay,
+        evidence: AssayEvidence = .none,
+        onStamp: @escaping (Int) -> Void = { _ in },
+        onExpandAssay: @escaping () -> Void = {}
     ) {
         self.layout = layout
         self.env = env
+        self.assay = assay
+        self.evidence = evidence
         self.onStamp = onStamp
+        self.onExpandAssay = onExpandAssay
     }
 
     public var body: some View {
         HStack(spacing: Space.s4) {
             RailsRegion()
                 .frame(width: layout.rails.width)
-            AssayRegion()
-                .frame(width: layout.assayColumn.width)
+            AssayGridView(
+                assay: assay, evidence: evidence, site: .benchWell, env: env,
+                onTap: onExpandAssay
+            )
+            .frame(width: layout.assayColumn.width, alignment: .top)
         }
         .frame(width: layout.benchRegion.width, height: layout.benchRegion.height)
         .accessibilityElement(children: .contain)
     }
 }
 
-// The two halves of the drawer. **E09·T02** fills the rails with the four tile canvases and
-// **E09·T05** the column with the Assay grid; each is replaced whole, so the split above is the
-// only thing this file has to get right.
+// The rails' contents are the player's draft, which E09·T07 gives `Round` a home for. The tile
+// canvases themselves are already built; what is missing is the draft that decides which of them
+// are on which rail.
 private struct RailsRegion: View { var body: some View { Color.clear } }
-private struct AssayRegion: View { var body: some View { Color.clear } }

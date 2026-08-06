@@ -22,7 +22,7 @@ struct BenchGestureTests {
     func oneNonTap() {
         let nonTaps = BenchGesture.allCases.filter { $0.kind != .tap }
         #expect(nonTaps == [.swipeRailTrailing])
-        #expect(nonTaps.allSatisfy(\.needsCustomAction))
+        #expect(nonTaps.filter(\.needsCustomAction).count == nonTaps.count)
         #expect(BenchGesture.allCases.filter(\.needsCustomAction).count == 1)
     }
 }

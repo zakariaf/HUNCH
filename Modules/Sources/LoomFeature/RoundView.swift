@@ -3,6 +3,7 @@ public import SwiftUI
 public import HunchUI
 
 internal import Glyphs
+internal import Bench
 internal import Rounds
 internal import Tokens
 
@@ -100,7 +101,12 @@ public struct RoundView: View {
                 }
                 if layout.mode == .bench {
                     region(layout, layout.benchRegion) {
-                        RenderEnvReader { env in BenchView(layout: layout, env: env) }
+                        RenderEnvReader { env in
+                            BenchView(
+                                layout: layout, env: env,
+                                assay: round.assay,
+                                evidence: round.assayEvidence)
+                        }
                     }
                     region(layout, layout.palette) {
                         RenderEnvReader { env in PaletteView(env: env) }
