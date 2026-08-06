@@ -345,6 +345,38 @@
       "command": "HUNCH_CALIBRATION=1 swift test --package-path HunchCore --filter goldenReproduces",
       "status": "pass",
       "task": "E06/T10"
+    },
+    {
+      "id": "E07-T01-store-seam",
+      "area": "persistence",
+      "statement": "\u00a711.13's ten file kinds, twenty paths derived from Band and Mode, each with a stated recovery policy",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E07/T01"
+    },
+    {
+      "id": "E07-T02-atomic-relaunch",
+      "area": "persistence",
+      "statement": "save then drop the actor then open a NEW store over the same directory keeps the bytes",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E07/T02"
+    },
+    {
+      "id": "E07-T02-commit-ordering",
+      "area": "persistence",
+      "statement": "a commit that fails partway leaves the round slot intact and resumable; a clean commit clears it last",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E07/T02"
+    },
+    {
+      "id": "E07-T09-snapshot-stores-the-law",
+      "area": "persistence",
+      "statement": "the snapshot stores the resolved law and recomputes verdicts, so a tampered probe list cannot forge a verdict and a swapped law fails the integrity check",
+      "command": "swift test --package-path HunchCore",
+      "status": "pass",
+      "task": "E07/T09"
     }
   ]
 }

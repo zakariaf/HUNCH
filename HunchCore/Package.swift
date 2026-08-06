@@ -43,7 +43,7 @@ let package = Package(
         // `import Testing` out of the release binary (01 P20, 06 T5a). Check 4 asserts it.
         .library(
             name: "HunchCore",
-            targets: ["Tokens", "Glyphs", "Laws", "LawGeneration", "Persistence"])
+            targets: ["Tokens", "Glyphs", "Laws", "LawGeneration", "Rounds", "Persistence"])
     ],
     targets: [
         // A .target, never a .testTarget — test targets cannot be depended on (01 P20).
@@ -77,7 +77,16 @@ let package = Package(
             swiftSettings: coreSettings),
 
         .target(
-            name: "Persistence", dependencies: ["Laws", "Glyphs"],
+            name: "Rounds", dependencies: ["Laws", "Glyphs"], swiftSettings: coreSettings),
+
+        .testTarget(
+            name: "RoundsTests",
+            dependencies: ["Rounds", "LawGeneration", "HunchTestSupport"],
+            swiftSettings: coreSettings
+        ),
+
+        .target(
+            name: "Persistence", dependencies: ["Laws", "Glyphs", "Rounds"],
             swiftSettings: coreSettings),
 
         .testTarget(
