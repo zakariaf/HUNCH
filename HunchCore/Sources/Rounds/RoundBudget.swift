@@ -1,4 +1,5 @@
 public import Glyphs
+public import Drift
 public import Laws
 
 /// The hard probe ceiling a mode serves at a band, and the worst-case transcript length every
@@ -15,10 +16,10 @@ public enum RoundBudget {
     public static func cap(mode: Mode, band: Band) -> Int? {
         switch mode {
         case .probe: band.cap
-        // E12·T04 fills §7.7's six-row table — 40 at bands 5–6 through 64 at band 8. When it
-        // does, `worstCaseTranscript` moves and the spool sheet's capacity test covers
-        // `cap_DRIFT = 64` with no edit in `Modules/`.
-        case .drift: nil
+        // §7.7's table, filled in E12·T04. `worstCaseTranscript` moved from 48 to 65 the
+        // moment it did, and the spool sheet's capacity test covered `cap_DRIFT = 64` with no
+        // edit in `Modules/` — which is what the exhaustive switch was for.
+        case .drift: DriftBudget.cap(band)
         // ECHO has no probe cap; it has a cast length (E13).
         case .echo: nil
         // SIEVE has no probe cap; it has a stream length (E14).

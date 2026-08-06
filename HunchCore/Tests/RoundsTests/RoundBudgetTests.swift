@@ -10,11 +10,14 @@ import Rounds
 @Suite("The worst-case transcript", .tags(.unit, .presubmission))
 struct RoundBudgetTests {
 
-    @Test("Today the worst case is PROBE's band-8 cap plus the seed")
-    func todayItIsProbe() {
-        let probeCaps = Band.allCases.map(\.cap)
-        #expect(RoundBudget.worstCaseTranscript == 1 + (probeCaps.max() ?? 0))
-        #expect(RoundBudget.worstCaseTranscript == 48)
+    /// DRIFT's row landed in E12 and moved this number from 48 to 65 — PROBE's band-8 cap is
+    /// 47, DRIFT's is 64. The spool sheet's capacity test covered the change with no edit in
+    /// `Modules/`, which is the whole reason the switch is exhaustive.
+    @Test("The worst case is DRIFT's band-8 cap plus the seed")
+    func theWorstCaseIsDrift() {
+        #expect(RoundBudget.worstCaseTranscript == 65)
+        #expect(RoundBudget.cap(mode: .drift, band: .systemic) == 64)
+        #expect((Band.allCases.map(\.cap).max() ?? 0) == 47)
     }
 
     @Test("The table is total over Mode × Band", arguments: Mode.allCases)

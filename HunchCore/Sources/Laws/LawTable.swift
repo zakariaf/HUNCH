@@ -128,6 +128,18 @@ public struct LawTable: Hashable, Sendable {
     /// This table tiled into pair space. Idempotent on a contextual table.
     public func lifted() -> LawTable { LawTable(.contextual(liftedBoard)) }
 
+    /// How many entries of the common space the two tables disagree about — `|T₁ △ T₂|`.
+    ///
+    /// Lifted where the arities differ, which is §4.5's comparison rule: a stateless table and a
+    /// contextual one are compared at the **larger** arity, so a stateless law that happens to
+    /// agree on the 256 is still counted as disagreeing on the pairs where it cannot.
+    public func disagreementCount(with other: LawTable) -> Int {
+        switch (storage, other.storage) {
+        case (.stateless(let a), .stateless(let b)): (a ^ b).count
+        default: (liftedBoard ^ other.liftedBoard).count
+        }
+    }
+
     /// §3.6: `P == lift(P & FULL256)`. G7's test, negated.
     public var isSecretlyStateless: Bool {
         switch storage {
