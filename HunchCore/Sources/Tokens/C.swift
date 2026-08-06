@@ -140,6 +140,18 @@ public enum C {
         public static let minimumPairwiseInkDifference = 8.0
     }
 
+    public enum TickRow {
+        /// The tick itself never scales with the pitch (§6.2): at DRIFT band 8's 40 ticks the
+        /// pitch compresses to 7.2 pt on the compact class and the tick stays 2 pt, which is
+        /// what leaves ≥ 5.2 pt of gap. A tick that scaled with the pitch would close that gap
+        /// into a solid bar exactly where the row is longest and the count matters most.
+        public static let tickWidth = 2.0
+
+        /// The dim rows — the unfilled remainder, the cap row, a Codex silhouette — are drawn
+        /// at this fraction of the row's height.
+        public static let dimHeightRatio = 0.45
+    }
+
     public enum Ramp {
         /// §13.11 gives an explicit High Contrast value, so this is a **substitution**:
         /// it terminates resolution and is never also offset.

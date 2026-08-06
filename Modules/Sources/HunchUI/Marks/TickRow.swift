@@ -61,9 +61,9 @@ extension TickRow {
         guard total > 0 else { return [] }
 
         let pitch = min(nominalPitch, frame.width / CGFloat(total))
-        let width: CGFloat = 2  // the tick itself never scales with pitch
+        let width = C.TickRow.tickWidth  // the tick itself never scales with pitch
         let fullHeight = frame.height * scale
-        let dimHeight = fullHeight * 0.45
+        let dimHeight = fullHeight * C.TickRow.dimHeightRatio
 
         return (0..<total).map { index in
             let offset = CGFloat(index) * pitch
