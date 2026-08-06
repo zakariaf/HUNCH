@@ -99,6 +99,13 @@ let package = Package(
         ),
 
         .target(
+            name: "Profile", dependencies: ["Glyphs", "Laws"], swiftSettings: coreSettings),
+
+        .testTarget(
+            name: "ProfileTests", dependencies: ["Profile", "HunchTestSupport"],
+            swiftSettings: coreSettings),
+
+        .target(
             name: "Sieve", dependencies: ["Glyphs", "Laws", "Tokens"],
             swiftSettings: coreSettings),
 
