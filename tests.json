@@ -594,6 +594,22 @@
       "status": "known-issue",
       "note": "OPEN AND OWNED, not a regression — which is what this status is for. The English source is complete and commented; the eleven other locales are not written. §12.9's process has a native speaker flip each entry from needsReview to translated, and no machine draft was authored here: marking untrusted output as reviewed, in a repo with no reviewer, is theatre that would show as green. Check 8's budget and duplicate-comment arms run today; its locale-set and per-key-completeness arms engage the moment a second locale appears, so the gate re-arms itself rather than needing to be remembered.",
       "task": "E18/T03"
+    },
+    {
+      "id": "E19-T01-element-map",
+      "area": "accessibility",
+      "statement": "every VoiceOver element has traits and a label; every gesture §4.2 rules out is reachable as a custom action; the Assay is one element with a read-by-attribute action rather than 256 cells",
+      "command": "swift test --package-path Modules --filter 'AccessibilityMapTests|RotorTests'",
+      "status": "pass",
+      "task": "E19/T01, E19/T04, E19/T05"
+    },
+    {
+      "id": "E19-T03-narrator-parity",
+      "area": "accessibility",
+      "statement": "the law narrator emits one clause per leaf in RNF order with a coupler exactly when the tiles carry one — it says nothing a sighted player cannot read off the Bench",
+      "command": "HUNCH_CALIBRATION=1 swift test --package-path HunchCore --filter LawNarratorTests",
+      "status": "pass",
+      "task": "E19/T03"
     }
   ]
 }

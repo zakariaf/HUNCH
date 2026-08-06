@@ -99,6 +99,14 @@ let package = Package(
         ),
 
         .target(
+            name: "Narration", dependencies: ["Glyphs", "Laws"], swiftSettings: coreSettings),
+
+        .testTarget(
+            name: "NarrationTests",
+            dependencies: ["Narration", "LawGeneration", "HunchTestSupport"],
+            swiftSettings: coreSettings),
+
+        .target(
             name: "Profile", dependencies: ["Glyphs", "Laws"], swiftSettings: coreSettings),
 
         .testTarget(
