@@ -97,11 +97,13 @@ let package = Package(
             swiftSettings: coreSettings
         ),
 
-        .target(name: "Ladder", dependencies: ["Glyphs", "Laws"], swiftSettings: coreSettings),
+        .target(
+            name: "Ladder", dependencies: ["Glyphs", "Laws", "LawGeneration"],
+            swiftSettings: coreSettings),
 
         .testTarget(
             name: "LadderTests",
-            dependencies: ["Ladder", "HunchTestSupport"],
+            dependencies: ["Ladder", "LawGeneration", "HunchTestSupport"],
             swiftSettings: coreSettings
         ),
 
