@@ -68,7 +68,7 @@ struct CounterexampleTests {
             declared: declared, hidden: hidden, ribbon: [anchor], seedGlyph: anchor)
         // Every disagreement is hue == teal; the nearest one differs from the anchor in hue only.
         #expect(choice?.current.hue == .teal)
-        #expect(Counterexample.hammingDistance(anchor, choice!.current) == 1)
+        #expect(choice.map { Counterexample.hammingDistance(anchor, $0.current) } == 1)
     }
 
     @Test("Selection is deterministic — the same inputs give the same glyph")
@@ -100,10 +100,11 @@ struct CounterexampleTests {
     @Test("A garbage declaration yields a glyph adjacent to the ribbon — near-zero information")
     func garbageDeclarationYieldsNothingNew() {
         let hidden = Law(.atom(.init(attribute: .fill, subset: Fixture.subset(0b0100))))
-        let declared = Law(.atom(.init(attribute: .fill, subset: Fixture.subset(0b1011))))  // complement
+        // The complement — so the declaration disagrees with the hidden law nearly everywhere.
+        let declared = Law(.atom(.init(attribute: .fill, subset: Fixture.subset(0b1011))))
         let probed = Self.g(.striped, .triangle, .two, .frost)
         let choice = Counterexample.select(
             declared: declared, hidden: hidden, ribbon: [probed], seedGlyph: probed)
-        #expect(Counterexample.hammingDistance(probed, choice!.current) <= 1)
+        #expect(choice.map { Counterexample.hammingDistance(probed, $0.current) } ?? 9 <= 1)
     }
 }

@@ -35,7 +35,7 @@ public enum Counterexample {
         let context = ribbon + [seedGlyph]
 
         var best: Choice?
-        var bestKey: (Int, Int, Int)?  // (falseNegativeRank, hamming, glyphID)
+        var bestKey: SelectionKey?
 
         func consider(_ current: Glyph, _ previous: Glyph?) {
             let prev = previous ?? seedGlyph
@@ -45,13 +45,13 @@ public enum Counterexample {
 
             let isFalseNegative = hiddenAdmits && !declaredAdmits
             let hamming = context.map { hammingDistance($0, current) }.min() ?? 4
-            let key = (isFalseNegative ? 0 : 1, hamming, current.id)
-            if bestKey == nil || key < bestKey! {
-                bestKey = key
-                best = Choice(
-                    current: current, previous: contextual ? prev : nil,
-                    isFalseNegative: isFalseNegative)
-            }
+            let key = SelectionKey(
+                falseNegativeRank: isFalseNegative ? 0 : 1, hamming: hamming, glyphID: current.id)
+            guard bestKey.map({ key < $0 }) ?? true else { return }
+            bestKey = key
+            best = Choice(
+                current: current, previous: contextual ? prev : nil,
+                isFalseNegative: isFalseNegative)
         }
 
         if contextual {
@@ -78,8 +78,15 @@ public enum Counterexample {
     }
 }
 
-private func < (lhs: (Int, Int, Int), rhs: (Int, Int, Int)) -> Bool {
-    if lhs.0 != rhs.0 { return lhs.0 < rhs.0 }
-    if lhs.1 != rhs.1 { return lhs.1 < rhs.1 }
-    return lhs.2 < rhs.2
+/// §4.5's tie-break ladder as one comparable value, so the ordering is stated once and cannot
+/// drift between the three comparisons.
+private struct SelectionKey: Comparable {
+    let falseNegativeRank: Int
+    let hamming: Int
+    let glyphID: Int
+
+    static func < (lhs: Self, rhs: Self) -> Bool {
+        (lhs.falseNegativeRank, lhs.hamming, lhs.glyphID)
+            < (rhs.falseNegativeRank, rhs.hamming, rhs.glyphID)
+    }
 }
