@@ -1,6 +1,6 @@
 public import SwiftUI
 
-internal import Tokens
+public import Tokens
 
 extension Color {
     /// The one bridge from a token to SwiftUI.
@@ -10,7 +10,7 @@ extension Color {
     /// `Color(.displayP3, …)` constructor with these same three numbers produces a *different*
     /// colour and moves every one of those ratios, with no test noticing — because the tests
     /// live in `HunchCore`, which has no `Color` at all.
-    nonisolated init(_ rgb: RGB8) {
+    public nonisolated init(_ rgb: RGB8) {
         self.init(
             .sRGB,
             red: Double(rgb.red) / 255,

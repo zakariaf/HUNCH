@@ -18,6 +18,16 @@ public struct GlyphCanvasView: View {
         self.env = env
     }
 
+    /// The renderer, for the two feature targets that draw a glyph inside a canvas they already
+    /// own — the Frame's idle Loom and E15's page thumbnails. `GlyphRenderer` itself stays
+    /// internal: it takes a `RenderEnv` and a side and would let a caller invent either.
+    public nonisolated static func draw(
+        glyph: Glyph, side: Double, into context: inout GraphicsContext, canvas: CGSize,
+        env: RenderEnv
+    ) {
+        GlyphRenderer(glyph: glyph, side: side, env: env).draw(into: &context, canvas: canvas)
+    }
+
     public var body: some View {
         let bleed = C.Glyph.bleed(side: side, in: env)
         Canvas { context, size in
