@@ -1,5 +1,7 @@
 public import Foundation
 
+public import Glyphs
+
 /// A difficulty band and, because §5.3 fixes strictly one family per band with no reprises,
 /// also the law family. Two words in prose; one type in code (`08 §3`, `W28`).
 ///
@@ -117,4 +119,53 @@ extension Band {
     /// Bands 5 and 7 — G7's scope, the two contextual hash runs, and the two bands DRIFT and
     /// SIEVE treat specially.
     public var isContextual: Bool { self == .contextual || self == .composite }
+}
+
+extension Band {
+    /// §5.2's "Example law" column — the family's deterministic anchor.
+    ///
+    /// The generator falls back to this when 200 attempts fail. Deliberately the *same* law
+    /// §5.2 reaches for when it needs one: inventing a ninth set of fallback laws would be a
+    /// second source of truth for "what a band-*b* law looks like".
+    ///
+    /// It satisfies G1–G7, G8's membership clause and G10 by construction, and is exempt only
+    /// from G8's proximity clause and from G9 — a last resort that can itself be vetoed is not
+    /// a last resort (§5.3).
+    public var anchor: LawNode {
+        func subset(_ raw: UInt8) -> Subset4 {
+            guard let s = Subset4(rawValue: raw) else { preconditionFailure("bad anchor subset") }
+            return s
+        }
+        func attributeSet(_ raw: UInt8) -> AttributeSet {
+            guard let s = AttributeSet(rawValue: raw) else { preconditionFailure("bad anchor set") }
+            return s
+        }
+        switch self {
+        case .literal:
+            return .atom(.init(attribute: .fill, subset: subset(0b0100)))
+        case .pair:
+            return .coupled(
+                .atom(.init(attribute: .shape, subset: subset(0b1010))), .and,
+                .atom(.init(attribute: .pips, subset: subset(0b1100))))
+        case .exclusive:
+            return .coupled(
+                .atom(.init(attribute: .shape, subset: subset(0b0011))), .xor,
+                .atom(.init(attribute: .fill, subset: subset(0b0011))))
+        case .relational:
+            return .relational(.init(leading: .shape, comparator: .eq, trailing: .pips))
+        case .contextual:
+            return .contextual(.init(current: .pips, comparator: .gt, previous: .pips))
+        case .guarded:
+            return .guarded(
+                .init(
+                    gate: .hue, gateValue: 0, branch: .pips,
+                    then: subset(0b1100), otherwise: subset(0b0001)))
+        case .composite:
+            return .coupled(
+                .contextual(.init(current: .hue, comparator: .eq, previous: .hue)), .xor,
+                .relational(.init(leading: .shape, comparator: .lt, trailing: .pips)))
+        case .systemic:
+            return .aggregate(.parity(.init(attributes: attributeSet(0b1111), isOdd: false)))
+        }
+    }
 }
