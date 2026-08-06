@@ -44,7 +44,8 @@ let package = Package(
         .library(
             name: "HunchCore",
             targets: [
-                "Tokens", "Glyphs", "Laws", "Bench", "LawGeneration", "Rounds", "Archive", "Onboarding", "Ladder", "Drift",
+                "Tokens", "Glyphs", "Laws", "Bench", "LawGeneration", "Rounds", "Archive",
+                "Onboarding", "Ladder", "Drift",
                 "Persistence",
             ])
     ],
