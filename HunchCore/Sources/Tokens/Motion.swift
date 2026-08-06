@@ -20,6 +20,9 @@ public enum Dur {
     public static let sealHold = Duration.milliseconds(640)
     /// §6.10's re-entry beat: the surface re-reads itself and input is locked throughout.
     public static let reEntry = Duration.milliseconds(900)
+    /// §9.5: the stream halts mid-lane on the third foul, long enough to be read as a stop
+    /// rather than a stutter.
+    public static let sieveFoulFreeze = Duration.milliseconds(400)
     /// §6.8: the counterexample beat, after which the round continues.
     public static let counterexample = Duration.milliseconds(960)
     /// §6.8: the one skip threshold, measured into the reveal. There is no other.

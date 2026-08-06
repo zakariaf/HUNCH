@@ -98,6 +98,14 @@ let package = Package(
             swiftSettings: coreSettings
         ),
 
+        .target(
+            name: "Sieve", dependencies: ["Glyphs", "Laws", "Tokens"],
+            swiftSettings: coreSettings),
+
+        .testTarget(
+            name: "SieveTests", dependencies: ["Sieve", "HunchTestSupport"],
+            swiftSettings: coreSettings),
+
         .target(name: "Echo", dependencies: ["Glyphs", "Laws"], swiftSettings: coreSettings),
 
         .testTarget(
