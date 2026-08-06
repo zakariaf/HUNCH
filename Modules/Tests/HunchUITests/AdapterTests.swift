@@ -35,6 +35,8 @@ struct AdapterTests {
         // TOKENS-EXEMPT: the literals ARE the fixture — see the doc comment above.
         let cases: [(Duration, Double)] = [
             (.milliseconds(260), 0.260), (.milliseconds(1_840), 1.840), (.milliseconds(640), 0.640),
+            (.milliseconds(420), 0.420), (.milliseconds(320), 0.320), (.milliseconds(960), 0.960),
+            (.milliseconds(1_020), 1.020), (.milliseconds(1_620), 1.620), (.seconds(0), 0),
         ]
         for (duration, expected) in cases {
             #expect(duration.seconds == expected)
