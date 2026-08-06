@@ -1,6 +1,8 @@
 import SwiftUI
 import Testing
 
+import ModulesTestSupport
+
 @testable import HunchUI
 import Tokens
 

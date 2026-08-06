@@ -33,7 +33,8 @@ let package = Package(
     // it. It must also EQUAL HunchCore's, or resolution fails the other way.
     platforms: [.iOS(.v18), .macOS(.v15)],
     products: [
-        .library(name: "HunchUI", targets: ["HunchUI"])
+        .library(name: "HunchUI", targets: ["HunchUI"]),
+        .library(name: "LoomFeature", targets: ["LoomFeature"]),
     ],
     dependencies: [.package(path: "../HunchCore")],
     targets: [
@@ -46,6 +47,35 @@ let package = Package(
             resources: [.process("Resources")],  // Localizable.xcstrings — 01 P35
             swiftSettings: ui
         ),
-        .testTarget(name: "HunchUITests", dependencies: ["HunchUI"], swiftSettings: ui),
+        .testTarget(
+            name: "HunchUITests", dependencies: ["HunchUI", "ModulesTestSupport"],
+            swiftSettings: ui),
+
+        // A .target, never a .testTarget — test targets cannot be depended on (01 P20). It may
+        // import Testing under 06 T5a's three conditions: absent from products:, named only by
+        // test targets, and both asserted in CI rather than remembered. It is this package's
+        // HunchTestSupport, and exists because that one is absent from HunchCore's products:.
+        .target(
+            name: "ModulesTestSupport",
+            dependencies: ["LoomFeature", .product(name: "HunchCore", package: "HunchCore")],
+            swiftSettings: ui
+        ),
+
+        .target(
+            name: "LoomFeature",
+            dependencies: [
+                "HunchUI",
+                .product(name: "HunchCore", package: "HunchCore"),
+            ],
+            swiftSettings: ui
+        ),
+
+        .testTarget(
+            name: "LoomFeatureTests",
+            dependencies: [
+                "LoomFeature", "ModulesTestSupport",
+                .product(name: "HunchCore", package: "HunchCore"),
+            ],
+            swiftSettings: ui),
     ]
 )

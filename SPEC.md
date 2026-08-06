@@ -25,6 +25,9 @@ rules, cited by id). Drawing and code standards: `.claude/skills/` (13 skills). 
 | The ten hygiene checks | `Scripts/check-source-hygiene.sh` | E01·T06 |
 | SwiftUI feature modules | `Modules/` | E03·T06 |
 | Design tokens, the only home for a value | `HunchCore/Sources/Tokens/` | E03·T01 |
+| §6.1's transition table, the only writer of a phase | `HunchCore/Sources/Rounds/RoundPhase+Advance.swift` | E07·T07 |
+| The one point at which round state becomes true | `Round.commit(_:)`, `Modules/Sources/LoomFeature/Round.swift` | E08·T01 |
+| Test helpers for `Modules/`, never a product | `Modules/Sources/ModulesTestSupport/` | E08·T01 |
 
 The complete annotated tree is `ios-swift-guide/08-APPLIED-TO-HUNCH.md` §1.
 
