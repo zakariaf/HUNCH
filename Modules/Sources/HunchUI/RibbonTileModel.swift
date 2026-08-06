@@ -38,15 +38,25 @@ public nonisolated struct RibbonTileModel: Equatable, Sendable, Identifiable {
     public let wearsGhostMark: Bool
     public let ring: Ring?
     /// Shared by both members of a twin pair; `nil` otherwise.
-    public let twinGroup: Int?
+    public var twinGroup: Int?
     /// False under verdict sort: once the chain order is not the layout order, an arc would
     /// assert an adjacency that is not on screen.
-    public let drawsLinkArc: Bool
+    public var drawsLinkArc: Bool
+
+    /// §7.3's seam marker — a vertical hairline carrying a 20 pt silhouette of the accepted tile
+    /// layout, written at the index where a DRIFT round's trigger (b) fired.
+    ///
+    /// **It appears only for trigger (b)**, where the player already knows something happened:
+    /// they were just told they were right. The other two triggers leave no trace at all, which
+    /// is the mode — an interface that marked every hinge would be announcing the change, and
+    /// DRIFT would measure reading rather than noticing.
+    public var carriesSeamMarker = false
 
     public init(
         id: Int, glyph: Glyph, verdict: Verdict?, isSeed: Bool, wearsGhostMark: Bool,
-        ring: Ring?, twinGroup: Int?, drawsLinkArc: Bool
+        ring: Ring?, twinGroup: Int?, drawsLinkArc: Bool, carriesSeamMarker: Bool = false
     ) {
+        self.carriesSeamMarker = carriesSeamMarker
         self.id = id
         self.glyph = glyph
         self.verdict = verdict
@@ -58,7 +68,13 @@ public nonisolated struct RibbonTileModel: Equatable, Sendable, Identifiable {
     }
 
     /// The chain: the seed, then one tile per probe in order.
-    public static func tiles(probes: [ProbeRecord], seedGlyph: Glyph) -> [RibbonTileModel] {
+    ///
+    /// - Parameter seamMarkerIndex: a DRIFT round's trigger-(b) index, or `nil`. PROBE always
+    ///   passes `nil`, which is why the parameter is defaulted rather than threaded: the seam is
+    ///   DRIFT's and the ribbon is everyone's.
+    public static func tiles(
+        probes: [ProbeRecord], seedGlyph: Glyph, seamMarkerIndex: Int? = nil
+    ) -> [RibbonTileModel] {
         let lastIndex = probes.count
         var tiles: [RibbonTileModel] = [
             RibbonTileModel(
@@ -87,7 +103,8 @@ public nonisolated struct RibbonTileModel: Equatable, Sendable, Identifiable {
                 RibbonTileModel(
                     id: index, glyph: probe.glyph, verdict: probe.verdict, isSeed: false,
                     wearsGhostMark: index == lastIndex, ring: ring,
-                    twinGroup: isTwin ? index - 1 : nil, drawsLinkArc: true))
+                    twinGroup: isTwin ? index - 1 : nil, drawsLinkArc: true,
+                    carriesSeamMarker: index == seamMarkerIndex))
         }
         return tiles
     }
@@ -106,17 +123,15 @@ public nonisolated struct RibbonTileModel: Equatable, Sendable, Identifiable {
     }
 
     func withTwinGroup(_ group: Int) -> RibbonTileModel {
-        RibbonTileModel(
-            id: id, glyph: glyph, verdict: verdict, isSeed: isSeed,
-            wearsGhostMark: wearsGhostMark, ring: ring, twinGroup: group,
-            drawsLinkArc: drawsLinkArc)
+        var tile = self
+        tile.twinGroup = group
+        return tile
     }
 
     func withoutLinkArc() -> RibbonTileModel {
-        RibbonTileModel(
-            id: id, glyph: glyph, verdict: verdict, isSeed: isSeed,
-            wearsGhostMark: wearsGhostMark, ring: ring, twinGroup: twinGroup,
-            drawsLinkArc: false)
+        var tile = self
+        tile.drawsLinkArc = false
+        return tile
     }
 }
 
