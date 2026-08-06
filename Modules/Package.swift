@@ -35,6 +35,7 @@ let package = Package(
     products: [
         .library(name: "HunchUI", targets: ["HunchUI"]),
         .library(name: "LoomFeature", targets: ["LoomFeature"]),
+        .library(name: "Feedback", targets: ["Feedback"]),
     ],
     dependencies: [.package(path: "../HunchCore")],
     targets: [
@@ -61,10 +62,19 @@ let package = Package(
             swiftSettings: ui
         ),
 
+        // A cue VOCABULARY is data, so this target takes no default isolation and imports
+        // neither AVFoundation nor CoreHaptics. Only the value half ships here; the four
+        // players are E20's. See DECISIONS.md 49 for why the target exists a phase early.
+        .target(
+            name: "Feedback",
+            dependencies: [.product(name: "HunchCore", package: "HunchCore")],
+            swiftSettings: base
+        ),
+
         .target(
             name: "LoomFeature",
             dependencies: [
-                "HunchUI",
+                "HunchUI", "Feedback",
                 .product(name: "HunchCore", package: "HunchCore"),
             ],
             swiftSettings: ui

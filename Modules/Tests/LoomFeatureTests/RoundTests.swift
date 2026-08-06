@@ -111,20 +111,27 @@ struct RoundTests {
         #expect(round.probesUsed == settled)
     }
 
-    /// The input lock is a *refused probe*, not a disabled button: T06's beat only sets a
-    /// phase, so if the model accepted a tap here, every animation would be a race.
-    @Test("A probe arriving inside the adjudication beat is dropped")
-    func probeInsideTheBeatIsDropped() {
+    /// The input lock is a *refused probe*, not a disabled button: the beat only sets a phase,
+    /// so if the model accepted a tap here every animation would be a race. §6.5 honours ONE
+    /// such tap at the unlock — the single slot is `InputGate`'s and is tested there; this is
+    /// the round-level consequence, which is that the probe count never moves early.
+    @Test("A probe arriving inside the adjudication beat waits for the unlock")
+    func probeInsideTheBeatIsQueued() {
         let round = Fixtures.round()
         round.probe(Fixtures.seedGlyph)
 
-        #expect(round.probe(Deck.glyph(id: 7)) == nil)
+        #expect(round.probe(Deck.glyph(id: 7)) == nil)  // not refused — deferred
         #expect(round.probesUsed == 1)
         #expect(round.acceptsInput == false)
 
         round.endVerdictBeat()
+        // The queued tap opened its own beat, so input is locked again and the probe is in.
+        #expect(round.probesUsed == 2)
+        #expect(round.ribbon.probes[1].glyph == Deck.glyph(id: 7))
+        #expect(round.acceptsInput == false)
+
+        round.endVerdictBeat()
         #expect(round.acceptsInput)
-        #expect(round.probe(Deck.glyph(id: 7)) != nil)
     }
 
     /// §6.11 case 3: the twin is the most informative probe in the game under

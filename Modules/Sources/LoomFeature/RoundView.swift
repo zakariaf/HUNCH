@@ -46,6 +46,8 @@ public struct RoundView: View {
                             changedRegister: round.changedRegister,
                             isSeed: round.probesUsed == 0 && round.draft == round.seedGlyph,
                             presentation: round.acceptsInput ? .live : .animating,
+                            ring: throatRing,
+                            ringProgress: round.hasLandedVerdict ? 1 : 0,
                             aperture: apertureTurn,
                             layout: layout,
                             env: env,
@@ -109,9 +111,22 @@ public struct RoundView: View {
         round.load(ribbonIndex: index)
     }
 
-    /// §6.5's 90–260 ms hold. T06 drives it; until then the aperture is absent, which is the
-    /// same thing the view shows outside the beat.
-    private var apertureTurn: Double? { nil }
+    /// §6.5, 90–260 ms: the aperture turns through the hold and stops the moment the verdict
+    /// lands. Nothing else on the throat moves, and the turn is never conditioned on the
+    /// verdict — the Loom must not look like it is thinking harder about a harder glyph.
+    private var apertureTurn: Double? {
+        guard case .adjudicating = round.phase, !round.hasLandedVerdict else { return nil }
+        return 0
+    }
+
+    /// The ring appears only once the verdict has landed. Before that the throat is holding,
+    /// which is the whole content of the 260 ms.
+    private var throatRing: VerdictRing.State? {
+        guard case .adjudicating(let verdict) = round.phase, round.hasLandedVerdict else {
+            return nil
+        }
+        return verdict == .admit ? .admit : .reject
+    }
 
     /// One region, placed by its rectangle. `.position` takes a centre, which is the one
     /// conversion this file does — every rectangle it is given is a `CGRect` in screen space.

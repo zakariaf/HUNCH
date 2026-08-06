@@ -1,3 +1,4 @@
+public import Feedback
 public import Glyphs
 public import Laws
 public import Rounds
@@ -61,6 +62,21 @@ public final class Round {
     /// nothing animates nothing.
     public private(set) var changedRegister: Glyph.Attribute?
 
+    /// §6.5's input policy and its single slot. The gate is the authority on whether a tap is
+    /// accepted; the phase follows it, never the other way round.
+    public private(set) var beat: VerdictBeat
+    private var gate = InputGate()
+    private var beatTask: Task<Void, Never>?
+
+    /// True from the end of the 260 ms hold to the unlock: the verdict has *landed* and its
+    /// ring is resolving. Not a phase — leaving `adjudicating` early would reopen input at
+    /// t = 260 and let the player outrun the beat.
+    public private(set) var hasLandedVerdict = false
+
+    /// What plays. Injected, never constructed here and never a singleton: E10·T01's
+    /// `AppDependencies` hands over the composite, and every test gets silence by default.
+    private let cues: any CuePlayer
+
     /// Set by the cap-th commit and read by `endVerdictBeat()`. §6.11 case 4 delivers that
     /// verdict in full and only *then* ends the round, so exhaustion cannot be part of the
     /// commit — a phase change there would swallow the last bit the player paid for.
@@ -72,8 +88,12 @@ public final class Round {
         mode: Mode,
         seedGlyph: Glyph,
         seed: UInt64,
-        targetDelta: Double
+        targetDelta: Double,
+        beat: VerdictBeat = VerdictBeat(reduceMotion: false),
+        cues: any CuePlayer = SilentCuePlayer()
     ) {
+        self.beat = beat
+        self.cues = cues
         self.law = law
         self.band = band
         self.mode = mode
@@ -208,13 +228,65 @@ public final class Round {
     /// merely displayed over the 420 ms that follow (§6.1). Killing the app mid-animation
     /// therefore loses nothing, and no view can be the reason a verdict is or is not true.
     ///
-    /// - Returns: the verdict, or `nil` when the probe was refused — input is locked, or the
-    ///   cap is already spent.
+    /// - Returns: the verdict, or `nil` when the tap was queued or dropped rather than fired.
     @discardableResult
     public func probe(_ glyph: Glyph) -> Verdict? {
-        guard phase == .probing, probesUsed < cap else { return nil }
-        draft = glyph
-        return commit(glyph)
+        guard outcome == nil, probesUsed < cap else { return nil }
+        switch gate.request(.probe(glyph)) {
+        case .fires: return beginBeat(.probe(glyph), queued: false)
+        case .queued, .dropped: return nil  // §6.11 case 10 — silently, with no feedback
+        }
+    }
+
+    /// The twin key: re-feed the glyph currently in the throat, unchanged (§4.1).
+    ///
+    /// Never blocked and never refunded. Under previously-probed semantics the twin is the
+    /// experiment that detects statefulness *at all* — same glyph, different verdict — so a
+    /// repeat guard here would be a bug rather than a courtesy.
+    @discardableResult
+    public func twin() -> Verdict? {
+        guard outcome == nil, probesUsed < cap else { return nil }
+        switch gate.request(.twin) {
+        case .fires: return beginBeat(.twin, queued: false)
+        case .queued, .dropped: return nil
+        }
+    }
+
+    /// t = 0 of the beat sheet: commit, announce, and start the clock.
+    @discardableResult
+    private func beginBeat(_ action: InputGate.Action, queued: Bool) -> Verdict? {
+        if case .probe(let glyph) = action { draft = glyph }
+        guard let verdict = commit(draft) else { return nil }
+        hasLandedVerdict = false
+        cues.play(.probeSubmit)
+
+        // Inherits `@MainActor` from `Round`: no `Task.detached`, no `nonisolated(unsafe)`, no
+        // `assumeIsolated`. The repository's escape-hatch budget is exactly one and it is
+        // spent in E20. Cancelled and replaced on every beat, so a queued probe cannot end up
+        // with two timers running against one round.
+        beatTask?.cancel()
+        beatTask = Task { [beat] in
+            try? await Task.sleep(for: beat.adjudicationHold)
+            guard !Task.isCancelled else { return }
+            landVerdict()
+            try? await Task.sleep(for: beat.travel(queued: queued))
+            guard !Task.isCancelled else { return }
+            endVerdictBeat()
+        }
+        return verdict
+    }
+
+    /// t = 260: the verdict lands. The ring opens or closes, the cue and the haptic fire on the
+    /// same frame, and VoiceOver speaks.
+    ///
+    /// **It does not change `phase`.** Input stays locked until `endVerdictBeat()`, which is
+    /// what stops a player outrunning the hold — and what lets every suite written before this
+    /// task keep passing unchanged. Idempotent, because §6.11 case 5 can background the app
+    /// mid-beat and leave the task unfinished.
+    public func landVerdict() {
+        guard case .adjudicating(let verdict) = phase, !hasLandedVerdict else { return }
+        hasLandedVerdict = true
+        cues.play(.verdict(verdict, isTwin: ribbon.probes.last?.isTwin ?? false))
     }
 
     /// **The one point at which round state becomes true.** The beat, the cue, the snapshot
@@ -237,6 +309,14 @@ public final class Round {
         guard let next = RoundPhase.advance(phase, on: hasReachedCap ? .capReached : .beatCompleted)
         else { return }
         phase = next
+        hasLandedVerdict = false
+        guard outcome == nil else {
+            // The round ended on this verdict. A tap made before it landed must not be honoured
+            // into a probe past the cap.
+            gate.close()
+            return
+        }
+        if let queued = gate.unlock() { beginBeat(queued, queued: true) }
     }
 
     /// Leaving from the run frame. Below one probe this is not a transition at all: the round

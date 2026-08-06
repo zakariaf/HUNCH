@@ -1,5 +1,6 @@
 public import Glyphs
 public import Laws
+public import Feedback
 public import LoomFeature
 
 /// The one place in `Modules/` that builds a `LawNode` by hand.
@@ -27,11 +28,14 @@ public enum Fixtures {
     public static func round(
         law: Law = openingLaw,
         band: Band = .literal,
-        seedGlyph: Glyph = seedGlyph
+        seedGlyph: Glyph = seedGlyph,
+        reduceMotion: Bool = false,
+        cues: any CuePlayer = SilentCuePlayer()
     ) -> Round {
         Round(
             law: law, band: band, mode: .probe, seedGlyph: seedGlyph,
-            seed: 0x4855_4E43_48, targetDelta: band.difficultyRange.lowerBound)
+            seed: 0x4855_4E43_48, targetDelta: band.difficultyRange.lowerBound,
+            beat: VerdictBeat(reduceMotion: reduceMotion), cues: cues)
     }
 
     /// `{triangle}` — bit 1 of the four, `Glyph.Shape.triangle`'s ordinal.
