@@ -98,7 +98,8 @@ let package = Package(
         ),
 
         .target(
-            name: "Drift", dependencies: ["Glyphs", "Laws"], swiftSettings: coreSettings),
+            name: "Drift", dependencies: ["Glyphs", "Laws", "Tokens"],
+            swiftSettings: coreSettings),
 
         .testTarget(
             name: "DriftTests",

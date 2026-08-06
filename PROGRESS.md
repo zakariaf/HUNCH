@@ -94,12 +94,48 @@ close further*. §10.8's family-rotation claim is likewise a mid-ladder claim; b
 band and there is nothing left to rotate. Both are now named tests rather than a bound that
 quietly excludes its worst case.
 
+## E08–E12 — where the app stands
+
+The app opens on a playable PROBE surface on both reference simulators: instrument bar with a
+seven-tick par row, the seed glyph ghost-framed in the throat, the ribbon pinned to its trailing
+edge, four Dial ramps with their headers and one lit cell each, the Bench handle, and three
+commit keys. `swift test` is **380 core + 205 module tests in 0.4 s**, well inside the 10 s
+budget, and 70 invariants in `tests.json`.
+
+What is model-complete and asserted, per epic:
+
+- **E08** — the round machine, the phase table as the only writer of a phase, the throat's
+  single-register crossfade, the Dial, the ribbon's chain model, the 420/320 ms beat with its
+  single-slot queue, the twin key and its breath, the par crossing, the spool sheet, and §6.6's
+  five discoverability layers proved band-independent.
+- **E09** — the Bench's two-mode layout with the evidence provably immobile, the four tile
+  canvases and their marks as constructions, the gesture inventory as a lint, the palette
+  ceiling, the Assay as a *slice* wired to the draft and never to the law, the machined bar, and
+  two strikes with extension-identity judging.
+- **E10** — the composition root, the snapshot written at t = 0 of every beat, the re-entry beat,
+  the exit rules as a total function, the onboarding ledger, the elastic cap, the five nudges,
+  and §6.11's twenty-nine rows accounted for exactly once.
+- **E11** — the symmetric estimator, the thirteen-step policy, calibration, anti-frustration and
+  anti-boredom, and the Level-A harness measuring **0.801–0.804** against H3's 0.80 ± 0.03.
+- **E12** — the two-law pair guardrails, the hinge and its three triggers, the DRIFT budget,
+  the lifecycle whose central row is invisible, the dead-law counterexample, and the reveal.
+
+**Not built, and named rather than implied:** the views for the Bench's rails (the tile canvases
+exist; the draft that decides which are on which rail is E09's remaining wiring), DRIFT's own
+`Round`-equivalent, and every mode after DRIFT. The E10 composition root routes all three launch
+routes to the opening round because the Frame is E17's and the served round is E11's serving
+*layer*, which is one task short.
+
 ## Known issues
 
 - The verdict ring's `.reject` cancel stroke renders faintly in the DEBUG gallery. The mark's
   geometry is spec-correct and the gallery's ring centre was the actual bug (fixed: the ring is
   concentric with the glyph *body*, not the canvas). **Resolved in E08:** the real cause was
   `arcs` treating `radiusScale` as a length, so every ring drew at about a point across.
+- **Four canon corrections** are recorded in `DECISIONS.md` rather than silently applied: §6.2's
+  three SE reach figures (38), the Pro Max commit bar's height (36), §12.8's Dial cell growth
+  (46), and §6.2's tick-clamp band count (103). Each was found by a test that reproduced the
+  design's own arithmetic and disagreed with its prose.
 - `check-symbols.sh` and `check-inventory.sh` still report unresolved `C.*` members and
   undeclared inventory rows for components E05–E16 have not written yet. Both are deferred out
   of CI with the epic that re-enables them named inline.
@@ -136,6 +172,38 @@ rescue, arrived at independently: *at the floor the tooling opens, because the d
 close further*. §10.8's family-rotation claim is likewise a mid-ladder claim; both ends pin the
 band and there is nothing left to rotate. Both are now named tests rather than a bound that
 quietly excludes its worst case.
+
+## E08–E12 — where the app stands
+
+The app opens on a playable PROBE surface on both reference simulators: instrument bar with a
+seven-tick par row, the seed glyph ghost-framed in the throat, the ribbon pinned to its trailing
+edge, four Dial ramps with their headers and one lit cell each, the Bench handle, and three
+commit keys. `swift test` is **380 core + 205 module tests in 0.4 s**, well inside the 10 s
+budget, and 70 invariants in `tests.json`.
+
+What is model-complete and asserted, per epic:
+
+- **E08** — the round machine, the phase table as the only writer of a phase, the throat's
+  single-register crossfade, the Dial, the ribbon's chain model, the 420/320 ms beat with its
+  single-slot queue, the twin key and its breath, the par crossing, the spool sheet, and §6.6's
+  five discoverability layers proved band-independent.
+- **E09** — the Bench's two-mode layout with the evidence provably immobile, the four tile
+  canvases and their marks as constructions, the gesture inventory as a lint, the palette
+  ceiling, the Assay as a *slice* wired to the draft and never to the law, the machined bar, and
+  two strikes with extension-identity judging.
+- **E10** — the composition root, the snapshot written at t = 0 of every beat, the re-entry beat,
+  the exit rules as a total function, the onboarding ledger, the elastic cap, the five nudges,
+  and §6.11's twenty-nine rows accounted for exactly once.
+- **E11** — the symmetric estimator, the thirteen-step policy, calibration, anti-frustration and
+  anti-boredom, and the Level-A harness measuring **0.801–0.804** against H3's 0.80 ± 0.03.
+- **E12** — the two-law pair guardrails, the hinge and its three triggers, the DRIFT budget,
+  the lifecycle whose central row is invisible, the dead-law counterexample, and the reveal.
+
+**Not built, and named rather than implied:** the views for the Bench's rails (the tile canvases
+exist; the draft that decides which are on which rail is E09's remaining wiring), DRIFT's own
+`Round`-equivalent, and every mode after DRIFT. The E10 composition root routes all three launch
+routes to the opening round because the Frame is E17's and the served round is E11's serving
+*layer*, which is one task short.
 
 ## Known issues
 
