@@ -151,6 +151,33 @@ SIEVE's conveyor, the Codex's three screens, the Profile's card, the Settings li
 them has its model complete and asserted underneath it; what is missing is SwiftUI, and E18–E20
 (localisation, accessibility, polish) have not started.
 
+## E18–E20 — localisation, accessibility, and the ship gates
+
+`swift test` is **480 core + 256 module tests in 0.8 s**, 81 invariants in `tests.json`, both
+reference simulators building with zero errors, and a debug `.app` of 5.4 MB against the 15 MB
+brief ceiling (a debug proxy — the thinned release figure is smaller and is measured at archive).
+
+- **E18** — the closed `LocKey` space (104 keys against a 250 budget, more than half audio-only),
+  the English source complete and commented, the bundle-and-locale accessor, the twelve-language
+  list with constant endonyms, and RTL read from the script rather than the environment.
+- **E19** — the VoiceOver element map with traits, labels and custom actions per element; the four
+  rotors; the Magic Tap; `LawNarrator` as structure rather than a sentence; §13.11's Dynamic Type
+  table.
+- **E20** — §13.8's cue table and §13.9's haptic table, each transcribed once and tested for the
+  *claim* rather than the numbers; the privacy manifest; and `check-tests-json-monotonic.sh`.
+
+**The one thing that is open and owned, not silently absent:** the eleven non-English locales are
+not written. §12.9's process has a native speaker flip each entry from `needsReview` to
+`translated`, and authoring a machine draft here and marking it reviewed — in a repository with no
+reviewer — would be theatre that shows as green. `tests.json` records it as
+`E18-T03-twelve-locales`, status `known-issue`, with its owner. Check 8's locale-set and per-key
+arms re-arm themselves the moment a second locale appears, so the gate does not have to be
+remembered.
+
+Also not built, and unchanged from the E13–E17 note: the remaining view layers for ECHO, SIEVE,
+the Codex, the Profile and Settings, and the two live players behind the `Feedback` seam — the
+synthesiser and the haptic engine. Every one has its model complete and asserted underneath it.
+
 ## Known issues
 
 - The verdict ring's `.reject` cancel stroke renders faintly in the DEBUG gallery. The mark's
@@ -254,6 +281,33 @@ on screen, with no words in it.
 SIEVE's conveyor, the Codex's three screens, the Profile's card, the Settings list. Every one of
 them has its model complete and asserted underneath it; what is missing is SwiftUI, and E18–E20
 (localisation, accessibility, polish) have not started.
+
+## E18–E20 — localisation, accessibility, and the ship gates
+
+`swift test` is **480 core + 256 module tests in 0.8 s**, 81 invariants in `tests.json`, both
+reference simulators building with zero errors, and a debug `.app` of 5.4 MB against the 15 MB
+brief ceiling (a debug proxy — the thinned release figure is smaller and is measured at archive).
+
+- **E18** — the closed `LocKey` space (104 keys against a 250 budget, more than half audio-only),
+  the English source complete and commented, the bundle-and-locale accessor, the twelve-language
+  list with constant endonyms, and RTL read from the script rather than the environment.
+- **E19** — the VoiceOver element map with traits, labels and custom actions per element; the four
+  rotors; the Magic Tap; `LawNarrator` as structure rather than a sentence; §13.11's Dynamic Type
+  table.
+- **E20** — §13.8's cue table and §13.9's haptic table, each transcribed once and tested for the
+  *claim* rather than the numbers; the privacy manifest; and `check-tests-json-monotonic.sh`.
+
+**The one thing that is open and owned, not silently absent:** the eleven non-English locales are
+not written. §12.9's process has a native speaker flip each entry from `needsReview` to
+`translated`, and authoring a machine draft here and marking it reviewed — in a repository with no
+reviewer — would be theatre that shows as green. `tests.json` records it as
+`E18-T03-twelve-locales`, status `known-issue`, with its owner. Check 8's locale-set and per-key
+arms re-arm themselves the moment a second locale appears, so the gate does not have to be
+remembered.
+
+Also not built, and unchanged from the E13–E17 note: the remaining view layers for ECHO, SIEVE,
+the Codex, the Profile and Settings, and the two live players behind the `Feedback` seam — the
+synthesiser and the haptic engine. Every one has its model complete and asserted underneath it.
 
 ## Known issues
 
