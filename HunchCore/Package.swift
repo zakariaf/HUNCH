@@ -98,6 +98,12 @@ let package = Package(
             swiftSettings: coreSettings
         ),
 
+        .target(name: "Echo", dependencies: ["Glyphs", "Laws"], swiftSettings: coreSettings),
+
+        .testTarget(
+            name: "EchoTests", dependencies: ["Echo", "HunchTestSupport"],
+            swiftSettings: coreSettings),
+
         .target(
             name: "Drift", dependencies: ["Glyphs", "Laws", "Tokens"],
             swiftSettings: coreSettings),
