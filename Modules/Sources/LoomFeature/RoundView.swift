@@ -125,6 +125,17 @@ public struct RoundView: View {
             }
             .frame(width: proxy.size.width, height: proxy.size.height, alignment: .topLeading)
             .ignoresSafeArea()
+            .overlay {
+                if round.sheet != .closed {
+                    RenderEnvReader { env in
+                        SpoolSheetView(
+                            tiles: sheetTiles,
+                            sheet: SpoolSheetLayout(
+                                deviceClass: layout.deviceClass),
+                            env: env, onLoad: loadFromSheet, onToggleSort: round.toggleSpool)
+                    }
+                }
+            }
         }
     }
 
@@ -140,6 +151,23 @@ public struct RoundView: View {
     private func select(_ attribute: Glyph.Attribute, _ rank: Int) {
         outgoingDraft = round.draft
         round.select(attribute, rank: rank)
+    }
+
+    /// The sheet's cells, in the order the current spool state asks for. One tile model, two
+    /// surfaces — the sheet does not get its own ring logic or its own ghost-mark rule.
+    private var sheetTiles: [RibbonTileModel] {
+        let chain = RibbonTileModel.tiles(
+            probes: round.ribbon.probes, seedGlyph: round.seedGlyph)
+        return round.sheet == .verdictSorted
+            ? RibbonTileModel.verdictSorted(chain) : chain
+    }
+
+    /// A sheet cell tap. The cell's chain index comes from the *current* ordering, which under
+    /// verdict sort is not the identity.
+    private func loadFromSheet(_ chainIndex: Int) {
+        outgoingDraft = nil
+        round.load(ribbonIndex: chainIndex)
+        round.closeSpool()
     }
 
     /// A ribbon tile tap: the Dial and the throat adopt that glyph wholesale (§4.1's second

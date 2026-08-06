@@ -349,6 +349,29 @@ public final class Round {
         if let queued = gate.unlock() { beginBeat(queued, queued: true) }
     }
 
+    /// §6.2's spool sheet, and the three-tap cycle that drives it. Not a filter and not a mode
+    /// switch: the sort re-orders the same cells.
+    public enum SheetState: Hashable, Sendable {
+        case closed
+        case chainOrder
+        case verdictSorted
+    }
+
+    public private(set) var sheet: SheetState = .closed
+
+    /// One tap on the spool — the 24 pt rail-cap at the ribbon's leading edge. It costs
+    /// nothing, consumes no probe and is available from probe 0.
+    public func toggleSpool() {
+        sheet =
+            switch sheet {
+            case .closed: .chainOrder
+            case .chainOrder: .verdictSorted
+            case .verdictSorted: .closed
+            }
+    }
+
+    public func closeSpool() { sheet = .closed }
+
     /// The Bench handle or the Bench key: raise the Bench and lower the Dial (§6.1). The
     /// declaration itself, the Seal and the counterexample are E09's; this is the one
     /// transition the commit bar needs to have a third key at all.
@@ -362,6 +385,17 @@ public final class Round {
     public func closeBench() {
         guard let next = RoundPhase.advance(phase, on: .benchDismissed) else { return }
         phase = next
+    }
+
+    /// A sheet cell tap: ribbon-load that cell's glyph and dismiss.
+    ///
+    /// Under verdict sort the cell index is **not** the chain index, and that mapping is the one
+    /// bug in this component worth a test of its own — a sorted sheet that loaded by cell index
+    /// would silently load a different probe than the one the player touched.
+    public func loadFromSheet(cellIndex: Int, chainIndex: (Int) -> Int?) {
+        guard let index = chainIndex(cellIndex) else { return }
+        load(ribbonIndex: index)
+        closeSpool()
     }
 
     /// Leaving from the run frame. Below one probe this is not a transition at all: the round
