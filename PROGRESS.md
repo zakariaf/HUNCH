@@ -126,6 +126,31 @@ exist; the draft that decides which are on which rail is E09's remaining wiring)
 routes to the opening round because the Frame is E17's and the served round is E11's serving
 *layer*, which is one task short.
 
+## E13–E17 — the four modes, the archive and the Frame
+
+`swift test` is **467 core + 215 module tests in 0.8 s**, 72 invariants in `tests.json`, and the
+app builds and runs on both reference simulators. The Frame is real: with a Codex of no pages,
+PROBE is lit and DRIFT, ECHO and SIEVE wear the machined bar — §12.4's whole message, verified
+on screen, with no words in it.
+
+- **E13 ECHO** — the pool, the primer's on-screen elimination, the load table, the cast's two
+  construction invariants, the scoring, the lifecycle whose `primer → casting` transition refuses
+  to fire on an ambiguous strip.
+- **E14 SIEVE** — the speed curve, the three-reach partition, the one-actionable-glyph invariant
+  as arithmetic rather than a guard, the scoring correction, the void allowance.
+- **E15 Codex** — the taxonomy, sealability derived from population, the logarithmic accretion
+  arc, the extension thumbnail and its contextual ink ladder.
+- **E16 Anomaly and Profile** — the UTC derivation and its low-bit band, the high-water ledger,
+  the grants and their two-way isolation, the five axes, the Robbins–Monro update, and the
+  geometry that makes the portrait unable to grow.
+- **E17 Frame and Settings** — the route graph with its two-tap worst case, the mode gates, the
+  nineteen-row settings schema with five named reset effects, and the Frame itself.
+
+**Not built, and named rather than implied:** the remaining view layers — ECHO's tray and rail,
+SIEVE's conveyor, the Codex's three screens, the Profile's card, the Settings list. Every one of
+them has its model complete and asserted underneath it; what is missing is SwiftUI, and E18–E20
+(localisation, accessibility, polish) have not started.
+
 ## Known issues
 
 - The verdict ring's `.reject` cancel stroke renders faintly in the DEBUG gallery. The mark's
@@ -204,6 +229,31 @@ exist; the draft that decides which are on which rail is E09's remaining wiring)
 `Round`-equivalent, and every mode after DRIFT. The E10 composition root routes all three launch
 routes to the opening round because the Frame is E17's and the served round is E11's serving
 *layer*, which is one task short.
+
+## E13–E17 — the four modes, the archive and the Frame
+
+`swift test` is **467 core + 215 module tests in 0.8 s**, 72 invariants in `tests.json`, and the
+app builds and runs on both reference simulators. The Frame is real: with a Codex of no pages,
+PROBE is lit and DRIFT, ECHO and SIEVE wear the machined bar — §12.4's whole message, verified
+on screen, with no words in it.
+
+- **E13 ECHO** — the pool, the primer's on-screen elimination, the load table, the cast's two
+  construction invariants, the scoring, the lifecycle whose `primer → casting` transition refuses
+  to fire on an ambiguous strip.
+- **E14 SIEVE** — the speed curve, the three-reach partition, the one-actionable-glyph invariant
+  as arithmetic rather than a guard, the scoring correction, the void allowance.
+- **E15 Codex** — the taxonomy, sealability derived from population, the logarithmic accretion
+  arc, the extension thumbnail and its contextual ink ladder.
+- **E16 Anomaly and Profile** — the UTC derivation and its low-bit band, the high-water ledger,
+  the grants and their two-way isolation, the five axes, the Robbins–Monro update, and the
+  geometry that makes the portrait unable to grow.
+- **E17 Frame and Settings** — the route graph with its two-tap worst case, the mode gates, the
+  nineteen-row settings schema with five named reset effects, and the Frame itself.
+
+**Not built, and named rather than implied:** the remaining view layers — ECHO's tray and rail,
+SIEVE's conveyor, the Codex's three screens, the Profile's card, the Settings list. Every one of
+them has its model complete and asserted underneath it; what is missing is SwiftUI, and E18–E20
+(localisation, accessibility, polish) have not started.
 
 ## Known issues
 
