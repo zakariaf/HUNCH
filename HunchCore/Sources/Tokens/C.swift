@@ -188,6 +188,27 @@ public enum C {
         public static let apertureSweepDegrees = 360.0
     }
 
+    /// §6.2's transcript strip. Four surfaces share this drawing — the PROBE ribbon, ECHO's
+    /// rail, ECHO's cast and SIEVE's tail — at different sizes and states.
+    public enum Ribbon {
+        /// **A floor, not a preference.** A 44 pt tile is below the `S = 48` regime boundary, so
+        /// the body takes `weight.bodySm` while the index stroke stays at `weight.body` — the
+        /// hue channel is deliberately the heaviest non-colour mark on the glyph. Under High
+        /// Contrast all four hues collapse to `stroke.primary` and are told apart by a
+        /// 90°-separated rotation and nothing else, which any shrink below 44 pt attacks
+        /// directly.
+        public static let tileSide = 44.0
+
+        /// §6.2: 50 pt pitch on both devices — the tile plus the link arc's run.
+        public static let tilePitch = 50.0
+
+        /// The rail-cap at the ribbon's leading edge that opens the spool sheet (T09).
+        public static let spoolCapWidth = 24.0
+
+        /// The elbow's vertical drop when the chain wraps to the next lane.
+        public static let returnElbowDrop = 18.0
+    }
+
     public enum TickRow {
         /// The tick itself never scales with the pitch (§6.2): at DRIFT band 8's 40 ticks the
         /// pitch compresses to 7.2 pt on the compact class and the tick stays 2 pt, which is

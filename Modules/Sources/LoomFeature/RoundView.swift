@@ -52,7 +52,15 @@ public struct RoundView: View {
                             onStep: step)
                     }
                 }
-                region(layout.ribbon) { RibbonRegion() }
+                region(layout.ribbon) {
+                    RenderEnvReader { env in
+                        RibbonView(
+                            tiles: RibbonTileModel.tiles(
+                                probes: round.ribbon.probes, seedGlyph: round.seedGlyph),
+                            layout: layout, env: env, loadedIndex: round.loadedIndex,
+                            onLoad: load)
+                    }
+                }
                 if let bezelGap = layout.bezelGap {
                     region(bezelGap) { BezelGapRegion() }
                 }
@@ -93,6 +101,14 @@ public struct RoundView: View {
         round.select(attribute, rank: rank)
     }
 
+    /// A ribbon tile tap: the Dial and the throat adopt that glyph wholesale (§4.1's second
+    /// mitigation). No outgoing draft is captured — a load crossfades the whole glyph, because
+    /// it is not a controlled variation and must not be dressed as one.
+    private func load(_ index: Int) {
+        outgoingDraft = nil
+        round.load(ribbonIndex: index)
+    }
+
     /// §6.5's 90–260 ms hold. T06 drives it; until then the aperture is absent, which is the
     /// same thing the view shows outside the beat.
     private var apertureTurn: Double? { nil }
@@ -113,7 +129,6 @@ public struct RoundView: View {
 // change here and the compiler names the site.
 
 private struct InstrumentBarRegion: View { var body: some View { Color.clear } }
-private struct RibbonRegion: View { var body: some View { Color.clear } }
 private struct BezelGapRegion: View { var body: some View { Color.clear } }
 private struct BenchHandleRegion: View { var body: some View { Color.clear } }
 private struct CommitKeyRegion: View { var body: some View { Color.clear } }

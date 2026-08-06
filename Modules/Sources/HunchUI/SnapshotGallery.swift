@@ -77,7 +77,9 @@
         private func verdictRings(_ env: RenderEnv) -> some View {
             let states: [(String, VerdictRing.State)] = [
                 ("admit", .admit), ("reject", .reject),
-                ("twin ✓", .twin(admitted: true)), ("twin ✗", .twin(admitted: false)),
+                ("twin ✓✓", .twin(first: .admit, second: .admit)),
+                ("twin ✗✗", .twin(first: .reject, second: .reject)),
+                ("twin split", .twin(first: .admit, second: .reject)),
                 ("counterex.", .counterexample(loomAdmits: true)),
                 ("restrike 3", .restrike(count: 3)),
             ]

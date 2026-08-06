@@ -1,5 +1,6 @@
 public import SwiftUI
 
+public import Glyphs  // Verdict
 public import Tokens  // RenderEnv, StrokeWeight, C
 
 public enum VerdictRing {
@@ -10,7 +11,11 @@ public enum VerdictRing {
     public enum State: Hashable, Sendable {
         case admit
         case reject
-        case twin(admitted: Bool)
+        /// An adjacent repeat, drawn as ONE unit. Both verdicts, because §6.6 layer 4's whole
+        /// point is the case where they DIFFER: same glyph, same context-free reading, two
+        /// answers. A single `admitted: Bool` cannot say that, and the split ring is the game's
+        /// clearest wordless statement of contextuality.
+        case twin(first: Verdict, second: Verdict)
         case counterexample(loomAdmits: Bool)
         case restrike(count: Int)
         case day(Day)
@@ -112,16 +117,21 @@ extension VerdictRing {
                     gapDegrees: rejectGap)
             ]
 
-        case .twin(let admitted):
+        case .twin(let first, let second):
             // A twin draws as ONE unit under a doubled ring, so it never reads as a fresh
             // discovery. When the two verdicts differ the ring draws SPLIT — one half open,
             // one half closed, on a single drawing of a single glyph (§6.6 layer 4).
-            let accent = admitted ? brass : cold
+            // Agreeing: one accent, one closure, read as a single reinforced verdict. Differing:
+            // the outer ring is HALF open — 180°, not the reject gap — so the contradiction is a
+            // shape rather than a colour, and the inner ring keeps the first verdict's accent.
+            let differ = first != second
+            let inner = first == .admit ? brass : cold
+            let outer = second == .admit ? brass : cold
             return [
-                Ring(radiusScale: 1.0, weight: body, ink: 1, accent: accent),
+                Ring(radiusScale: 1.0, weight: body, ink: 1, accent: inner),
                 Ring(
-                    radiusScale: 1.16, weight: hair, ink: 1, accent: accent,
-                    gapDegrees: admitted ? 0 : rejectGap),
+                    radiusScale: 1.16, weight: hair, ink: 1, accent: outer,
+                    gapDegrees: differ ? 180 : (second == .admit ? 0 : rejectGap)),
             ]
 
         case .counterexample(let loomAdmits):
