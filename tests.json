@@ -441,6 +441,46 @@
       "command": "swift test --package-path HunchCore --filter RoundPhaseTests",
       "status": "pass",
       "task": "E08/T01"
+    },
+    {
+      "id": "E10-T09-edge-case-ledger",
+      "area": "probe-e2e",
+      "statement": "every one of §6.11's 29 rows is accounted for exactly once — a named passing test, or a named row in the delegation table with its owning epic; the two sets are disjoint and their union is 1…29",
+      "command": "swift test --package-path Modules --filter EdgeCaseLedgerTests",
+      "status": "pass",
+      "task": "E10/T09"
+    },
+    {
+      "id": "E10-T07-elastic-cap",
+      "area": "probe-e2e",
+      "statement": "the opening round's cap cannot end the round while no reject has landed; the first reject re-arms it at max(Band.literal.cap, probesUsed+3); the suspension hard-stops at probe 24",
+      "command": "swift test --package-path HunchCore --filter ElasticCapTests",
+      "status": "pass",
+      "task": "E10/T07"
+    },
+    {
+      "id": "E10-T08-nudge-floor",
+      "area": "probe-e2e",
+      "statement": "a nudge can name a control and nothing else — the target type has no payload — and VoiceOver suppresses every nudge at the scheduler without spending a budget",
+      "command": "swift test --package-path HunchCore --filter NudgeSchedulerTests",
+      "status": "pass",
+      "task": "E10/T08"
+    },
+    {
+      "id": "E09-T08-declaration-semantics",
+      "area": "bench",
+      "statement": "a declaration is judged by extension identity in the common space with lifting, so a differently-spelled equivalent is correct and a stateless declaration against a contextual law is lifted before comparison",
+      "command": "swift test --package-path Modules --filter DeclarationTests",
+      "status": "pass",
+      "task": "E09/T08"
+    },
+    {
+      "id": "E09-T05-assay-is-a-slice",
+      "area": "bench",
+      "statement": "the live Assay is the pair table's row for the pinned prev, never the unconditional marginal projection, and it is fed by the player's draft and never by the hidden law",
+      "command": "swift test --package-path HunchCore --filter AssayTests && swift test --package-path Modules --filter AssayWiringTests",
+      "status": "pass",
+      "task": "E09/T05, E09/T06"
     }
   ]
 }
