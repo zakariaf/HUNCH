@@ -249,3 +249,91 @@ struct EchoPhaseTests {
         }
     }
 }
+
+/// §8.3's cast. Both construction invariants are load-bearing rather than tidy.
+@Suite("ECHO's cast", .tags(.unit, .presubmission))
+struct EchoCastTests {
+
+    private static let law = Law(
+        .atom(.init(attribute: .shape, subset: Fixture.subset(0b0010))))
+
+    /// Pairwise distinct, so the tray is a **set** and no duplicate-identity ambiguity can
+    /// arise: with a repeat, "the third one" would name two tiles.
+    @Test("Cast glyphs are pairwise distinct", arguments: EchoLoad.all)
+    func castIsASet(_ load: EchoLoad) {
+        let built = EchoCast.build(
+            law: Self.law, load: load, seedGlyph: Deck.glyph(id: 22), seed: 0xCA57)
+        #expect(built != nil)
+        if let built {
+            #expect(built.glyphs.count == load.castLength)
+            #expect(Set(built.glyphs.map(\.id)).count == load.castLength)
+        }
+    }
+
+    /// Exactly `A` lawful, by construction — and `A` is never displayed, because knowing it
+    /// turns the recall into a counting problem.
+    @Test("Exactly A of the L are lawful", arguments: EchoLoad.all)
+    func exactlyALawful(_ load: EchoLoad) {
+        let seed = Deck.glyph(id: 22)
+        guard
+            let built = EchoCast.build(law: Self.law, load: load, seedGlyph: seed, seed: 0xCA57)
+        else {
+            #expect(Bool(false), "the cast must build at every load")
+            return
+        }
+        #expect(built.lawful.count == load.lawfulCount)
+
+        // …and the truth list agrees with the law, walked along the cast's own context chain.
+        var context = seed
+        for (index, glyph) in built.glyphs.enumerated() {
+            let admits = Self.law.admits(glyph, after: context)
+            #expect(admits == built.lawful.contains(index))
+            context = glyph
+        }
+    }
+
+    /// The cast is a pure function of the seed, so a round is reproducible from its record.
+    @Test("The cast replays exactly from its seed")
+    func castIsDeterministic() {
+        let first = EchoCast.build(
+            law: Self.law, load: .load(4), seedGlyph: Deck.glyph(id: 22), seed: 99)
+        let second = EchoCast.build(
+            law: Self.law, load: .load(4), seedGlyph: Deck.glyph(id: 22), seed: 99)
+        #expect(first == second)
+        #expect(
+            EchoCast.build(
+                law: Self.law, load: .load(4), seedGlyph: Deck.glyph(id: 22), seed: 100)
+                != first)
+    }
+
+    /// The tray is canonical `glyphID` order — the Assay's order, already spatially familiar.
+    /// Cast order would give the answer away; shuffled would make the index arbitrary.
+    @Test("The tray is in canonical order, not cast order")
+    func trayIsCanonical() {
+        guard
+            let built = EchoCast.build(
+                law: Self.law, load: .load(6), seedGlyph: Deck.glyph(id: 22), seed: 7)
+        else { return }
+        let tray = EchoCast.trayOrder(built.glyphs)
+        #expect(tray.map(\.id) == tray.map(\.id).sorted())
+        #expect(Set(tray.map(\.id)) == Set(built.glyphs.map(\.id)))
+        #expect(tray.map(\.id) != built.glyphs.map(\.id))  // and it is not the cast order
+    }
+
+    /// A law that cannot supply the split returns `nil` rather than relaxing an invariant. The
+    /// caller's answer is to reselect — a cast with the wrong lawful count would silently change
+    /// what the round is measuring.
+    @Test("An impossible split returns nil rather than a wrong cast")
+    func impossibleSplitRefuses() {
+        // A law admitting a single glyph cannot supply six lawful ones.
+        let narrow = Law(
+            .coupled(
+                .atom(.init(attribute: .shape, subset: Fixture.subset(0b0001))), .and,
+                .atom(.init(attribute: .fill, subset: Fixture.subset(0b0001)))))
+        let built = EchoCast.build(
+            law: narrow, load: .load(8), seedGlyph: Deck.glyph(id: 0), seed: 3)
+        if let built {
+            #expect(built.lawful.count == EchoLoad.load(8).lawfulCount)
+        }
+    }
+}

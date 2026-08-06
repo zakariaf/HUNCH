@@ -105,3 +105,29 @@ public struct AnomalyLedger: Codable, Equatable, Sendable {
     /// in the game a reset cannot launder, which is what makes it mean anything at all.
     public static let survivesEveryReset = true
 }
+
+/// §10.6's grants — what an Anomaly round hands the player that an ordinary round does not, and
+/// what it deliberately withholds.
+public enum AnomalyGrants {
+
+    /// The Anomaly unlocks the **full palette** for its round, exactly as calibration does, and
+    /// reverts when it ends. It is served off-ladder at a band up to three above the player's,
+    /// so the palette ceiling — which tracks `maxBandEverServed` — would otherwise hand them a
+    /// toolbox that cannot state the law they were given.
+    public static let unlocksFullPalette = true
+
+    /// §4.3's evidence overlay opens for the Anomaly at any band. The gate exists because a free
+    /// consistency check trivialises the low bands; a once-a-day off-ladder round at band 4–7 is
+    /// not a low band, and the player has no ladder position to protect there anyway.
+    public static let unlocksAssayEvidence = true
+
+    /// **The isolation, and it runs both ways.** The Anomaly does not read the player's history
+    /// — the generator is called with an empty `avoid` set, which is how G9 is switched off
+    /// without a special case — and it does not write to it either.
+    public static let readsNoveltyHistory = false
+    public static let writesNoveltyHistory = false
+
+    /// It **does** inscribe. A page found on the Anomaly is a page, and marking it with the
+    /// doubled rim is the whole record of having been there.
+    public static let inscribesCodexPage = true
+}

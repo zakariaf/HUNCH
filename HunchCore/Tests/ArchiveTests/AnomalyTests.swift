@@ -155,3 +155,44 @@ struct AnomalyLedgerTests {
         #expect(try JSONDecoder().decode(AnomalyLedger.self, from: data) == ledger)
     }
 }
+
+/// §10.6's grants. The Anomaly is an *exception* to the ladder in both directions, and each
+/// direction has to be stated or the exception leaks.
+@Suite("The Anomaly's grants and isolation", .tags(.unit, .presubmission))
+struct AnomalyGrantTests {
+
+    /// Served off-ladder at up to three bands above the player, so the palette ceiling would
+    /// otherwise hand them a toolbox that cannot state the law they were given — the same
+    /// failure the calibration unlock exists to prevent, arriving once a day instead of once.
+    @Test("It unlocks the full palette for its round")
+    func fullPalette() {
+        #expect(AnomalyGrants.unlocksFullPalette)
+        // The gap it closes: a player whose ceiling is band 3 can be handed band 7.
+        #expect(Anomaly.parameters(day: 19_000).band.rawValue >= 4)
+    }
+
+    /// A free consistency check trivialises the low bands — and a once-a-day off-ladder round at
+    /// band 4–7 is not a low band, and has no ladder position to protect.
+    @Test("It unlocks the Assay's evidence overlay")
+    func evidenceOverlay() {
+        #expect(AnomalyGrants.unlocksAssayEvidence)
+    }
+
+    /// The isolation runs **both ways**: it neither reads the player's novelty history — the
+    /// generator is called with an empty `avoid`, which is how G9 switches off without a special
+    /// case — nor writes to it.
+    @Test("It is isolated from the novelty history in both directions")
+    func isolation() {
+        #expect(AnomalyGrants.readsNoveltyHistory == false)
+        #expect(AnomalyGrants.writesNoveltyHistory == false)
+        #expect(Anomaly.updatesAbility == false)
+    }
+
+    /// It does inscribe: a page found on the Anomaly is a page, and the doubled rim is the whole
+    /// record of having been there.
+    @Test("It inscribes, and it feeds the Profile at half weight")
+    func itStillCounts() {
+        #expect(AnomalyGrants.inscribesCodexPage)
+        #expect(Anomaly.profileWeight == 0.5)
+    }
+}
