@@ -93,7 +93,14 @@ extension Band {
     /// for it, not because it varies.
     public var admitWindow: ClosedRange<Double> { 0.15...0.60 }
 
-    /// §5.1's `m1` subtrahend — the family's minimum leaf count.
+    /// §5.1's `m1` subtrahend.
+    ///
+    /// For seven bands this is the family's minimum leaf count. **Band 8 is 4, not 3**, and
+    /// the epic's reconstructed table says 3 — but §5.2's published δ for the parity exemplar
+    /// is 0.928, and only `minLeaves = 4` reproduces it (3 gives 0.9433). The consequence is
+    /// coherent rather than a fudge: a 3-attribute COUNT clamps to 0 as well, so leaf count
+    /// carries NO difficulty signal anywhere inside band 8 — which is exactly §5.2's own
+    /// argument that band 8 is hard by SYMMETRY, not by size. See DECISIONS.md.
     public var minLeaves: Int {
         switch self {
         case .literal: 1
@@ -103,7 +110,7 @@ extension Band {
         case .contextual: 1
         case .guarded: 3
         case .composite: 2
-        case .systemic: 3
+        case .systemic: 4
         }
     }
 

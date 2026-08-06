@@ -81,8 +81,11 @@ struct BandTests {
         #expect(Band.allCases.filter(\.isContextual) == [.contextual, .composite])
     }
 
-    @Test("§5.1's m1 subtrahends are the family minimum leaf counts")
+    /// Band 8 is 4, not the family minimum of 3: §5.2's published δ of 0.928 for the parity
+    /// exemplar only reproduces at 4. The effect is that m1 is zero for every aggregate, which
+    /// is §5.2's own argument — band 8 is hard by symmetry, not by size.
+    @Test("§5.1's m1 subtrahends, with band 8 pinned by its published δ")
     func minLeaves() {
-        #expect(Band.allCases.map(\.minLeaves) == [1, 2, 2, 1, 1, 3, 2, 3])
+        #expect(Band.allCases.map(\.minLeaves) == [1, 2, 2, 1, 1, 3, 2, 4])
     }
 }

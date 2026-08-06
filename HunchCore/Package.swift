@@ -41,7 +41,7 @@ let package = Package(
     products: [
         // HunchTestSupport is deliberately NEVER here — that absence is half of what keeps
         // `import Testing` out of the release binary (01 P20, 06 T5a). Check 4 asserts it.
-        .library(name: "HunchCore", targets: ["Tokens", "Glyphs", "Laws"])
+        .library(name: "HunchCore", targets: ["Tokens", "Glyphs", "Laws", "LawGeneration"])
     ],
     targets: [
         // A .target, never a .testTarget — test targets cannot be depended on (01 P20).
@@ -69,6 +69,16 @@ let package = Package(
         .target(name: "Glyphs", swiftSettings: coreSettings),
 
         .target(name: "Laws", dependencies: ["Glyphs"], swiftSettings: coreSettings),
+
+        .target(
+            name: "LawGeneration", dependencies: ["Laws", "Glyphs"],
+            swiftSettings: coreSettings),
+
+        .testTarget(
+            name: "LawGenerationTests",
+            dependencies: ["LawGeneration", "HunchTestSupport"],
+            swiftSettings: coreSettings
+        ),
 
         .testTarget(
             name: "LawsTests",
