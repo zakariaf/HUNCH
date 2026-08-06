@@ -523,6 +523,12 @@ public final class Round {
         phase = next
     }
 
+    /// §6.8's decision: **the counterexample is not a probe.** It does not increment
+    /// `probesUsed`, it does not become `prev`, and it draws below the chain with no link arc
+    /// into it — a player's carefully arranged context should not be destroyed by their own
+    /// failure, which has nothing to do with the law.
+    public var previousGlyphIsUnaffectedByCounterexample: Bool { true }
+
     /// §6.1: the counterexample beat completes and the round **continues** — strikes stand at 1,
     /// the Bench collapses, and the draft is preserved. A counterexample you cannot act on is
     /// pedagogically worthless, which is the whole argument for two strikes over one.

@@ -87,7 +87,8 @@ let package = Package(
             swiftSettings: coreSettings),
 
         .target(
-            name: "Rounds", dependencies: ["Laws", "Glyphs"], swiftSettings: coreSettings),
+            name: "Rounds", dependencies: ["Laws", "Glyphs", "Tokens"],
+            swiftSettings: coreSettings),
 
         .testTarget(
             name: "RoundsTests",

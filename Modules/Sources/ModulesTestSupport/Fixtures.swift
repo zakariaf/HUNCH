@@ -24,6 +24,10 @@ public enum Fixtures {
     public static let contextualLaw = Law(
         .contextual(.init(current: .pips, comparator: .gt, previous: .pips)))
 
+    /// The opening law under a different spelling — same extension, different AST. What §4.5's
+    /// "purely semantic" means, as a fixture.
+    public static let subsetLaw = Law(.atom(.init(attribute: .shape, subset: subset(0b0010))))
+
     @MainActor
     public static func round(
         law: Law = openingLaw,

@@ -109,7 +109,9 @@ hits=$(grep -rnE "$rng" --include='*.swift' "$core" | grep -v 'using:' || true)
 
 ambient='Date\(\)|Date\.now|UUID\(\)|ProcessInfo|Locale\.current|TimeZone\.current|Calendar\.current'
 ambient="$ambient"'|CFAbsoluteTimeGetCurrent|DispatchTime\.now|ContinuousClock|SuspendingClock|Task\.sleep'
-hits=$(grep -rnE "$ambient" --include='*.swift' "$core" || true)
+# Comments are exempt: naming `Task.sleep` in a doc comment to say the file deliberately does
+# NOT use one is exactly the sentence this rule wants written down.
+hits=$(grep -rnE "$ambient" --include='*.swift' "$core" | grep -vE ':[[:space:]]*(//|\*)' || true)
 [ -n "$hits" ] && report 'Ambient clock/locale/identity in HunchCore (08 §2, §5) — take it as a parameter:' "$hits"
 
 # 7. Zero characters on the play surface, in any locale — §12.9, owner hunch-accessibility.

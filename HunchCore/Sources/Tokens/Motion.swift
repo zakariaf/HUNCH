@@ -14,6 +14,14 @@ public enum Dur {
     public static let shared = Duration.milliseconds(340)
     public static let streak = Duration.milliseconds(600)
     public static let drift = Duration.milliseconds(520)
+    /// §6.8's seal hold — **verdict-blind and unchanged under Reduce Motion**, which is why it
+    /// is a token rather than a number inside one beat sheet: the reveal, the counterexample and
+    /// the lost skeleton all start after it and all three must start after the *same* one.
+    public static let sealHold = Duration.milliseconds(640)
+    /// §6.8: the counterexample beat, after which the round continues.
+    public static let counterexample = Duration.milliseconds(960)
+    /// §6.8: the one skip threshold, measured into the reveal. There is no other.
+    public static let revealSkip = Duration.milliseconds(400)
     public static let reveal = Duration.milliseconds(1840)
     public static let revealLost = Duration.milliseconds(1020)
     public static let grainReseed = Duration.milliseconds(125)

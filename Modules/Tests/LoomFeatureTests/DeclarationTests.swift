@@ -171,3 +171,62 @@ struct DeclarationTests {
         #expect(round.strikes == 0)
     }
 }
+
+/// §6.8's two decisions about what a strike must *not* do. Both are about protecting the
+/// player's own context from their failure.
+@Suite("What a strike does not touch", .tags(.unit, .presubmission))
+@MainActor
+struct StrikeConsequenceTests {
+
+    /// The counterexample is **not a probe**: it does not increment the count, and it does not
+    /// become `prev`. A player's carefully arranged context has nothing to do with the law they
+    /// got wrong.
+    @Test("A strike leaves the probe count and the context untouched")
+    func theCounterexampleIsNotAProbe() {
+        let round = Fixtures.round(law: Fixtures.contextualLaw, band: .contextual)
+        round.probe(Deck.glyph(id: 40))
+        round.endVerdictBeat()
+        let context = round.previousGlyph
+        let used = round.probesUsed
+
+        round.setBenchDraft(Fixtures.openingLaw)
+        round.seal()
+        round.resolveSeal()
+        round.dismissCounterexample()
+
+        #expect(round.counterexample != nil)
+        #expect(round.probesUsed == used)
+        #expect(round.previousGlyph == context)
+        #expect(round.ribbon.probes.count == used)
+    }
+
+    /// §6.8: the Bench auto-collapses and there is **no forced probe** before re-declaring.
+    /// Evidence is acted on by probing, so return the player to the Dial — but a player who
+    /// reads their error straight off the counterexample has done the reasoning, and a
+    /// mandatory-probe gate would be another rule taught by refusal.
+    @Test("After a strike the Bench collapses and the player may declare again immediately")
+    func noForcedProbeBeforeRedeclaring() {
+        let round = Fixtures.round()
+        round.setBenchDraft(Fixtures.contextualLaw)
+        round.seal()
+        round.resolveSeal()
+        round.dismissCounterexample()
+
+        #expect(round.phase == .probing)  // the Dial, not the Bench
+        #expect(round.probesUsed == 0)
+
+        round.setBenchDraft(Fixtures.subsetLaw)
+        #expect(round.seal() == nil)  // no gate, no forced probe
+    }
+
+    /// The draft survives a strike: the player edits what they had rather than rebuilding it.
+    @Test("The Bench draft survives the strike")
+    func draftSurvivesAStrike() {
+        let round = Fixtures.round()
+        round.setBenchDraft(Fixtures.contextualLaw)
+        round.seal()
+        round.resolveSeal()
+        round.dismissCounterexample()
+        #expect(round.benchDraft == Fixtures.contextualLaw)
+    }
+}
