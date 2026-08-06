@@ -165,6 +165,23 @@ public enum C {
         /// `C.Throat` member the two would drift the day §13.7.2 moves.
         public static let transientAdmitRadius = 1.35
 
+        /// Where a ring COMES TO REST, as a multiple of the body radius — and the two differ by
+        /// verdict because §6.4's geometric opposition is the encoding: admit completes and
+        /// blooms outward, reject contracts and breaks.
+        ///
+        /// §13.7.4 states both, as the radii its Reduce Motion substitutions freeze at: a static
+        /// closed ring at **1.18 R** and a static broken ring at **1.00 R**. They are the
+        /// settled radii in every motion mode, not only under Reduce Motion — at 1.00 R an
+        /// admit ring is drawn exactly on `GlyphShape`'s own centre-line and vanishes into the
+        /// silhouette of a circle glyph, which is what the E04 note about the ring reading
+        /// faintly turned out to be. A broken ring at 1.00 R has the opposite property and is
+        /// correct there: it reads as the glyph's own outline breaking.
+        public static let settledAdmitRadius = 1.18
+        public static let settledRejectRadius = 1.00
+
+        /// The outer ring of a twin pair, relative to its inner one.
+        public static let twinRingSeparation = 0.16
+
         /// The reject ring's gap, degrees. Doubled under Differentiate Without Colour (§13.11),
         /// which is why it is a pair rather than a constant.
         public static let rejectGapDegrees = 30.0
@@ -198,6 +215,13 @@ public enum C {
         /// 90°-separated rotation and nothing else, which any shrink below 44 pt attacks
         /// directly.
         public static let tileSide = 44.0
+
+        /// The glyph drawn INSIDE a 44 pt tile. Smaller than the tile because the tile has to
+        /// hold the settled verdict ring as well as the glyph: at `settledAdmitRadius` the ring
+        /// reaches `0.4366 · S` above the body centre, which at `S = 44` clips against the
+        /// tile's own edge and the ring silently disappears. The sheet's cells use the same
+        /// ratio for the same reason.
+        public static let tileGlyphSide = 40.0
 
         /// §6.2: 50 pt pitch on both devices — the tile plus the link arc's run.
         public static let tilePitch = 50.0

@@ -48,7 +48,7 @@ public enum VerdictRing {
         {
             ctx.opacity = ring.ink
             ctx.stroke(
-                arcs(centre: centre, ring: ring, env: env),
+                arcs(centre: centre, ring: ring, bodyRadius: bodyRadius, env: env),
                 with: .color(ring.accent.rgb.color),
                 style: StrokeStyle(
                     lineWidth: ring.weight, lineCap: .butt, dash: ring.dash.map { CGFloat($0) })
@@ -103,14 +103,18 @@ extension VerdictRing {
         case .admit:
             // Admit COMPLETES and blooms outward. Transient expands with progress; settled
             // sits at the body. Closed at every moment — closure is the channel.
-            let scale = role == .transient ? 1.0 + (expansion - 1) * progress : 1.0
+            let scale =
+                role == .transient
+                ? 1.0 + (expansion - 1) * progress : C.VerdictRing.settledAdmitRadius
             let ink = role == .transient ? 1.0 - 0.6 * progress : 1.0
             return [Ring(radiusScale: scale, weight: body, ink: ink, accent: brass)]
 
         case .reject:
             // Reject CONTRACTS and BREAKS. The direction and the closure are the achromatic
             // signal; the cancel stroke is drawn by the caller.
-            let scale = role == .transient ? expansion - (expansion - 1) * progress : 1.0
+            let scale =
+                role == .transient
+                ? expansion - (expansion - 1) * progress : C.VerdictRing.settledRejectRadius
             return [
                 Ring(
                     radiusScale: scale, weight: hair, ink: 1, accent: cold,
@@ -127,10 +131,14 @@ extension VerdictRing {
             let differ = first != second
             let inner = first == .admit ? brass : cold
             let outer = second == .admit ? brass : cold
+            let innerScale =
+                first == .admit
+                ? C.VerdictRing.settledAdmitRadius : C.VerdictRing.settledRejectRadius
             return [
-                Ring(radiusScale: 1.0, weight: body, ink: 1, accent: inner),
+                Ring(radiusScale: innerScale, weight: body, ink: 1, accent: inner),
                 Ring(
-                    radiusScale: 1.16, weight: hair, ink: 1, accent: outer,
+                    radiusScale: innerScale + C.VerdictRing.twinRingSeparation, weight: hair,
+                    ink: 1, accent: outer,
                     gapDegrees: differ ? 180 : (second == .admit ? 0 : rejectGap)),
             ]
 
@@ -183,9 +191,14 @@ extension VerdictRing {
 
     /// A closed circle, or an arc with `gapDegrees` removed at due north. `splitHalves` draws
     /// the two semicircles separately so one can be open while the other is closed.
-    static func arcs(centre: CGPoint, ring: Ring, env: RenderEnv) -> Path {
+    /// - Parameter bodyRadius: `C.Glyph.radius(side:)`, in points. `Ring.radiusScale` is a
+    ///   **multiple** of it and is never a length: reading it as one draws every ring in the
+    ///   game at about one point across, which is a dot at the glyph's centre and reads as the
+    ///   ring being faint rather than as the ring being absent. Found in E08 by putting the
+    ///   mark on a live round; see `DECISIONS.md` 60.
+    static func arcs(centre: CGPoint, ring: Ring, bodyRadius: CGFloat, env: RenderEnv) -> Path {
         var path = Path()
-        let r = ring.radiusScale
+        let r = ring.radiusScale * bodyRadius
         guard ring.gapDegrees > 0 else {
             path.addEllipse(
                 in: CGRect(x: centre.x - r, y: centre.y - r, width: 2 * r, height: 2 * r))

@@ -54,18 +54,26 @@ public struct ParTickRowView: View {
 
     public var body: some View {
         Canvas { context, size in
-            let width = min(size.width, layout.tickRowWidth)
-            let x = (size.width - width) / 2
+            // The row CENTRES inside the slot, and the slot is wider than the row at every par
+            // — so the frame handed to the mark is the row's own drawn length, not the slot's.
+            // Passing the slot would draw the row from its leading edge and leave the whole
+            // instrument bar looking off-centre at band 1 and nearly centred at band 8, which
+            // reads as the bar drifting with difficulty.
+            let parWidth = min(size.width, layout.tickRowLength(total: model.parTotal))
+            let capWidth = min(size.width, layout.tickRowLength(total: model.capTotal))
             let rowHeight = size.height / 2
             TickRow.draw(
                 into: context,
-                frame: CGRect(x: x, y: 0, width: width, height: rowHeight * 0.8),
+                frame: CGRect(
+                    x: (size.width - parWidth) / 2, y: 0, width: parWidth,
+                    height: rowHeight * 0.8),
                 mode: model.parMode, nominalPitch: layout.nominalTickPitch, env: env)
             if model.capIsLit {
                 TickRow.draw(
                     into: context,
                     frame: CGRect(
-                        x: x, y: rowHeight, width: width, height: rowHeight * 0.6),
+                        x: (size.width - capWidth) / 2, y: rowHeight, width: capWidth,
+                        height: rowHeight * 0.6),
                     mode: model.capMode, nominalPitch: layout.nominalTickPitch, env: env)
             }
         }

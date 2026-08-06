@@ -36,6 +36,11 @@ public nonisolated struct ParRowModel: Equatable, Sendable {
 
     public var capIsLit: Bool { hasCrossed }
 
+    /// The two rows' tick counts, so a caller can size each row to its own drawn length rather
+    /// than to the slot it sits in.
+    public var parTotal: Int { par }
+    public var capTotal: Int { max(0, cap - par) }
+
     /// **A spent cap stop is an absence, never a dimmed stop.** Dimming would put a second,
     /// weaker copy of the same fact on the row and reintroduce exactly the tint channel that
     /// the height-based state channel removed. The concept must not exist, which is why this is

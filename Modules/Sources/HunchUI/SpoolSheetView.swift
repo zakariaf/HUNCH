@@ -59,7 +59,8 @@ public struct SpoolSheetView: View {
                         onLoad(tile.id)
                     } label: {
                         RibbonTile(
-                            tile: tile, side: sheet.glyphSide, isLoaded: false, env: env)
+                            tile: tile, glyphSide: sheet.glyphSide, isLoaded: false,
+                            env: env)
                     }
                     .buttonStyle(.plain)
                     .frame(width: sheet.cellSide, height: sheet.cellSide)

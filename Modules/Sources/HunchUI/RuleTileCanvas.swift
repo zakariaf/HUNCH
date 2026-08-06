@@ -166,6 +166,27 @@ struct RampCell: View {
                 let box = CGRect(
                     x: (size.width - side) / 2, y: (size.height - side) / 2,
                     width: side, height: side)
+                // `fill` and `pips` mark the *interior* and the *contour nodes*, and neither
+                // reads without an edge to be inside or on: a hollow cell would be a blank
+                // rectangle and three pips would be three floating dots. The hairline guide is
+                // `attribute-header.md` §3's own idiom for exactly this, at the same ink — a
+                // guide, not a silhouette, so the cell stays a picture of one channel.
+                if attribute == .fill || attribute == .pips {
+                    var guideContext = context
+                    guideContext.opacity =
+                        C.AttributeHeader.contourGuideInk
+                        * (isLit ? 1 : C.Ramp.cellUnlitInk(in: env))
+                    let radius = C.Glyph.radius(side: side)
+                    let centre = CGPoint(
+                        x: box.midX, y: box.midY + C.Glyph.centreOffset(side: side))
+                    guideContext.stroke(
+                        Path(
+                            ellipseIn: CGRect(
+                                x: centre.x - radius, y: centre.y - radius,
+                                width: 2 * radius, height: 2 * radius)),
+                        with: .color(env.palette.stroke.secondary.color),
+                        style: StrokeStyle(lineWidth: env.weight(.hairline)))
+                }
                 context.opacity = isLit ? 1 : C.Ramp.cellUnlitInk(in: env)
                 GlyphRenderer(
                     glyph: RampCell.specimen(attribute, rank: rank), side: side, env: env

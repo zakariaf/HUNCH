@@ -30,14 +30,28 @@ public struct RoundView: View {
     }
 
     public var body: some View {
+        // A **plain** reader, and the regions drawn in safe-area-local coordinates.
+        //
+        // `.ignoresSafeArea()` was tried on both sides of the reader and neither is reliable:
+        // inside it the proxy is already inset and reports zero insets, and outside it the
+        // proxy reports the full height with a zero *top* inset and a real *bottom* one — so
+        // every region below the instrument bar drifts up the screen by the top inset, which is
+        // invisible on the compact device and 62 pt wrong on the large one. That is exactly the
+        // defect the second reference column exists to catch.
+        //
+        // A plain reader gives the safe rect, which is a fact and not an interpretation. §6.2's
+        // coordinates are absolute, so `PlaySurfaceLayout` still speaks them and the placement
+        // subtracts `safeTop` once, here — the one conversion in the file.
         GeometryReader { proxy in
+            let insets = proxy.safeAreaInsets
+            let screen = CGSize(
+                width: proxy.size.width,
+                height: proxy.size.height + insets.top + insets.bottom)
             let layout = PlaySurfaceLayout(
-                size: proxy.size,
-                safeAreaTop: proxy.safeAreaInsets.top,
-                safeAreaBottom: proxy.safeAreaInsets.bottom)
+                size: screen, safeAreaTop: insets.top, safeAreaBottom: insets.bottom)
 
             ZStack(alignment: .topLeading) {
-                region(layout.instrumentBar) {
+                region(layout, layout.instrumentBar) {
                     RenderEnvReader { env in
                         // The chevron's ACTION is E10·T04's and the mode sigil's DRAWING is
                         // E17·T04's; both arrive as slot contents, so neither epic reopens
@@ -55,7 +69,7 @@ public struct RoundView: View {
                         }
                     }
                 }
-                region(layout.throat) {
+                region(layout, layout.throat) {
                     RenderEnvReader { env in
                         ThroatView(
                             draft: round.draft,
@@ -71,7 +85,7 @@ public struct RoundView: View {
                             onStep: step)
                     }
                 }
-                region(layout.ribbon) {
+                region(layout, layout.ribbon) {
                     RenderEnvReader { env in
                         RibbonView(
                             tiles: RibbonTileModel.tiles(
@@ -81,17 +95,17 @@ public struct RoundView: View {
                     }
                 }
                 if let bezelGap = layout.bezelGap {
-                    region(bezelGap) { BezelGapRegion() }
+                    region(layout, bezelGap) { BezelGapRegion() }
                 }
-                region(layout.dial) {
+                region(layout, layout.dial) {
                     RenderEnvReader { env in
                         DialView(
                             draft: round.draft, layout: layout, env: env,
                             isEnabled: round.acceptsInput, onSelect: select)
                     }
                 }
-                region(layout.benchHandle) { BenchHandleRegion() }
-                region(layout.commitBar) {
+                region(layout, layout.benchHandle) { BenchHandleRegion() }
+                region(layout, layout.commitBar) {
                     RenderEnvReader { env in
                         // §12.6's Left-hand keys setting mirrors exactly this bar's order and
                         // the Bench handle's side; it lands in E19 and flips one flag here.
@@ -123,8 +137,9 @@ public struct RoundView: View {
                     }
                 }
             }
-            .frame(width: proxy.size.width, height: proxy.size.height, alignment: .topLeading)
-            .ignoresSafeArea()
+            .frame(
+                width: proxy.size.width, height: proxy.size.height, alignment: .topLeading
+            )
             .overlay {
                 if round.sheet != .closed {
                     RenderEnvReader { env in
@@ -195,14 +210,16 @@ public struct RoundView: View {
         return verdict == .admit ? .admit : .reject
     }
 
-    /// One region, placed by its rectangle. `.position` takes a centre, which is the one
-    /// conversion this file does — every rectangle it is given is a `CGRect` in screen space.
+    /// One region, placed by its rectangle.
+    ///
+    /// Two conversions and no others: §6.2's absolute y minus the safe-area origin, and
+    /// `.position`'s centre.
     private func region(
-        _ frame: CGRect, @ViewBuilder content: () -> some View
+        _ layout: PlaySurfaceLayout, _ frame: CGRect, @ViewBuilder content: () -> some View
     ) -> some View {
         content()
             .frame(width: frame.width, height: frame.height)
-            .position(x: frame.midX, y: frame.midY)
+            .position(x: frame.midX, y: frame.midY - layout.safeTop)
     }
 }
 

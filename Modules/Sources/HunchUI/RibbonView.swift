@@ -50,7 +50,7 @@ public struct RibbonView: View {
                         onLoad(tile.id)
                     } label: {
                         RibbonTile(
-                            tile: tile, side: C.Ribbon.tileSide,
+                            tile: tile, glyphSide: C.Ribbon.tileGlyphSide,
                             isLoaded: tile.id == loadedIndex, env: env)
                     }
                     .buttonStyle(.plain)
@@ -108,13 +108,15 @@ public struct RibbonView: View {
 @MainActor
 struct RibbonTile: View {
     let tile: RibbonTileModel
-    let side: Double
+    /// The glyph's own side — **smaller than the tile**, so the settled verdict ring has room.
+    let glyphSide: Double
     let isLoaded: Bool
     let env: RenderEnv
 
     var body: some View {
         Canvas { context, size in
             var context = context
+            let side = glyphSide
             let box = CGRect(
                 x: (size.width - side) / 2, y: (size.height - side) / 2,
                 width: side, height: side)

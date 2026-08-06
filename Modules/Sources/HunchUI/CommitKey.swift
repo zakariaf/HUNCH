@@ -60,7 +60,13 @@ public struct CommitKey<Face: View>: View {
                 }
         }
         .buttonStyle(.plain)
-        .frame(minWidth: Space.targetMin, minHeight: Space.targetMin)
+        // A floor **and** a ceiling: `minHeight` alone lets a key grow past the commit bar's
+        // own region, which puts a 44 pt target inside a 54 pt row and draws a 69 pt border
+        // over the Bench handle above it.
+        .frame(
+            minWidth: Space.targetMin, maxWidth: .infinity,
+            minHeight: Space.targetMin, maxHeight: .infinity
+        )
         .contentShape(.rect)
         .disabled(!isEnabled)
         .opacity(isEnabled ? 1 : Opacity.disabled)
