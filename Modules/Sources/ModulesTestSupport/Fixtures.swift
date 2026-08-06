@@ -38,6 +38,18 @@ public enum Fixtures {
             beat: VerdictBeat(reduceMotion: reduceMotion), cues: cues)
     }
 
+    /// A non-optional `<subset4>` for tests, so no test writes `!`. The grammar type rejects
+    /// its two degenerate values by design and a test naming a legal literal should not have to
+    /// unwrap — nor force-unwrap, because `NeverForceUnwrap` is on for this package too. The
+    /// core side's `Fixture.subset(_:)` does the same job; `HunchTestSupport` is absent from
+    /// `HunchCore`'s `products:`, which is why it cannot simply be imported.
+    public static func subset(_ raw: UInt8) -> Subset4 {
+        guard let value = Subset4(rawValue: raw) else {
+            preconditionFailure("0b\(String(raw, radix: 2)) is not a legal <subset4> (§3.2)")
+        }
+        return value
+    }
+
     /// `{triangle}` — bit 1 of the four, `Glyph.Shape.triangle`'s ordinal.
     ///
     /// Spelled through the failing initialiser rather than force-unwrapped: `Subset4` rejects

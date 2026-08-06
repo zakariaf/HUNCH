@@ -8,7 +8,7 @@ public import Rounds
 // an internal import cannot carry (07 B7a's price, paid rather than worked around).
 public import Observation
 
-internal import LawGeneration
+public import LawGeneration
 
 /// One live PROBE round.
 ///
@@ -41,6 +41,13 @@ public final class Round {
     public private(set) var phase: RoundPhase
     public private(set) var ribbon: Ribbon
     public private(set) var strikes = 0
+
+    /// §4.5's counterexample — one glyph, never the law. Set when the first strike lands.
+    public private(set) var counterexample: Counterexample.Choice?
+
+    /// Computed when the Seal is pressed and revealed 640 ms later. Held rather than recomputed
+    /// so the hold cannot become verdict-dependent by accident.
+    private var pendingSeal: SealResult?
 
     /// The throat **is** the draft (§6.3): one glyph, always present, always probeable. It
     /// starts at the seed glyph so probe 1 is one tap, and it survives a probe untouched so a
@@ -444,6 +451,97 @@ public final class Round {
         load(ribbonIndex: index)
         closeSpool()
     }
+
+    // ── Declaring (§4.5, §6.8) ───────────────────────────────────────────────────────────
+
+    /// Why the Seal is barred right now, or `nil` when the draft may be declared.
+    ///
+    /// The rail states come from the Bench's own editing model (E09·T02's tiles); until a rail
+    /// exists the draft is either absent — barred as empty — or a whole law, which is one ready
+    /// rail. Both are honest and neither invents a rail the player cannot see.
+    public var sealBarReason: SealBar.Reason? {
+        SealBar.reason(
+            rails: benchDraft == nil ? [] : [.ready], extension: benchDraft?.table)
+    }
+
+    public var isSealBarred: Bool { sealBarReason != nil }
+
+    /// Press the Seal.
+    ///
+    /// Barred is **not** an error: no text, no state, no modal. The offending rail pulses and
+    /// the round does not move — which is why this returns the reason rather than throwing, and
+    /// why the caller's only job with it is to choose a rail to pulse.
+    ///
+    /// The Seal is edge-triggered and never queues (§6.11 case 11): a queued second declaration
+    /// would spend the round's second strike on a press made before the first one resolved.
+    @discardableResult
+    public func seal() -> SealBar.Reason? {
+        guard phase == .declaring || phase == .probing else { return .empty }
+        if let reason = sealBarReason { return reason }
+        guard gateAcceptsSeal(), let declared = benchDraft else { return .empty }
+
+        // §4.5, and the whole of the judgement: **extension equality in the common space.**
+        // Tile arrangement, spelling, coupler choice and complement direction are irrelevant;
+        // rejecting an equivalent phrasing would punish the player for the grammar rather than
+        // for the induction.
+        pendingSeal =
+            if declared.isSameLaw(as: law) {
+                .correct(
+                    marks: Scoring.marks(probesUsed: probesUsed, par: par, cap: cap),
+                    fracture: strikes > 0)
+            } else {
+                strikes == 0 ? .wrongFirstStrike : .wrongSecondStrike
+            }
+        if phase == .probing, let next = RoundPhase.advance(phase, on: .benchOpened) {
+            phase = next
+        }
+        guard let next = RoundPhase.advance(phase, on: .sealPressed) else { return .empty }
+        phase = next
+        cues.play(.declare)
+        return nil
+    }
+
+    /// The 640 ms hold expires. **Verdict-blind**: the hold is identical in content and duration
+    /// whether the declaration was right or wrong, so the answer is not readable off the clock.
+    public func resolveSeal() {
+        guard case .sealing = phase, let result = pendingSeal else { return }
+        pendingSeal = nil
+        switch result {
+        case .correct:
+            cues.play(.lawDeclaredCorrectly(marks: marks))
+        case .wrongFirstStrike:
+            strikes = 1
+            counterexample = Counterexample.select(
+                declared: benchDraft ?? law, hidden: law,
+                ribbon: ribbon.probes.map(\.glyph), seedGlyph: seedGlyph)
+            cues.play(.strike)
+        case .wrongSecondStrike:
+            strikes = 2
+            cues.play(.lawBroken)
+        }
+        guard let next = RoundPhase.advance(phase, on: .sealResolved(result)) else { return }
+        phase = next
+    }
+
+    /// §6.1: the counterexample beat completes and the round **continues** — strikes stand at 1,
+    /// the Bench collapses, and the draft is preserved. A counterexample you cannot act on is
+    /// pedagogically worthless, which is the whole argument for two strikes over one.
+    public func dismissCounterexample() {
+        guard let next = RoundPhase.advance(phase, on: .beatCompleted) else { return }
+        phase = next
+    }
+
+    /// The reveal beat completes, or is skipped.
+    public func endReveal() {
+        guard let next = RoundPhase.advance(phase, on: .beatCompleted) else { return }
+        phase = next
+    }
+
+    /// A third declaration is structurally impossible: the second strike settles the round, and
+    /// `settled` is terminal in §6.1's table.
+    public var canDeclare: Bool { strikes < 2 && outcome == nil }
+
+    private func gateAcceptsSeal() -> Bool { gate.requestSeal() == .fires }
 
     /// Leaving from the run frame. Below one probe this is not a transition at all: the round
     /// is discarded outright, with no record and no `Outcome` (§6.10), and `phase` is left
