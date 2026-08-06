@@ -37,6 +37,9 @@ jobs:
       - run: Scripts/check-source-hygiene.sh
       - run: Scripts/check-pbxproj-clean.sh Hunch.xcodeproj
       - run: Scripts/check-tests-json.sh
+      # A weakened entry is perfectly well-formed, so monotonicity is a property of the DIFF
+      # and cannot live in the shape check.
+      - run: Scripts/check-tests-json-monotonic.sh origin/${{ github.base_ref || 'main' }}
       # check-inventory and check-symbols exit 1 while the drawing components they audit are
       # still unwritten — they report ~90 unresolved C.* members and 26 undeclared inventory
       # rows, which is correct and expected until E04. Run them locally; re-enable here when

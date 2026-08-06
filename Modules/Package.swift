@@ -117,7 +117,7 @@ let package = Package(
         .target(
             name: "HunchAppFeature",
             dependencies: [
-                "HunchUI", "LoomFeature", "Feedback", "HunchNavigation",
+                "HunchUI", "LoomFeature", "Feedback", "HunchNavigation", "HunchLocalization",
                 .product(name: "HunchCore", package: "HunchCore"),
             ],
             swiftSettings: ui

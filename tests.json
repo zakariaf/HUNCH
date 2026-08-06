@@ -634,6 +634,22 @@
       "command": "swift test --package-path HunchCore --filter AccessibilityLayoutTests",
       "status": "pass",
       "task": "E19/T06, E19/T08"
+    },
+    {
+      "id": "E20-T11-privacy-manifest",
+      "area": "ship",
+      "statement": "the privacy manifest declares nothing collected, no tracking and exactly one required-reason API; the Info.plist declares no usage description, neither Files-presence key, portrait only, and no non-exempt encryption",
+      "command": "swift test --package-path Modules --filter 'PrivacyManifestTests|InfoPlistAbsenceTests'",
+      "status": "pass",
+      "task": "E20/T11"
+    },
+    {
+      "id": "E20-T12-tests-json-monotonic",
+      "area": "ship",
+      "statement": "no invariant has been removed, materially shortened or downgraded from pass since the merge base — a property of the diff, proved by planting a removal and a downgrade",
+      "command": "bash Scripts/check-tests-json-monotonic.sh origin/main",
+      "status": "pass",
+      "task": "E20/T12"
     }
   ]
 }

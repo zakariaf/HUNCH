@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Nothing is collected. The claim is provable rather than asserted: there is no network
+	     symbol anywhere in the repository, and check 5 of Scripts/check-source-hygiene.sh fails
+	     the build on one. -->
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<!-- Empty because tracking is false. A domain listed here with tracking false is a
+	     contradiction App Review reads before it reads any code. -->
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+
+	<!-- Exactly one required-reason API. UserDefaults holds preferences only (§12.6); game
+	     state lives in JSON under Application Support, which needs no declaration. -->
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>CA92.1</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
