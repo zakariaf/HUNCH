@@ -144,8 +144,8 @@ public nonisolated struct PlaySurfaceLayout: Equatable, Sendable {
     ///   clamp inside PROBE and turn §10.5's only difficulty signal into a lie.
     public func tickPitch(total: Int, artScale: CGFloat = 1) -> CGFloat {
         _ = artScale
-        guard total > 0 else { return nominalTickPitch }
-        return min(nominalTickPitch, tickRowWidth / CGFloat(total))
+        return TickRow.pitch(
+            nominalPitch: nominalTickPitch, rowWidth: tickRowWidth, total: total)
     }
 
     /// The row's drawn length. Proportional to `total` wherever the clamp does not engage,

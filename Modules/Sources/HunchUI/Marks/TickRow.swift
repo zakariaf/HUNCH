@@ -50,6 +50,15 @@ extension TickRow {
     /// engage — everywhere in PROBE — the row's LENGTH stays proportional to `total`, which is
     /// §10.5's only difficulty signal. `scale` moves heights and never the pitch: scaling the
     /// pitch would make the row longer at large Dynamic Type and turn the signal into a lie.
+    /// §6.2's clamp, and the **one home** for it. Two implementations of this is how a row
+    /// silently stops being length-proportional, which is §5.4's only difficulty signal.
+    public nonisolated static func pitch(
+        nominalPitch: CGFloat, rowWidth: CGFloat, total: Int
+    ) -> CGFloat {
+        guard total > 0 else { return nominalPitch }
+        return min(nominalPitch, rowWidth / CGFloat(total))
+    }
+
     static func bars(
         mode: Mode, frame: CGRect, nominalPitch: CGFloat,
         scale: Double, layout: LayoutDirection
@@ -60,7 +69,7 @@ extension TickRow {
         }
         guard total > 0 else { return [] }
 
-        let pitch = min(nominalPitch, frame.width / CGFloat(total))
+        let pitch = pitch(nominalPitch: nominalPitch, rowWidth: frame.width, total: total)
         let width = C.TickRow.tickWidth  // the tick itself never scales with pitch
         let fullHeight = frame.height * scale
         let dimHeight = fullHeight * C.TickRow.dimHeightRatio

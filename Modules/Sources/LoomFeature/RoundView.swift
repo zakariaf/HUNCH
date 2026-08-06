@@ -37,7 +37,24 @@ public struct RoundView: View {
                 safeAreaBottom: proxy.safeAreaInsets.bottom)
 
             ZStack(alignment: .topLeading) {
-                region(layout.instrumentBar) { InstrumentBarRegion() }
+                region(layout.instrumentBar) {
+                    RenderEnvReader { env in
+                        // The chevron's ACTION is E10·T04's and the mode sigil's DRAWING is
+                        // E17·T04's; both arrive as slot contents, so neither epic reopens
+                        // this file.
+                        InstrumentBar {
+                            ChevronSlot()
+                        } centre: {
+                            ParTickRowView(
+                                model: ParRowModel(
+                                    probesUsed: round.probesUsed, par: round.par,
+                                    cap: round.cap),
+                                layout: layout, env: env)
+                        } trailing: {
+                            Color.clear
+                        }
+                    }
+                }
                 region(layout.throat) {
                     RenderEnvReader { env in
                         ThroatView(
@@ -165,7 +182,7 @@ public struct RoundView: View {
 // is a distinct type rather than a shared `EmptyView` so that replacing one is a one-line
 // change here and the compiler names the site.
 
-private struct InstrumentBarRegion: View { var body: some View { Color.clear } }
+private struct ChevronSlot: View { var body: some View { Color.clear } }
 private struct BezelGapRegion: View { var body: some View { Color.clear } }
 private struct BenchHandleRegion: View { var body: some View { Color.clear } }
 /// The key's own drawing — the sigil each of the three carries. **E17·T03** draws them; until
