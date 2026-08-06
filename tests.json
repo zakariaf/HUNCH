@@ -117,7 +117,7 @@
     {
       "id": "E03-T01-luminance-is-wcag",
       "area": "tokens",
-      "statement": "RGB8.relativeLuminance is WCAG 2.1 sRGB with the 0.04045 knee and 2.4 exponent; contrastRatio is symmetric and closed on 1.0\u202621.0",
+      "statement": "RGB8.relativeLuminance is WCAG 2.1 sRGB with the 0.04045 knee and 2.4 exponent; contrastRatio is symmetric and closed on 1.0…21.0",
       "command": "swift test --package-path HunchCore",
       "status": "pass",
       "task": "E03/T01"
@@ -133,7 +133,7 @@
     {
       "id": "E03-T01-canon-ratio-corrections",
       "area": "tokens",
-      "statement": "the four measured corrections to \u00a713.2 hold: amber 8.79, teal 5.78, teal-rose 1.12, amber-brass 1.22",
+      "statement": "the four measured corrections to §13.2 hold: amber 8.79, teal 5.78, teal-rose 1.12, amber-brass 1.22",
       "command": "swift test --package-path HunchCore",
       "status": "pass",
       "task": "E03/T01"
@@ -141,7 +141,7 @@
     {
       "id": "E03-T03-resolution-order",
       "area": "tokens",
-      "statement": "weight resolution is Select\u2192Scale\u2192Offset\u2192Derive: Bold Text + High Contrast on .body is 4.25, not 4.375; the ladder stays strictly increasing and pairwise distinct",
+      "statement": "weight resolution is Select→Scale→Offset→Derive: Bold Text + High Contrast on .body is 4.25, not 4.375; the ladder stays strictly increasing and pairwise distinct",
       "command": "swift test --package-path HunchCore",
       "status": "pass",
       "task": "E03/T03"
@@ -181,7 +181,7 @@
     {
       "id": "E04-T01-screen-frame",
       "area": "drawing",
-      "statement": "the glyph frame is screen-space y-down: bodyCentre -0.10*S, indexCentre +0.43*S, both negated from \u00a713.5's y-up statement",
+      "statement": "the glyph frame is screen-space y-down: bodyCentre -0.10*S, indexCentre +0.43*S, both negated from §13.5's y-up statement",
       "command": "swift test --package-path HunchCore",
       "status": "pass",
       "task": "E04/T01"
@@ -245,7 +245,7 @@
     {
       "id": "E05-T02-exemplar-metrics",
       "area": "grammar",
-      "statement": "all eight of \u00a75.2's exemplar laws reproduce their published p and the five \u00a75.1 metrics, including band 8 COUNT at deficit .286",
+      "statement": "all eight of §5.2's exemplar laws reproduce their published p and the five §5.1 metrics, including band 8 COUNT at deficit .286",
       "command": "swift test --package-path HunchCore",
       "status": "pass",
       "task": "E05/T02"
@@ -253,7 +253,7 @@
     {
       "id": "E05-T03-worked-rounds",
       "area": "grammar",
-      "statement": "\u00a75.5's 15-probe band-5 round and \u00a75.6's band-3 round reproduce verdict for verdict under previously-PROBED semantics",
+      "statement": "§5.5's 15-probe band-5 round and §5.6's band-3 round reproduce verdict for verdict under previously-PROBED semantics",
       "command": "swift test --package-path HunchCore",
       "status": "pass",
       "task": "E05/T03"
@@ -277,7 +277,7 @@
     {
       "id": "E05-T06-par-derivation",
       "area": "grammar",
-      "statement": "\u00a75.4's ceil(k*log2|H| + d) reproduces \u00a75.7's locked par row for all eight bands",
+      "statement": "§5.4's ceil(k*log2|H| + d) reproduces §5.7's locked par row for all eight bands",
       "command": "swift test --package-path HunchCore",
       "status": "pass",
       "task": "E05/T06"
@@ -285,7 +285,7 @@
     {
       "id": "E05-T08-band-populations",
       "area": "grammar",
-      "statement": "the six stateless bands enumerate to \u00a75.2's counts exactly (40/1272/108/2322/5688/337) and the lower-band index totals 9,767",
+      "statement": "the six stateless bands enumerate to §5.2's counts exactly (40/1272/108/2322/5688/337) and the lower-band index totals 9,767",
       "command": "HUNCH_CALIBRATION=1 swift test --package-path HunchCore --filter statelessBandsReproduce",
       "status": "pass",
       "task": "E05/T08"
@@ -293,7 +293,7 @@
     {
       "id": "E06-T01-published-deltas",
       "area": "generator",
-      "statement": "all eight of \u00a75.2's published \u03b4 values reproduce within 0.001, and each lands inside its own band's range",
+      "statement": "all eight of §5.2's published δ values reproduce within 0.001, and each lands inside its own band's range",
       "command": "swift test --package-path HunchCore",
       "status": "pass",
       "task": "E06/T01"
@@ -317,7 +317,7 @@
     {
       "id": "E06-T07-scoring",
       "area": "generator",
-      "statement": "\u00a76.9's three worked rounds reproduce; the gradient is flat below par; the middle mark threshold does not move",
+      "statement": "§6.9's three worked rounds reproduce; the gradient is flat below par; the middle mark threshold does not move",
       "command": "swift test --package-path HunchCore",
       "status": "pass",
       "task": "E06/T07"
@@ -325,7 +325,7 @@
     {
       "id": "E06-T08-counterexample",
       "area": "generator",
-      "statement": "\u00a74.5's four selection steps hold, including a false negative winning over a strictly nearer false positive",
+      "statement": "§4.5's four selection steps hold, including a false negative winning over a strictly nearer false positive",
       "command": "swift test --package-path HunchCore",
       "status": "pass",
       "task": "E06/T08"
@@ -349,7 +349,7 @@
     {
       "id": "E07-T01-store-seam",
       "area": "persistence",
-      "statement": "\u00a711.13's ten file kinds, twenty paths derived from Band and Mode, each with a stated recovery policy",
+      "statement": "§11.13's ten file kinds, twenty paths derived from Band and Mode, each with a stated recovery policy",
       "command": "swift test --package-path HunchCore",
       "status": "pass",
       "task": "E07/T01"
@@ -389,7 +389,7 @@
     {
       "id": "E07-T06-reset-immunity",
       "area": "persistence",
-      "statement": "all five resets leave anomaly.json and anomaly.hw byte-identical \u2014 the whole anti-cheat",
+      "statement": "all five resets leave anomaly.json and anomaly.hw byte-identical — the whole anti-cheat",
       "command": "swift test --package-path HunchCore --filter ResetMap",
       "status": "pass",
       "task": "E07/T06"
@@ -401,6 +401,46 @@
       "command": "swift test --package-path HunchCore --filter ResetMap",
       "status": "pass",
       "task": "E07/T06"
+    },
+    {
+      "id": "E08-T10-discoverability-layers",
+      "area": "probe-surface",
+      "statement": "§6.6's five discoverability layers are present, and identical, in every one of the eight bands — a layer that appeared only where the law is contextual would announce the family it exists to make findable",
+      "command": "swift test --package-path Modules --filter DiscoverabilityTests",
+      "status": "pass",
+      "task": "E08/T10"
+    },
+    {
+      "id": "E08-T02-tick-pitch",
+      "area": "probe-surface",
+      "statement": "tickPitch = min(nominalPitch, rowWidth/N) and never clamps inside PROBE, so the par row's LENGTH stays proportional to par — §5.4's only difficulty signal; Dynamic Type scales tick heights and never the pitch",
+      "command": "swift test --package-path Modules --filter 'TickPitchTests|ParRowTests'",
+      "status": "pass",
+      "task": "E08/T02, E08/T08"
+    },
+    {
+      "id": "E08-T09-sheet-capacity",
+      "area": "probe-surface",
+      "statement": "the spool sheet's 70 cells are at least 1 + the largest cap over every Mode x Band, so the longest possible round in any mode fits one screen with no scrolling",
+      "command": "swift test --package-path Modules --filter SpoolSheetTests && swift test --package-path HunchCore --filter RoundBudgetTests",
+      "status": "pass",
+      "task": "E08/T09"
+    },
+    {
+      "id": "E08-T06-constant-hold",
+      "area": "probe-surface",
+      "statement": "the 260 ms adjudication hold is constant across verdict, band and contextuality and in both motion modes — variable latency is a side channel that would leak the family before probe 3",
+      "command": "swift test --package-path Modules --filter VerdictBeatTests",
+      "status": "pass",
+      "task": "E08/T06"
+    },
+    {
+      "id": "E08-T01-phase-machine",
+      "area": "probe-surface",
+      "statement": "RoundPhase.advance is the only writer of a phase; every row of §6.1's table holds and every other (phase, event) pair is refused rather than trapped",
+      "command": "swift test --package-path HunchCore --filter RoundPhaseTests",
+      "status": "pass",
+      "task": "E08/T01"
     }
   ]
 }

@@ -204,6 +204,26 @@ if [ "${#tokenRoots[@]}" -gt 0 ]; then
   fi
 fi
 
+# 11. §6.6's five discoverability layers must not be band-conditional. A layer that appeared
+#     only where the law is contextual would announce the family it exists to make findable.
+#     The list is short and specific on purpose: grepping all of Modules/ would fire on every
+#     legitimate `band.par` and the check would be disabled within a week.
+layerFiles=(
+  Modules/Sources/HunchUI/RibbonTileModel.swift
+  Modules/Sources/HunchUI/SpoolSheetLayout.swift
+  Modules/Sources/HunchUI/ThroatView.swift
+  Modules/Sources/HunchUI/CommitKey.swift
+)
+present=(); for f in "${layerFiles[@]}"; do [ -f "$f" ] && present+=("$f"); done
+if [ "${#present[@]}" -gt 0 ]; then
+  # Comments are exempt, and deliberately: "the same in every band" is precisely what these
+  # files SHOULD say. It is the code that must not read it.
+  hits=$(grep -rnE '\bband\b|Band\.' "${present[@]}" | grep -vE ':[[:space:]]*(//|\*)' || true)
+  [ -n "$hits" ] && report \
+    'A discoverability layer reads the band (§6.6 requires all five to be band-independent):' \
+    "$hits"
+fi
+
 label=""; [ "$fast" -eq 1 ] && label=" (fast subset)"
 [ "$status" -eq 0 ] && echo "Source hygiene: clean$label"
 exit "$status"
