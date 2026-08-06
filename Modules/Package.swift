@@ -110,6 +110,10 @@ let package = Package(
             swiftSettings: ui
         ),
 
+        .testTarget(
+            name: "FeedbackTests", dependencies: ["Feedback", "ModulesTestSupport"],
+            swiftSettings: ui),
+
         .target(
             name: "HunchAppFeature",
             dependencies: [

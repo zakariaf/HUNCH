@@ -610,6 +610,30 @@
       "command": "HUNCH_CALIBRATION=1 swift test --package-path HunchCore --filter LawNarratorTests",
       "status": "pass",
       "task": "E19/T03"
+    },
+    {
+      "id": "E20-T03-cue-intervals",
+      "area": "polish",
+      "statement": "§13.8's scale is five-limit just intonation on D3; admit is a just fifth and reject a just tritone a fifth below, so with no context admit rises and reject falls; the twin is the verdict cue quieter with one octave partial",
+      "command": "swift test --package-path Modules --filter CueTableTests",
+      "status": "pass",
+      "task": "E20/T01, E20/T03, E20/T04"
+    },
+    {
+      "id": "E20-T05-haptic-corners",
+      "area": "polish",
+      "statement": "admit and reject occupy opposite corners of the intensity/sharpness square and differ in event count; the bar is the only high-intensity low-sharpness event in the game",
+      "command": "swift test --package-path Modules --filter HapticTableTests",
+      "status": "pass",
+      "task": "E20/T05, E20/T06"
+    },
+    {
+      "id": "E19-T06-dynamic-type",
+      "area": "accessibility",
+      "statement": "no screen shrinks anything at any text size; every screen has an above-AX2 behaviour; the commit bar never scrolls and a thumbnail never scales",
+      "command": "swift test --package-path HunchCore --filter AccessibilityLayoutTests",
+      "status": "pass",
+      "task": "E19/T06, E19/T08"
     }
   ]
 }
