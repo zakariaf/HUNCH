@@ -36,6 +36,7 @@ let package = Package(
         .library(name: "HunchUI", targets: ["HunchUI"]),
         .library(name: "LoomFeature", targets: ["LoomFeature"]),
         .library(name: "Feedback", targets: ["Feedback"]),
+        .library(name: "HunchAppFeature", targets: ["HunchAppFeature"]),
     ],
     dependencies: [.package(path: "../HunchCore")],
     targets: [
@@ -77,6 +78,21 @@ let package = Package(
                 "HunchUI", "Feedback",
                 .product(name: "HunchCore", package: "HunchCore"),
             ],
+            swiftSettings: ui
+        ),
+
+        .target(
+            name: "HunchAppFeature",
+            dependencies: [
+                "HunchUI", "LoomFeature", "Feedback",
+                .product(name: "HunchCore", package: "HunchCore"),
+            ],
+            swiftSettings: ui
+        ),
+
+        .testTarget(
+            name: "HunchAppFeatureTests",
+            dependencies: ["HunchAppFeature", "ModulesTestSupport"],
             swiftSettings: ui
         ),
 

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		C0F1000000000000000320 /* HunchUI in Frameworks */ = {isa = PBXBuildFile; productRef = C0F1000000000000000310 /* HunchUI */; };
 		C0F1000000000000000321 /* LoomFeature in Frameworks */ = {isa = PBXBuildFile; productRef = C0F1000000000000000311 /* LoomFeature */; };
+		C0F1000000000000000322 /* HunchAppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = C0F1000000000000000312 /* HunchAppFeature */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,7 @@
 			files = (
 				C0F1000000000000000320 /* HunchUI in Frameworks */,
 				C0F1000000000000000321 /* LoomFeature in Frameworks */,
+				C0F1000000000000000322 /* HunchAppFeature in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,6 +117,7 @@
 			packageProductDependencies = (
 				C0F1000000000000000310 /* HunchUI */,
 				C0F1000000000000000311 /* LoomFeature */,
+				C0F1000000000000000312 /* HunchAppFeature */,
 			);
 			productName = Hunch;
 			productReference = C0F1000000000000000001 /* Hunch.app */;
@@ -169,6 +172,10 @@
 /* End PBXNativeTarget section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		C0F1000000000000000312 /* HunchAppFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = HunchAppFeature;
+		};
 		C0F1000000000000000311 /* LoomFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = LoomFeature;

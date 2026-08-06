@@ -1,4 +1,5 @@
 public import Glyphs
+public import Feedback
 public import Laws
 
 extension Round {
@@ -8,12 +9,14 @@ extension Round {
     /// exactly why it is what the app opens on until E10 wires the run frame and the ladder.
     /// Everything about it is checkable by eye: a triangle is admitted, anything else is not.
     @MainActor
-    public static func openingRound(reduceMotion: Bool = false) -> Round {
+    public static func openingRound(
+        reduceMotion: Bool = false, cues: any CuePlayer = SilentCuePlayer()
+    ) -> Round {
         Round(
             law: Law(.atom(.init(attribute: .shape, subset: Round.triangleOnly))),
             band: .literal, mode: .probe, seedGlyph: Deck.glyph(id: 22),
             seed: 0x4855_4E43_48, targetDelta: Band.literal.difficultyRange.lowerBound,
-            beat: VerdictBeat(reduceMotion: reduceMotion))
+            beat: VerdictBeat(reduceMotion: reduceMotion), cues: cues)
     }
 
     static let triangleOnly: Subset4 = {

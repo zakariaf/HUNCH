@@ -250,6 +250,41 @@ if [ "${#present[@]}" -gt 0 ]; then
     "$hits"
 fi
 
+# 13. Every presented subtree re-injects the dependency graph (04 A25). A .sheet,
+#     .fullScreenCover, .alert or .popover starts a NEW environment hierarchy, and "remember to
+#     re-inject" is exactly the rule reviews forget — so it is mechanical instead.
+if [ -d Modules/Sources ]; then
+  presenters=$(grep -rn --include='*.swift' -E '\.(sheet|fullScreenCover|alert|popover)\(' \
+    Modules/Sources | grep -vE ':[[:space:]]*(//|\*)' | cut -d: -f1,2 || true)
+  missing=""
+  if [ -n "$presenters" ]; then
+    while IFS=: read -r file line; do
+      [ -z "$file" ] && continue
+      end=$(( line + 12 ))
+      sed -n "${line},${end}p" "$file" | grep -q 'hunchEnvironment(' \
+        || missing="$missing$file:$line\n"
+    done <<EOF
+$presenters
+EOF
+  fi
+  [ -n "$missing" ] && report \
+    'A presented subtree does not re-inject the dependency graph (04 A25):' \
+    "$(printf '%b' "$missing")"
+fi
+
+# 14. The app becomes nondeterministic in exactly two files, and they are named here.
+if [ -d Modules/Sources ]; then
+  hits=$(grep -rn --include='*.swift' -E '\bDate\(\)' Modules/Sources \
+    | grep -v 'Modules/Sources/HunchAppFeature/Now.swift' \
+    | grep -vE ':[[:space:]]*(//|\*)' || true)
+  [ -n "$hits" ] && report 'Date() outside HunchAppFeature/Now.swift:' "$hits"
+  hits=$(grep -rn --include='*.swift' -E 'SystemRandomNumberGenerator' Modules/Sources \
+    | grep -v 'Modules/Sources/HunchAppFeature/SeedSource.swift' \
+    | grep -vE ':[[:space:]]*(//|\*)' || true)
+  [ -n "$hits" ] && report \
+    'SystemRandomNumberGenerator outside HunchAppFeature/SeedSource.swift:' "$hits"
+fi
+
 label=""; [ "$fast" -eq 1 ] && label=" (fast subset)"
 [ "$status" -eq 0 ] && echo "Source hygiene: clean$label"
 exit "$status"
