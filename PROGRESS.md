@@ -61,6 +61,39 @@ identifiers yet, so there is nothing for a UI test to address and no way to driv
 `InputGateTests`, `VerdictCueTests`, `SpoolSheetTests`). E19·T02 adds the identifiers and
 E10·T03 the end-to-end UI test; this row is finished there, not here.
 
+## E11 — the ladder, measured
+
+The Level-A harness plays a simulated Rasch player against the **real** serving policy and the
+**real** estimator, 20,000 rounds per point, seeded and reproducible. Measured realised success
+rate, against H3's 0.80 ± 0.03:
+
+| `θ_true` | realised rate | modal band share | longest same-band run |
+|---|---|---|---|
+| −3.0 | 0.663 | 0.791 | 23 |
+| −2.0 | 0.817 | 0.799 | 54 |
+| −1.0 | 0.810 | 0.490 | 48 |
+| 0.0 | 0.804 | 0.505 | 13 |
+| 1.0 | 0.801 | 0.518 | 13 |
+| 2.0 | 0.801 | 0.519 | 13 |
+| 3.0 | 0.801 | 0.519 | 13 |
+| 4.0 | 0.804 | 0.525 | 16 |
+
+Two things worth saying plainly.
+
+**π₀ = 0.44 works.** Across the whole servable range the composed loop — target, pressure,
+jitter, quantisation, band clamps, both guards and the estimator — lands within 0.004 of 0.800.
+That is the number §10.3 says is 0.75 without the centring, and it is the one number in the
+design that no unit test could have established: every part can be individually right and the
+composition still miss.
+
+**The ladder is censored at both ends, and the floor is the interesting one.** Below band 1 there
+is nothing easier to serve, so a player at `θ = −3` realises 0.66 and sits on band 1 for 79 % of
+rounds. That is not a defect and it is not a surprise — it is §10.7's own argument for the floor
+rescue, arrived at independently: *at the floor the tooling opens, because the difficulty cannot
+close further*. §10.8's family-rotation claim is likewise a mid-ladder claim; both ends pin the
+band and there is nothing left to rotate. Both are now named tests rather than a bound that
+quietly excludes its worst case.
+
 ## Known issues
 
 - The verdict ring's `.reject` cancel stroke renders faintly in the DEBUG gallery. The mark's
@@ -70,6 +103,39 @@ E10·T03 the end-to-end UI test; this row is finished there, not here.
 - `check-symbols.sh` and `check-inventory.sh` still report unresolved `C.*` members and
   undeclared inventory rows for components E05–E16 have not written yet. Both are deferred out
   of CI with the epic that re-enables them named inline.
+
+## E11 — the ladder, measured
+
+The Level-A harness plays a simulated Rasch player against the **real** serving policy and the
+**real** estimator, 20,000 rounds per point, seeded and reproducible. Measured realised success
+rate, against H3's 0.80 ± 0.03:
+
+| `θ_true` | realised rate | modal band share | longest same-band run |
+|---|---|---|---|
+| −3.0 | 0.663 | 0.791 | 23 |
+| −2.0 | 0.817 | 0.799 | 54 |
+| −1.0 | 0.810 | 0.490 | 48 |
+| 0.0 | 0.804 | 0.505 | 13 |
+| 1.0 | 0.801 | 0.518 | 13 |
+| 2.0 | 0.801 | 0.519 | 13 |
+| 3.0 | 0.801 | 0.519 | 13 |
+| 4.0 | 0.804 | 0.525 | 16 |
+
+Two things worth saying plainly.
+
+**π₀ = 0.44 works.** Across the whole servable range the composed loop — target, pressure,
+jitter, quantisation, band clamps, both guards and the estimator — lands within 0.004 of 0.800.
+That is the number §10.3 says is 0.75 without the centring, and it is the one number in the
+design that no unit test could have established: every part can be individually right and the
+composition still miss.
+
+**The ladder is censored at both ends, and the floor is the interesting one.** Below band 1 there
+is nothing easier to serve, so a player at `θ = −3` realises 0.66 and sits on band 1 for 79 % of
+rounds. That is not a defect and it is not a surprise — it is §10.7's own argument for the floor
+rescue, arrived at independently: *at the floor the tooling opens, because the difficulty cannot
+close further*. §10.8's family-rotation claim is likewise a mid-ladder claim; both ends pin the
+band and there is nothing left to rotate. Both are now named tests rather than a bound that
+quietly excludes its worst case.
 
 ## Known issues
 

@@ -285,6 +285,19 @@ if [ -d Modules/Sources ]; then
     'SystemRandomNumberGenerator outside HunchAppFeature/SeedSource.swift:' "$hits"
 fi
 
+# 15. §10.9: difficulty is NEVER a number. Not a band numeral, not a percentage, not a theta,
+#     not a level. The three signals §10.5 permits are the par row's length, the palette ceiling
+#     and the Codex shelves, and none of them is a digit. Check 7 already bans Text() outright on
+#     the play surfaces; this one covers the CHROME, where text is legal and a band numeral is
+#     the easiest thing in the world to add to a Codex shelf header.
+if [ -d Modules/Sources ]; then
+  hits=$(grep -rn --include='*.swift' -E '(Text|Label|AttributedString)\(' Modules/Sources \
+    | grep -E '\b(band|difficulty|theta|targetDelta|servedDelta)\b' \
+    | grep -vE ':[[:space:]]*(//|\*)' || true)
+  [ -n "$hits" ] && report \
+    'A band or difficulty rendered as text (§10.9 — difficulty is never a number):' "$hits"
+fi
+
 label=""; [ "$fast" -eq 1 ] && label=" (fast subset)"
 [ "$status" -eq 0 ] && echo "Source hygiene: clean$label"
 exit "$status"
