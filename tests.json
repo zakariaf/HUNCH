@@ -521,6 +521,62 @@
       "command": "swift test --package-path HunchCore --filter DriftBudgetTests",
       "status": "pass",
       "task": "E12/T04"
+    },
+    {
+      "id": "E13-T01-primer-separates",
+      "area": "echo",
+      "statement": "ECHO's primer eliminates on screen progressively and monotonically, and the cast cannot begin while more than one pool member is lit",
+      "command": "swift test --package-path HunchCore --filter 'EchoPoolTests|EchoPhaseTests'",
+      "status": "pass",
+      "task": "E13/T01, E13/T09"
+    },
+    {
+      "id": "E14-T02-one-actionable-glyph",
+      "area": "sieve",
+      "statement": "at most one glyph is ever actionable, at every band and every tempo step — pitch 132 against a gate of 88, so the rate cancels",
+      "command": "swift test --package-path HunchCore --filter SieveStreamTests",
+      "status": "pass",
+      "task": "E14/T02"
+    },
+    {
+      "id": "E14-T05-ratio-over-resolved",
+      "area": "sieve",
+      "statement": "SIEVE's ratio is normalised over resolved glyphs so accuracy and reach are charged exactly once each; the squared alternative is computed in the test and is 3.5x harsher",
+      "command": "swift test --package-path HunchCore --filter SieveScoringTests",
+      "status": "pass",
+      "task": "E14/T05"
+    },
+    {
+      "id": "E16-T01-anomaly-determinism",
+      "area": "anomaly",
+      "statement": "every Anomaly parameter is a pure function of the UTC day index; the band reads the low bits and the high-bit spelling disagrees on more than 300 of 500 days",
+      "command": "swift test --package-path HunchCore --filter AnomalyDerivationTests",
+      "status": "pass",
+      "task": "E16/T01"
+    },
+    {
+      "id": "E16-T08-portrait-cannot-grow",
+      "area": "profile",
+      "statement": "radii normalise against the player's own five-axis mean, so improving on every axis draws the identical silhouette; idling decays confidence and never the value",
+      "command": "swift test --package-path HunchCore --filter 'ProfileGeometryTests|AxisStateTests'",
+      "status": "pass",
+      "task": "E16/T06, E16/T08"
+    },
+    {
+      "id": "E17-T02-navigation-depth",
+      "area": "frame",
+      "statement": "every reachable screen is within two taps of a live probe surface, and a suspended round opens at zero",
+      "command": "swift test --package-path Modules --filter NavigationDepthTests",
+      "status": "pass",
+      "task": "E17/T02"
+    },
+    {
+      "id": "E17-T08-resets-spare-the-ledger",
+      "area": "settings",
+      "statement": "not one of the five destructive settings rows touches the Anomaly ledger, and clearing the Codex and resetting the ladder are genuinely separable",
+      "command": "swift test --package-path HunchCore --filter SettingsSchemaTests",
+      "status": "pass",
+      "task": "E17/T08"
     }
   ]
 }

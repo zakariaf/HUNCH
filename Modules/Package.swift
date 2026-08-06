@@ -37,6 +37,7 @@ let package = Package(
         .library(name: "LoomFeature", targets: ["LoomFeature"]),
         .library(name: "Feedback", targets: ["Feedback"]),
         .library(name: "HunchAppFeature", targets: ["HunchAppFeature"]),
+        .library(name: "HunchNavigation", targets: ["HunchNavigation"]),
     ],
     dependencies: [.package(path: "../HunchCore")],
     targets: [
@@ -78,6 +79,19 @@ let package = Package(
                 "HunchUI", "Feedback",
                 .product(name: "HunchCore", package: "HunchCore"),
             ],
+            swiftSettings: ui
+        ),
+
+        // A route graph is values, so this target takes NO default isolation (08 §4).
+        .target(
+            name: "HunchNavigation",
+            dependencies: [.product(name: "HunchCore", package: "HunchCore")],
+            swiftSettings: base
+        ),
+
+        .testTarget(
+            name: "HunchNavigationTests",
+            dependencies: ["HunchNavigation", "ModulesTestSupport"],
             swiftSettings: ui
         ),
 
