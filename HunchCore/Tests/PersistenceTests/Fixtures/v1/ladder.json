@@ -1,0 +1,10 @@
+{
+  "core": 1.2,
+  "maxBandEverServed": 5,
+  "n": {
+    "probe": 40
+  },
+  "reach": 0.25,
+  "relief": 0.0,
+  "v": 1
+}

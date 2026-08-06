@@ -92,6 +92,7 @@ let package = Package(
         .testTarget(
             name: "PersistenceTests",
             dependencies: ["Persistence", "HunchTestSupport"],
+            resources: [.copy("Fixtures")],
             swiftSettings: coreSettings
         ),
 

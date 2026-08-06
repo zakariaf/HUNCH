@@ -377,6 +377,30 @@
       "command": "swift test --package-path HunchCore",
       "status": "pass",
       "task": "E07/T09"
+    },
+    {
+      "id": "E07-T05-v1-fixture",
+      "area": "persistence",
+      "statement": "the hand-written Fixtures/v1 tree still loads, and is never regenerated to make a build pass",
+      "command": "swift test --package-path HunchCore --filter FixtureV1",
+      "status": "pass",
+      "task": "E07/T05"
+    },
+    {
+      "id": "E07-T06-reset-immunity",
+      "area": "persistence",
+      "statement": "all five resets leave anomaly.json and anomaly.hw byte-identical \u2014 the whole anti-cheat",
+      "command": "swift test --package-path HunchCore --filter ResetMap",
+      "status": "pass",
+      "task": "E07/T06"
+    },
+    {
+      "id": "E07-T06-palette-ceiling-ownership",
+      "area": "persistence",
+      "statement": "clearing the Codex does not drop the palette ceiling; only resetting the ladder does",
+      "command": "swift test --package-path HunchCore --filter ResetMap",
+      "status": "pass",
+      "task": "E07/T06"
     }
   ]
 }
