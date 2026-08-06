@@ -481,6 +481,46 @@
       "command": "swift test --package-path HunchCore --filter AssayTests && swift test --package-path Modules --filter AssayWiringTests",
       "status": "pass",
       "task": "E09/T05, E09/T06"
+    },
+    {
+      "id": "E11-T10-h3-realised-rate",
+      "area": "ladder",
+      "statement": "the Level-A harness realises 0.80 ± 0.03 across the servable ability range with the real policy and the real estimator; the floor and the ceiling are censored and are named tests rather than excluded cases",
+      "command": "swift test --package-path HunchCore --filter 'ResponseHarnessTests|LadderCensoringTests'",
+      "status": "pass",
+      "task": "E11/T10"
+    },
+    {
+      "id": "E11-T02-estimator-symmetry",
+      "area": "ladder",
+      "statement": "the ability estimator is strictly symmetric, reproduces §10.2's published K row, and is unbiased at its own fixed point under sampled outcomes",
+      "command": "swift test --package-path HunchCore --filter AbilityEstimatorTests",
+      "status": "pass",
+      "task": "E11/T02"
+    },
+    {
+      "id": "E11-T03-target-inside-band",
+      "area": "ladder",
+      "statement": "targetδ lies inside the band it was served for at every point of the state space, including after the family-repeat guard and the ceiling rotation have moved the band",
+      "command": "swift test --package-path HunchCore --filter ServingPolicyTests",
+      "status": "pass",
+      "task": "E11/T03"
+    },
+    {
+      "id": "E12-T02-drift-guardrails",
+      "area": "drift",
+      "statement": "D1, D2 and D4 hold on a law pair: distinct, disagreement rate in [0.10,0.30], and at least 8 broken positives — the directional guardrail a disagreement rate cannot see",
+      "command": "swift test --package-path HunchCore --filter DriftPairTests",
+      "status": "pass",
+      "task": "E12/T02"
+    },
+    {
+      "id": "E12-T04-drift-budget",
+      "area": "drift",
+      "statement": "§7.7's par_DRIFT/cap_DRIFT/forced-hinge table reproduces row for row, bands 1-2 have no rows at all, and the forced hinge is measured against par rather than par_DRIFT",
+      "command": "swift test --package-path HunchCore --filter DriftBudgetTests",
+      "status": "pass",
+      "task": "E12/T04"
     }
   ]
 }
