@@ -120,18 +120,41 @@ public final class Round {
 
     // ── Composing ────────────────────────────────────────────────────────────────────────
 
-    /// Ribbon-load: the throat and the Dial adopt a glyph wholesale (§6.3). Refused outside an
-    /// open-input phase, because the throat is the input.
+    /// Set the whole draft — the spool sheet's cell tap (T09) and the Dial's own preload.
+    /// Refused outside an open-input phase, because the throat is the input.
     ///
-    /// Every register that differs is reported as changed — a ribbon-load is not a controlled
-    /// variation and must not be dressed as one.
+    /// A single-register difference is reported as changed so the throat can crossfade that one
+    /// register; anything wider reports `nil`, because a wholesale adoption is not a controlled
+    /// variation and animating one register would be a lie about what happened.
     public func setDraft(_ glyph: Glyph) {
         guard phase.acceptsInput else { return }
         let differing = Glyph.Attribute.allCases.filter {
             glyph.ordinal(of: $0) != draft.ordinal(of: $0)
         }
         draft = glyph
+        loadedIndex = nil
         changedRegister = differing.count == 1 ? differing[0] : nil
+    }
+
+    /// The ribbon tile the Dial is currently sourced from, for the ribbon's `loaded` state.
+    /// Cleared by any edit, because after an edit the Dial is no longer showing that tile.
+    public private(set) var loadedIndex: Int?
+
+    /// Ribbon-load (§6.3, §4.1's mitigation 2): the Dial and the throat adopt that tile's glyph
+    /// **wholesale**. Costs nothing, consumes no probe, and out of range is a no-op.
+    ///
+    /// Index 0 is the seed tile; probe *n* is index *n*. That numbering is the ribbon's, which
+    /// draws the seed first with its dashed frame (§6.6 layer 1).
+    public func load(ribbonIndex index: Int) {
+        guard phase.acceptsInput else { return }
+        let glyphs = [seedGlyph] + ribbon.probes.map(\.glyph)
+        guard glyphs.indices.contains(index) else { return }
+        draft = glyphs[index]
+        loadedIndex = index
+        // Nothing was *touched*, so the swipe's target must not move under the player; and a
+        // wholesale adoption is not a controlled variation, so no single register may animate.
+        // The throat crossfades the whole glyph on a load and only on a load.
+        changedRegister = nil
     }
 
     /// One Dial cell tap: that ramp's selection moves and the throat redraws (§6.3).
@@ -141,6 +164,7 @@ public final class Round {
     public func select(_ attribute: Glyph.Attribute, rank: Int) {
         guard phase.acceptsInput, (1...4).contains(rank) else { return }
         lastTouched = attribute
+        loadedIndex = nil
         let moved = draft.rank(of: attribute) != rank
         draft = Round.glyph(draft, setting: attribute, toOrdinal: rank - 1)
         changedRegister = moved ? attribute : nil

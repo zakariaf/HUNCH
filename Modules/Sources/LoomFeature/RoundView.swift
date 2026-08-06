@@ -56,7 +56,13 @@ public struct RoundView: View {
                 if let bezelGap = layout.bezelGap {
                     region(bezelGap) { BezelGapRegion() }
                 }
-                region(layout.dial) { DialRegion() }
+                region(layout.dial) {
+                    RenderEnvReader { env in
+                        DialView(
+                            draft: round.draft, layout: layout, env: env,
+                            isEnabled: round.acceptsInput, onSelect: select)
+                    }
+                }
                 region(layout.benchHandle) { BenchHandleRegion() }
                 region(layout.commitBar) {
                     CommitBar {
@@ -78,6 +84,13 @@ public struct RoundView: View {
     private func step(_ delta: Int) {
         outgoingDraft = round.draft
         round.stepDraft(by: delta)
+    }
+
+    /// One Dial cell tap. Captures the outgoing draft for the throat's register crossfade, the
+    /// same way a swipe does — one behaviour, two entry points.
+    private func select(_ attribute: Glyph.Attribute, _ rank: Int) {
+        outgoingDraft = round.draft
+        round.select(attribute, rank: rank)
     }
 
     /// §6.5's 90–260 ms hold. T06 drives it; until then the aperture is absent, which is the
@@ -102,6 +115,5 @@ public struct RoundView: View {
 private struct InstrumentBarRegion: View { var body: some View { Color.clear } }
 private struct RibbonRegion: View { var body: some View { Color.clear } }
 private struct BezelGapRegion: View { var body: some View { Color.clear } }
-private struct DialRegion: View { var body: some View { Color.clear } }
 private struct BenchHandleRegion: View { var body: some View { Color.clear } }
 private struct CommitKeyRegion: View { var body: some View { Color.clear } }

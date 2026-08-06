@@ -11,6 +11,19 @@ import Foundation
 /// Two worked examples ship here because they belong to the resolution order rather
 /// than to a drawing. Everything else is appended by the component skills.
 public enum C {
+
+    /// A width × height pair for L2 members that name one. Deliberately not `CGSize`: the token
+    /// layer is `HunchCore` and imports no graphics framework, which is what keeps
+    /// `swift test` able to assert every dimension with no simulator.
+    public struct Size: Hashable, Sendable {
+        public let width: Double
+        public let height: Double
+
+        public init(width: Double, height: Double) {
+            self.width = width
+            self.height = height
+        }
+    }
     /// The dashed hollow frame and backward chevron that marks a `prev` referent — §4.2's
     /// diegetic symbol, drawn identically at every one of its four sites so the identity is
     /// what does the naming that words are forbidden from doing.
@@ -196,9 +209,59 @@ public enum C {
 
         public static let inertInk = 0.30
 
+        // Geometry. Canon fixes the header width and the cell size on both devices (§4.1, §6.2)
+        // and never fixes the Bench rail's gutter, so that one is derived rather than pinned as
+        // a fifth constant that would disagree with the rail the day the rail moves.
+        public static let dialCell = C.Size(width: 70, height: 48)
+        public static let dialCellLarge = C.Size(width: 82, height: 62)
+        public static let benchCell = C.Size(width: 56, height: 44)
+        public static let headerWidth = 44.0
+        public static let headerWidthLarge = 52.0
+
+        /// Between cells only — the header abuts cell 1. The header and its four cells are one
+        /// semantic group, and §12.8 exempts intra-group spacing from the 8 pt inter-target
+        /// floor for exactly that reason. Between two *ramps* the gutter is inter-target.
+        public static let dialGutter = 6.0
+        public static let dialGutterLarge = 10.0
+
+        /// §12.8: the Dial gutter tightens to 4 pt **at accessibility1 only** — not across
+        /// xLarge–xxxLarge, where the table leaves it at 6. It is the only gutter in the app
+        /// that moves with type size.
+        public static let dialGutterAccessible = Space.s4
+
+        /// The row's whole horizontal budget: §4.1's own sum on the compact device
+        /// (`44 + 4 × 70 + 3 × 6`) and §6.2's on the large one (`52 + 4 × 82 + 3 × 10`).
+        ///
+        /// It exists because §12.8's Dynamic Type row does not fit: `44 + 4 × 84 + 3 × 6 = 398`
+        /// on a 375 pt screen. A ramp cannot scroll horizontally anywhere in the design, so the
+        /// budget binds the cell's **width** and Dynamic Type's growth lands in its height,
+        /// where §13.11 already sanctions the region scrolling. See `DECISIONS.md` 46.
+        public static let dialRowWidth = 342.0
+        public static let dialRowWidthLarge = 410.0
+
+        public static func benchGutter(railContent: Double) -> Double {
+            max(Space.s4, (railContent - headerWidth - 4 * benchCell.width) / 4)
+        }
+
         /// 1.0 → **2.0** under High Contrast, not 1.0 + 0.5. Another substitution.
         public static func cancelHatchWeight(in env: RenderEnv) -> Double {
             env.theme == .highContrast ? 2.0 : 1.0
         }
+    }
+
+    /// The leading 44 pt of every ramp — the one drawing canon names on five surfaces and never
+    /// specifies. `attribute-header.md` §3 derives it: the attribute's **whole ladder drawn at
+    /// once, in its own register**, so no value is selected and the header is a legend for the
+    /// row rather than an emblem to memorise.
+    public enum AttributeHeader {
+        /// The hue rosette's spoke length, as a fraction of the box side. `0.273 · S / 2`.
+        public static let hueSpokeRatio = 0.273 / 2
+
+        /// The four hue spokes, degrees. The whole rotation ladder as one rosette.
+        public static let hueSpokeDegrees: [Double] = [0, 45, 90, 135]
+
+        /// The `pips` header's contour guide: hairline, so all four compass positions read as
+        /// positions rather than as a fifth silhouette.
+        public static let contourGuideInk = 0.55
     }
 }

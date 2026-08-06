@@ -157,12 +157,20 @@ public nonisolated struct PlaySurfaceLayout: Equatable, Sendable {
     // ── The Dial's ramps (§4.1) ──────────────────────────────────────────────────────────
 
     public var dialRowCount: Int { Metrics.dialRowCount }
-    public var dialCellSize: CGSize { metrics.dialCellSize }
+
+    /// Read from `C.Ramp`, never restated: the cell is the ramp's, and the ramp is drawn on the
+    /// Bench and in the Codex as well as here.
+    public var dialCellSize: CGSize {
+        let cell = deviceClass == .large ? C.Ramp.dialCellLarge : C.Ramp.dialCell
+        return CGSize(width: cell.width, height: cell.height)
+    }
 
     /// The ramp header's **width** — §4.1's "header 44 + 4 cells 70 × 48" is a row's horizontal
     /// budget, not a stacked height: `44 + 4 × 70 = 324` fits inside 375 and `52 + 4 × 82 = 380`
     /// fits inside 440, while any vertical reading overflows a 60 pt row immediately.
-    public var dialHeaderWidth: CGFloat { metrics.dialHeaderWidth }
+    public var dialHeaderWidth: CGFloat {
+        deviceClass == .large ? C.Ramp.headerWidthLarge : C.Ramp.headerWidth
+    }
 
     /// One ramp row. `dialRow(0).minY == dial.minY`: the compact class's 8 pt residual
     /// (`4 × 60 + 3 × 8 = 264` inside 272) goes to the **bottom**, so the first ramp sits
@@ -196,8 +204,6 @@ extension PlaySurfaceLayout {
         var dialHeight: CGFloat
         var dialRowHeight: CGFloat
         var dialRowGutter: CGFloat
-        var dialHeaderWidth: CGFloat
-        var dialCellSize: CGSize
         var dialToHandleGap: CGFloat
         var benchHandleHeight: CGFloat
         var handleToCommitGap: CGFloat
@@ -220,7 +226,6 @@ extension PlaySurfaceLayout {
             ribbonHeight: 52, ribbonLanes: 1,
             separatorHeight: Space.s8, hasBezelGap: false,
             dialHeight: 272, dialRowHeight: 60, dialRowGutter: Space.s8,
-            dialHeaderWidth: Space.targetMin, dialCellSize: CGSize(width: 70, height: 48),
             dialToHandleGap: Space.s8,
             benchHandleHeight: Space.targetMin, handleToCommitGap: Space.s44,
             commitBarHeight: 63,
@@ -234,7 +239,6 @@ extension PlaySurfaceLayout {
             ribbonHeight: 114, ribbonLanes: 2,
             separatorHeight: 50, hasBezelGap: true,
             dialHeight: 342, dialRowHeight: 78, dialRowGutter: 10,
-            dialHeaderWidth: 52, dialCellSize: CGSize(width: 82, height: 62),
             dialToHandleGap: Space.s8,
             benchHandleHeight: Space.targetMin, handleToCommitGap: Space.s4,
             commitBarHeight: 54,

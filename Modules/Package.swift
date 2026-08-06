@@ -48,7 +48,7 @@ let package = Package(
             swiftSettings: ui
         ),
         .testTarget(
-            name: "HunchUITests", dependencies: ["HunchUI", "ModulesTestSupport"],
+            name: "HunchUITests", dependencies: ["HunchUI", "ModulesTestSupport", "LoomFeature"],
             swiftSettings: ui),
 
         // A .target, never a .testTarget — test targets cannot be depended on (01 P20). It may
