@@ -1,5 +1,6 @@
 public import Bench
 public import Feedback
+public import Foundation
 public import Glyphs
 public import Laws
 public import Rounds
@@ -85,6 +86,20 @@ public final class Round {
     /// `AppDependencies` hands over the composite, and every test gets silence by default.
     private let cues: any CuePlayer
 
+    /// The clock, as a capability rather than a record — `LoomFeature` sits below the
+    /// composition root and cannot import it (DECISIONS 82). Used for §6.10's two snapshot
+    /// fields and for nothing else: **no wall-clock quantity affects score, marks or the Rasch
+    /// update** (§6.1), so a round paused for a week is worth exactly what it was worth.
+    private let now: @Sendable () -> Date
+
+    /// Where the round writes itself. Called after every committed verdict and after every
+    /// strike resolution — never on a timer, because a timer would write a round that had not
+    /// changed and would miss one that had.
+    private let persist: @MainActor (ProbeSnapshot) -> Void
+
+    public let startedAt: Date
+    public private(set) var elapsedActive: TimeInterval = 0
+
     /// Set by the cap-th commit and read by `endVerdictBeat()`. §6.11 case 4 delivers that
     /// verdict in full and only *then* ends the round, so exhaustion cannot be part of the
     /// commit — a phase change there would swallow the last bit the player paid for.
@@ -102,10 +117,15 @@ public final class Round {
         seed: UInt64,
         targetDelta: Double,
         beat: VerdictBeat = VerdictBeat(reduceMotion: false),
-        cues: any CuePlayer = SilentCuePlayer()
+        cues: any CuePlayer = SilentCuePlayer(),
+        now: @escaping @Sendable () -> Date = { Date(timeIntervalSince1970: 0) },
+        persist: @escaping @MainActor (ProbeSnapshot) -> Void = { _ in }
     ) {
         self.beat = beat
         self.cues = cues
+        self.now = now
+        self.persist = persist
+        startedAt = now()
         self.law = law
         self.band = band
         self.mode = mode
@@ -328,8 +348,8 @@ public final class Round {
         cues.play(.verdict(verdict, isTwin: ribbon.probes.last?.isTwin ?? false))
     }
 
-    /// **The one point at which round state becomes true.** The beat, the cue, the snapshot
-    /// (E10·T02) and the VoiceOver announcement all hang off this call and off nothing else.
+    /// **The one point at which round state becomes true.** The beat, the cue, the snapshot and
+    /// the VoiceOver announcement all hang off this call and off nothing else.
     private func commit(_ glyph: Glyph) -> Verdict? {
         let record = ribbon.probe(glyph, against: law)
         guard let next = RoundPhase.advance(phase, on: .verdict(record.verdict)) else {
@@ -337,8 +357,33 @@ public final class Round {
         }
         phase = next
         hasReachedCap = ribbon.count >= cap
+        // Written HERE, at t = 0, and not when the beat ends: killing the app mid-animation
+        // must lose nothing, and the animation is the only thing between the two.
+        writeSnapshot()
         return record.verdict
     }
+
+    /// §6.10's snapshot. **Glyph IDs only** — verdicts are recomputed from the stored law on
+    /// resume, which is what makes a tampered file produce `.voided` rather than a quietly
+    /// altered round.
+    public func snapshot() -> ProbeSnapshot {
+        ProbeSnapshot(
+            law: law.node, seed: seed, band: band, targetDelta: targetDelta, mode: mode,
+            seedGlyph: UInt8(seedGlyph.id), probes: ribbon.probes.map(\.glyphID),
+            strikes: strikes, counterexample: nil, startedAt: startedAt,
+            elapsedActive: elapsedActive)
+    }
+
+    private func writeSnapshot() {
+        guard outcome == nil else { return }
+        elapsedActive = now().timeIntervalSince(startedAt)
+        persist(snapshot())
+    }
+
+    /// `scenePhase → .inactive`. The **Bench draft rides this write and no other**: it is the
+    /// only state the player would notice missing and the only one that changes without a
+    /// verdict, so writing it after every cell tap would be a file write per tap.
+    public func sceneBecameInactive() { writeSnapshot() }
 
     /// Called when the adjudication beat's input lock expires — T06 owns the clock and calls
     /// this; nothing here measures time. Exposing the beat's *end* as a method is what lets the
@@ -511,6 +556,7 @@ public final class Round {
             cues.play(.lawDeclaredCorrectly(marks: marks))
         case .wrongFirstStrike:
             strikes = 1
+            defer { writeSnapshot() }
             counterexample = Counterexample.select(
                 declared: benchDraft ?? law, hidden: law,
                 ribbon: ribbon.probes.map(\.glyph), seedGlyph: seedGlyph)

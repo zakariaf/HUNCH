@@ -18,6 +18,8 @@ public enum Dur {
     /// is a token rather than a number inside one beat sheet: the reveal, the counterexample and
     /// the lost skeleton all start after it and all three must start after the *same* one.
     public static let sealHold = Duration.milliseconds(640)
+    /// §6.10's re-entry beat: the surface re-reads itself and input is locked throughout.
+    public static let reEntry = Duration.milliseconds(900)
     /// §6.8: the counterexample beat, after which the round continues.
     public static let counterexample = Duration.milliseconds(960)
     /// §6.8: the one skip threshold, measured into the reveal. There is no other.
